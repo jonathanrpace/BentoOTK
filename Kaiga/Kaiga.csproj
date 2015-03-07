@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{20FD8AC9-3241-4F0F-9671-50F1E736D7A1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Kaiga</RootNamespace>
+    <AssemblyName>Kaiga</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Kaiga.Core\BackBufferOutputMode.cs" />
+    <Compile Include="src\Kaiga.Core\DeferredRenderer.cs" />
+    <Compile Include="src\Kaiga.Core\IRenderer.cs" />
+    <Compile Include="src\Kaiga.Core\IRenderTarget.cs" />
+    <Compile Include="src\Kaiga.Core\RenderParams.cs" />
+    <Compile Include="src\Kaiga.Core\RenderPhase.cs" />
+    <Compile Include="src\Kaiga.RenderPasses\IRenderPass.cs" />
+    <Compile Include="src\Kaiga.Core\RenderTarget2D.cs" />
+    <Compile Include="src\Kaiga.Shaders\Shader.cs" />
+    <Compile Include="src\Kaiga.Shaders\TestVertexShader.cs" />
+    <Compile Include="src\Kaiga.Shaders\TestFragShader.cs" />
+    <Compile Include="src\Kaiga.RenderPasses\TestRenderPass.cs" />
+    <Compile Include="src\Kaiga.Geom\IGeometry.cs" />
+    <Compile Include="src\Kaiga.Geom\Geometry.cs" />
+    <Compile Include="src\Kaiga.Geom\PlaneGeometry.cs" />
+    <Compile Include="src\Kaiga.Components\ILens.cs" />
+    <Compile Include="src\Kaiga.Components\PerspectiveLens.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{916765FF-9963-400C-8BC5-0C858443EAFA}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Ramen\Ramen.csproj">
+      <Project>{02479A03-4DE7-4419-92D2-96EC57DCFC7B}</Project>
+      <Name>Ramen</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\OpenTK\1.1\Source\OpenTK\OpenTK.csproj">
+      <Project>{A37A7E14-0000-0000-0000-000000000000}</Project>
+      <Name>OpenTK</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\" />
+    <Folder Include="src\Kaiga.Core\" />
+    <Folder Include="src\Kaiga.Components\" />
+    <Folder Include="src\Kaiga.RenderPasses\" />
+    <Folder Include="src\Kaiga.Shaders\" />
+    <Folder Include="src\Kaiga.Geom\" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,19 @@
+﻿<Properties StartupItem="Examples\Examples.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="c:\Coding\OpenTK\1.1\Source\OpenTK\Graphics\OpenGL4\ErrorHelper.cs">
+    <Files>
+      <File FileName="Kaiga\src\Kaiga.RenderPasses\TestRenderPass.cs" Line="1" Column="1" />
+      <File FileName="Kaiga\src\Kaiga.Shaders\TestVertexShader.cs" Line="1" Column="1" />
+      <File FileName="Kaiga\src\Kaiga.Shaders\TestFragShader.cs" Line="1" Column="1" />
+      <File FileName="c:\Coding\OpenTK\1.1\Source\OpenTK\Graphics\OpenGL4\ErrorHelper.cs" Line="62" Column="62" />
+      <File FileName="Examples\src\Program.cs" Line="5" Column="5" />
+      <File FileName="Examples\src\Test.cs" Line="14" Column="14" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="C:\Coding\Bento2\Test\Program.cs" line="111" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
