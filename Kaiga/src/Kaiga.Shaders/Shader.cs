@@ -1,12 +1,11 @@
 ﻿using System;
-using Ramen;
 using OpenTK.Graphics.OpenGL4;
 using System.Diagnostics;
 using Kaiga.Core;
 
 namespace Kaiga.Shaders
 {
-	abstract public class Shader
+	abstract public class Shader : IGraphicsContextDependant
 	{
 		protected int shaderProgram;
 
@@ -18,31 +17,33 @@ namespace Kaiga.Shaders
 			}
 		}
 
-		protected Shader()
-		{
-			Init();
-		}
+		#region IGraphicsContextDependant implementation
 
-		~Shader()
-		{
-			GL.DeleteProgram( shaderProgram );
-		}
-
-		private void Init()
+		public void CreateGraphicsContextResources()
 		{
 			var shaderSource = new string[1];
 			shaderSource[ 0 ] = GetShaderSource();
 
 			shaderProgram = GL.CreateShaderProgram
-			( 
-				GetShaderType(),
-				shaderSource.Length,
-				shaderSource
-			);
+				( 
+					GetShaderType(),
+					shaderSource.Length,
+					shaderSource
+				);
 			var log = GL.GetProgramInfoLog( shaderProgram );
 			Debug.Write( log );
 		}
 
+		public void DisposeGraphicsContextResources()
+		{
+			if ( GL.IsProgram( shaderProgram ) )
+			{
+				GL.DeleteProgram( shaderProgram );
+			}
+		}
+
+		#endregion
+		
 		public virtual void BindShader( RenderParams renderParams )
 		{
 

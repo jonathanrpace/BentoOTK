@@ -1,5 +1,6 @@
 ﻿using System;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics;
 
 namespace Kaiga.Core
 {
@@ -17,21 +18,15 @@ namespace Kaiga.Core
 		public int MaterialBuffer { get; private set; }
 		public int PostBuffer { get; private set; }
 
-		public RenderTarget2D()
+		bool invalid = true;
+		
+		public void CreateGraphicsContextResources()
 		{
-
+			Invalidate();
 		}
 
-		public void SetSize( int width, int height )
+		public void DisposeGraphicsContextResources()
 		{
-			if ( width == Width && height == Height )
-			{
-				return;
-			}
-
-			Width = width;
-			Height = height;
-
 			// Dispose existing frameBuffer
 			if ( GL.IsFramebuffer( FrameBuffer ) )
 			{
@@ -45,32 +40,64 @@ namespace Kaiga.Core
 				GL.DeleteRenderbuffer( PostBuffer );
 			}
 
+			invalid = true;
+		}
+
+		public void SetSize( int width, int height )
+		{
+			if ( width == Width && height == Height )
+			{
+				return;
+			}
+
+			Width = width;
+			Height = height;
+
+			Invalidate();
+		}
+
+		public void Bind()
+		{
+			if ( invalid )
+			{
+				Validate();
+				invalid = false;
+			}
+		}
+
+		void Invalidate()
+		{
+			DisposeGraphicsContextResources();
+			invalid = true;
+		}
+
+		void Validate()
+		{
 			DepthBuffer = GL.GenRenderbuffer();
 			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, DepthBuffer );
-			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height );
+			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, Width, Height );
 
 			NormalBuffer = GL.GenRenderbuffer();
 			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, NormalBuffer );
-			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, width, height );
+			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, Width, Height );
 
 			PositionBuffer = GL.GenRenderbuffer();
 			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, PositionBuffer );
-			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, width, height );
+			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, Width, Height );
 
 			LBuffer = GL.GenRenderbuffer();
 			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, LBuffer );
-			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, width, height );
+			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, Width, Height );
 
 			MaterialBuffer = GL.GenRenderbuffer();
 			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, MaterialBuffer );
-			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, width, height );
+			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, Width, Height );
 
 			PostBuffer = GL.GenRenderbuffer();
 			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, PostBuffer );
-			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, width, height );
+			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, Width, Height );
 
 			FrameBuffer = GL.GenFramebuffer();
-
 		}
 	}
 }

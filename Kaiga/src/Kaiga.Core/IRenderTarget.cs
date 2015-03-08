@@ -2,7 +2,7 @@
 
 namespace Kaiga.Core
 {
-	public interface IRenderTarget
+	public interface IRenderTarget : IGraphicsContextDependant
 	{
 		int FrameBuffer{ get; }
 		int NormalBuffer { get; }
@@ -11,6 +11,8 @@ namespace Kaiga.Core
 		int LBuffer { get; }
 		int MaterialBuffer { get; }
 		int PostBuffer { get; }
+
+		void Bind();
 	}
 }
 

@@ -5,6 +5,7 @@ using Ramen;
 using Kaiga.Core;
 using Kaiga.RenderPasses;
 using Kaiga.Geom;
+using Kaiga.Processes;
 
 namespace Examples
 {
@@ -48,12 +49,16 @@ namespace Examples
 			plane.AddComponent( new PlaneGeometry() );
 			plane.AddComponent( Matrix4.Identity );
 			scene.AddEntity( plane );
+
+			scene.AddProcess( new GraphicsContextDependencyManager() );
 		}
 
 		protected override void OnUnload( System.EventArgs e )
 		{
 			scene.Clear();
 			scene = null;
+
+			base.OnUnload(e);
 		}
 
 		protected override void OnUpdateFrame(FrameEventArgs e)

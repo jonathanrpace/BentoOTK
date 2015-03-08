@@ -49,6 +49,8 @@
     <Compile Include="src\Kaiga.Geom\PlaneGeometry.cs" />
     <Compile Include="src\Kaiga.Components\ILens.cs" />
     <Compile Include="src\Kaiga.Components\PerspectiveLens.cs" />
+    <Compile Include="src\Kaiga.Core\IGraphicsContextDependant.cs" />
+    <Compile Include="src\Kaiga.Processes\GraphicsContextDependencyManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -72,5 +74,6 @@
     <Folder Include="src\Kaiga.RenderPasses\" />
     <Folder Include="src\Kaiga.Shaders\" />
     <Folder Include="src\Kaiga.Geom\" />
+    <Folder Include="src\Kaiga.Processes\" />
   </ItemGroup>
 </Project>

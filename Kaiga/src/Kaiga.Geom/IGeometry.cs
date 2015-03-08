@@ -1,8 +1,9 @@
 ﻿using System;
+using Kaiga.Core;
 
 namespace Kaiga.Geom
 {
-	public interface IGeometry
+	public interface IGeometry : IGraphicsContextDependant
 	{
 
 	}

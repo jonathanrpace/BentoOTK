@@ -1,6 +1,7 @@
 ﻿using System;
 using OpenTK.Graphics.OpenGL4;
 using Ramen;
+using Kaiga.Core;
 
 namespace Kaiga.Geom
 {
@@ -50,8 +51,11 @@ namespace Kaiga.Geom
 			}
 		}
 		
-		public PlaneGeometry()
+
+		override public void CreateGraphicsContextResources()
 		{
+			base.CreateGraphicsContextResources();
+
 			vertexArrayBuffer = GL.GenVertexArray();
 			GL.BindVertexArray( vertexArrayBuffer );
 
@@ -193,7 +197,7 @@ namespace Kaiga.Geom
 
 		#region ITypedComponent implementation
 
-		private Type[] types = new Type[] { typeof(Geometry), typeof(PlaneGeometry) };
+		private Type[] types = { typeof(Geometry), typeof(PlaneGeometry), typeof(IGraphicsContextDependant) };
 		public Type[] Types
 		{
 			get

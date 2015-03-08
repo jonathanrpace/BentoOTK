@@ -10,12 +10,7 @@ namespace Kaiga.Shaders
 		{
 			return ShaderType.FragmentShader;
 		}
-
-		override public void BindShader( RenderParams renderParams )
-		{
-
-		}
-
+		
 		override protected string GetShaderSource()
 		{
 			return @"

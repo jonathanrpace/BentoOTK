@@ -32,15 +32,32 @@ namespace Kaiga.RenderPasses
 			fragmentShader = new TestFragShader();
 		}
 
-		public void OnAddedToScene( Ramen.Scene scene )
+		#region IGraphicsContextDependant implementation
+
+		public void CreateGraphicsContextResources()
 		{
-			nodeList = new NodeList<Node>( scene );
+			vertexShader.CreateGraphicsContextResources();
+			fragmentShader.CreateGraphicsContextResources();
 
 			pipeline = GL.GenProgramPipeline();
-			GL.BindProgramPipeline( pipeline );
 			GL.UseProgramStages( pipeline, ProgramStageMask.VertexShaderBit, vertexShader.ShaderProgram );
 			GL.UseProgramStages( pipeline, ProgramStageMask.FragmentShaderBit, fragmentShader.ShaderProgram );
 			GL.BindProgramPipeline( 0 );
+		}
+
+		public void DisposeGraphicsContextResources()
+		{
+			vertexShader.DisposeGraphicsContextResources();
+			fragmentShader.DisposeGraphicsContextResources();
+		}
+
+		#endregion
+
+		public void OnAddedToScene( Scene scene )
+		{
+			nodeList = new NodeList<Node>( scene );
+
+
 		}
 
 		public void OnRemovedFromScene( Ramen.Scene scene )

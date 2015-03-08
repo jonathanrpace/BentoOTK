@@ -7,10 +7,11 @@ using System.Diagnostics;
 using OpenTK.Graphics.OpenGL4;
 using Kaiga.Components;
 using OpenTK;
+using OpenTK.Graphics;
 
 namespace Kaiga.Core
 {
-	public class DeferredRenderer : NamedObject, IRenderer
+	public class DeferredRenderer : NamedObject, IRenderer, IGraphicsContextDependant
 	{
 		private Scene										scene;
 		private RenderParams 								renderParams;
@@ -25,6 +26,8 @@ namespace Kaiga.Core
 
 		public event RenderPassDelegate OnRenderPassAdded;
 		public event RenderPassDelegate OnRenderPassRemoved;
+
+		bool graphicsContextAvailable = false;
 
 		public DeferredRenderer() : this( "Deferred Renderer" )
 		{
@@ -50,6 +53,32 @@ namespace Kaiga.Core
 			AddRenderPhase( RenderPhase.Material );
 			AddRenderPhase( RenderPhase.Post );
 		}
+
+		#region IGLContextDependant implementation
+
+		public void CreateGraphicsContextResources()
+		{
+			graphicsContextAvailable = true;
+			renderTarget.CreateGraphicsContextResources();
+
+			foreach ( var renderPass in renderPasses )
+			{
+				renderPass.CreateGraphicsContextResources();
+			}
+		}
+
+		public void DisposeGraphicsContextResources()
+		{
+			graphicsContextAvailable = false;
+			renderTarget.DisposeGraphicsContextResources();
+
+			foreach ( var renderPass in renderPasses )
+			{
+				renderPass.DisposeGraphicsContextResources();
+			}
+		}
+
+		#endregion
 
 		public void OnAddedToScene( Scene scene )
 		{
@@ -130,6 +159,10 @@ namespace Kaiga.Core
 
 		public void RenderToBackBuffer( RenderTarget2D renderTarget )
 		{
+			if (!graphicsContextAvailable )
+			{
+				return;
+			}
 			renderTarget.SetSize( scene.GameWindow.Width, scene.GameWindow.Height );
 
 			renderParams.CameraLens = Camera.GetComponentByType<ILens>();
@@ -249,6 +282,9 @@ namespace Kaiga.Core
 			RenderPassesInPhase( passesByPhase[ RenderPhase.Material ] );
 
 			*/
+
+			renderTarget.Bind();
+
 			GL.Enable(EnableCap.DepthTest);
 			GL.ClearColor( 0.0f, 1.0f, 0.0f, 0.0f );
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit );

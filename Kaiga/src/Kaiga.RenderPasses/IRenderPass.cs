@@ -4,7 +4,7 @@ using Kaiga.Core;
 
 namespace Kaiga.RenderPasses
 {
-	public interface IRenderPass
+	public interface IRenderPass : IGraphicsContextDependant
 	{
 		void OnAddedToScene( Scene scene );
 		void OnRemovedFromScene( Scene scene );
