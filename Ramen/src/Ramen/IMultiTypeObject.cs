@@ -2,7 +2,7 @@
 
 namespace Ramen
 {
-	public interface ITypedComponent
+	public interface IMultiTypeObject
 	{
 		Type[] Types { get; }
 	}

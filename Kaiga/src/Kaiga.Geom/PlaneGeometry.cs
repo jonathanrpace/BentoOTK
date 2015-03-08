@@ -5,7 +5,7 @@ using Kaiga.Core;
 
 namespace Kaiga.Geom
 {
-	public class PlaneGeometry : Geometry, ITypedComponent
+	public class PlaneGeometry : Geometry, IMultiTypeObject
 	{
 		private float _width = 1;
 		public float Width 
@@ -114,7 +114,7 @@ namespace Kaiga.Geom
 					int float4Index = (i * numVerticesY + j) * 4;
 
 					positions[ float3Index ] = ( xRatio * _width ) - _width * 0.5f;
-					positions[ float3Index + 1 ] = ( (1-yRatio) * _height ) - _height * 0.5f;
+					positions[ float3Index + 1 ] = ( yRatio * _height ) - _height * 0.5f;
 					positions[ float3Index + 2 ] = 0.0f;
 
 					normals[ float3Index ] = 0;
@@ -124,10 +124,10 @@ namespace Kaiga.Geom
 					uvs[float2Index] = xRatio;
 					uvs[float2Index + 1] = 1-yRatio;
 
-					colors[ float4Index ] = (float) rand.NextDouble();
-					colors[ float4Index + 1 ] = (float) rand.NextDouble();
-					colors[ float4Index + 2 ] = (float) rand.NextDouble();
-					colors[ float4Index + 3 ] = (float) rand.NextDouble();
+					colors[ float4Index ] = xRatio;
+					colors[ float4Index + 1 ] = yRatio;
+					colors[ float4Index + 2 ] = 0;
+					colors[ float4Index + 3 ] = 0;
 
 					if ( i < numVerticesY-1 && j < numVerticesX-1 )
 					{
@@ -195,16 +195,10 @@ namespace Kaiga.Geom
 			GL.BindBuffer( BufferTarget.ElementArrayBuffer, 0 );
 		}
 
-		#region ITypedComponent implementation
+		#region IMultiTypeObject implementation
 
-		private Type[] types = { typeof(Geometry), typeof(PlaneGeometry), typeof(IGraphicsContextDependant) };
-		public Type[] Types
-		{
-			get
-			{
-				return types;
-			}
-		}
+	 	static readonly Type[] types = { typeof(Geometry), typeof(PlaneGeometry), typeof(IGraphicsContextDependant) };
+		public Type[] Types { get { return types; } }
 
 		#endregion
 	}

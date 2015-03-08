@@ -36,9 +36,9 @@ namespace Ramen
 			Debug.Assert( component != null );
 
 			Type[] types;
-			if ( component is ITypedComponent )
+			if ( component is IMultiTypeObject )
 			{
-				types = ((ITypedComponent)component).Types;
+				types = ((IMultiTypeObject)component).Types;
 			}
 			else
 			{
@@ -72,9 +72,9 @@ namespace Ramen
 			components.Remove( component );
 
 			Type[] types;
-			if ( component is ITypedComponent )
+			if ( component is IMultiTypeObject )
 			{
-				types = ((ITypedComponent)component).Types;
+				types = ((IMultiTypeObject)component).Types;
 			}
 			else
 			{

@@ -166,9 +166,24 @@ namespace Ramen
 		{
 			Debug.Assert( process != null );
 			Debug.Assert( processes.IndexOf( process ) == -1, "Process already a child of this Scene." );
-			Debug.Assert( processesByType.ContainsKey( process.GetType() ) == false, "Process of this type already a child of this Scene." );
 
-			processesByType[ process.GetType() ] = process;
+
+			Type[] types;
+			if ( process is IMultiTypeObject )
+			{
+				types = ( process as IMultiTypeObject ).Types;
+			}
+			else
+			{
+				types = new Type[1]{ process.GetType() };
+			}
+
+			foreach ( var type in types )
+			{
+				Debug.Assert( processesByType.ContainsKey( type ) == false, "Process of this type already a child of this Scene." );
+				processesByType[ type ] = process;
+			}
+
 			processes.Add( process );
 			process.OnAddedToScene( this );
 
@@ -180,8 +195,22 @@ namespace Ramen
 			Debug.Assert( process != null );
 			Debug.Assert( processes.IndexOf( process ) != -1, "Process is not a child of this Scene" );
 
+			Type[] types;
+			if ( process is IMultiTypeObject )
+			{
+				types = ( process as IMultiTypeObject ).Types;
+			}
+			else
+			{
+				types = new Type[1]{ process.GetType() };
+			}
+
+			foreach ( var type in types )
+			{
+				processesByType.Remove( type );
+			}
+
 			processes.Remove( process );
-			processesByType[ process.GetType() ] = null;
 			process.OnRemovedFromScene( this );
 
 			if ( ProcessRemoved != null ) ProcessRemoved( process );
@@ -218,6 +247,11 @@ namespace Ramen
 		public IProcess GetProcessByType( Type type )
 		{
 			return processesByType[ type ];
+		}
+
+		public T GetProcessByType<T>()
+		{
+			return (T) processesByType[ typeof(T) ];
 		}
 
 		private void OnTimerElapsed( object sender, ElapsedEventArgs e )

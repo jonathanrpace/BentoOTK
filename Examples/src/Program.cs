@@ -51,6 +51,7 @@ namespace Examples
 			scene.AddEntity( plane );
 
 			scene.AddProcess( new GraphicsContextDependencyManager() );
+			scene.AddProcess( new OrbitCamera() );
 		}
 
 		protected override void OnUnload( System.EventArgs e )

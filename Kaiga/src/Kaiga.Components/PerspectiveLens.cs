@@ -4,7 +4,7 @@ using Ramen;
 
 namespace Kaiga.Components
 {
-	public class PerspectiveLens : ILens, ITypedComponent
+	public class PerspectiveLens : ILens, IMultiTypeObject
 	{
 		private bool matrixInvalid = true;
 		private bool invMatrixInvalid = true;

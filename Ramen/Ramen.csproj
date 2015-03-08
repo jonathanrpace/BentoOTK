@@ -34,11 +34,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\Ramen\Entity.cs" />
     <Compile Include="src\Ramen\IProcess.cs" />
-    <Compile Include="src\Ramen\ITypedComponent.cs" />
     <Compile Include="src\Ramen\NamedObject.cs" />
     <Compile Include="src\Ramen\Node.cs" />
     <Compile Include="src\Ramen\NodeList.cs" />
     <Compile Include="src\Ramen\Scene.cs" />
+    <Compile Include="src\Ramen\IMultiTypeObject.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

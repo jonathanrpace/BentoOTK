@@ -11,7 +11,7 @@ using OpenTK.Graphics;
 
 namespace Kaiga.Core
 {
-	public class DeferredRenderer : NamedObject, IRenderer, IGraphicsContextDependant
+	public class DeferredRenderer : NamedObject, IRenderer, IGraphicsContextDependant, IMultiTypeObject
 	{
 		private Scene										scene;
 		private RenderParams 								renderParams;
@@ -45,7 +45,7 @@ namespace Kaiga.Core
 			Camera = new Entity();
 			var lens = new PerspectiveLens();
 			Camera.AddComponent( lens );
-			var cameraTransform = Matrix4.Identity * Matrix4.CreateTranslation( 0.0f, 0.0f, -2.0f );
+			var cameraTransform = new Transform( Matrix4.Identity * Matrix4.CreateTranslation( 0.0f, 0.0f, -2.0f ) );
 			Camera.AddComponent( cameraTransform );
 
 			AddRenderPhase( RenderPhase.G );
@@ -168,7 +168,7 @@ namespace Kaiga.Core
 			renderParams.CameraLens = Camera.GetComponentByType<ILens>();
 			renderParams.CameraLens.AspectRatio = (float)scene.GameWindow.Width / scene.GameWindow.Height;
 
-			renderParams.ViewMatrix = Camera.GetComponentByType<Matrix4>();
+			renderParams.ViewMatrix = Camera.GetComponentByType<Transform>().Matrix;
 			renderParams.InvViewMatrix = renderParams.ViewMatrix.Inverted();
 			renderParams.ProjectionMatrix = renderParams.CameraLens.ProjectionMatrix;
 			renderParams.InvProjectionMatrix = renderParams.CameraLens.InvProjectionMatrix;
@@ -329,6 +329,13 @@ namespace Kaiga.Core
 			Debug.Assert( passesByPhase.ContainsKey( renderPhase ) == false, "RenderPhase already added" );
 			passesByPhase.Add( renderPhase, new List<IRenderPass>() );
 		}
+
+		#region IMultiTypeObject implementation
+
+		static readonly Type[] types = { typeof(DeferredRenderer), typeof(IRenderer) };
+		public Type[] Types { get { return types; } }
+
+		#endregion
 	}
 }
 
