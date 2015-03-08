@@ -40,9 +40,6 @@
     <Compile Include="src\Kaiga.Core\RenderPhase.cs" />
     <Compile Include="src\Kaiga.RenderPasses\IRenderPass.cs" />
     <Compile Include="src\Kaiga.Core\RenderTarget2D.cs" />
-    <Compile Include="src\Kaiga.Shaders\Shader.cs" />
-    <Compile Include="src\Kaiga.Shaders\TestVertexShader.cs" />
-    <Compile Include="src\Kaiga.Shaders\TestFragShader.cs" />
     <Compile Include="src\Kaiga.RenderPasses\TestRenderPass.cs" />
     <Compile Include="src\Kaiga.Geom\IGeometry.cs" />
     <Compile Include="src\Kaiga.Geom\Geometry.cs" />
@@ -51,6 +48,10 @@
     <Compile Include="src\Kaiga.Components\PerspectiveLens.cs" />
     <Compile Include="src\Kaiga.Core\IGraphicsContextDependant.cs" />
     <Compile Include="src\Kaiga.Processes\GraphicsContextDependencyManager.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\TestVertexShader.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\TestFragShader.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\ShaderStage.cs" />
+    <Compile Include="src\Kaiga.Shaders\TestShader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -72,8 +73,9 @@
     <Folder Include="src\Kaiga.Core\" />
     <Folder Include="src\Kaiga.Components\" />
     <Folder Include="src\Kaiga.RenderPasses\" />
-    <Folder Include="src\Kaiga.Shaders\" />
     <Folder Include="src\Kaiga.Geom\" />
     <Folder Include="src\Kaiga.Processes\" />
+    <Folder Include="src\Kaiga.ShaderStages\" />
+    <Folder Include="src\Kaiga.Shaders\" />
   </ItemGroup>
 </Project>

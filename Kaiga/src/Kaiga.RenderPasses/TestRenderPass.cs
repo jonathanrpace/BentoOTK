@@ -20,35 +20,23 @@ namespace Kaiga.RenderPasses
 	public class TestRenderPass : IRenderPass
 	{
 		private NodeList<Node> nodeList;
-
-		private TestVertexShader vertexShader;
-		private TestFragShader fragmentShader;
-
-		private int pipeline;
+		private readonly TestShader shader;
 
 		public TestRenderPass()
 		{
-			vertexShader = new TestVertexShader();
-			fragmentShader = new TestFragShader();
+			shader = new TestShader();
 		}
 
 		#region IGraphicsContextDependant implementation
 
 		public void CreateGraphicsContextResources()
 		{
-			vertexShader.CreateGraphicsContextResources();
-			fragmentShader.CreateGraphicsContextResources();
-
-			pipeline = GL.GenProgramPipeline();
-			GL.UseProgramStages( pipeline, ProgramStageMask.VertexShaderBit, vertexShader.ShaderProgram );
-			GL.UseProgramStages( pipeline, ProgramStageMask.FragmentShaderBit, fragmentShader.ShaderProgram );
-			GL.BindProgramPipeline( 0 );
+			shader.CreateGraphicsContextResources();
 		}
 
 		public void DisposeGraphicsContextResources()
 		{
-			vertexShader.DisposeGraphicsContextResources();
-			fragmentShader.DisposeGraphicsContextResources();
+			shader.DisposeGraphicsContextResources();
 		}
 
 		#endregion
@@ -56,27 +44,17 @@ namespace Kaiga.RenderPasses
 		public void OnAddedToScene( Scene scene )
 		{
 			nodeList = new NodeList<Node>( scene );
-
-
 		}
 
 		public void OnRemovedFromScene( Ramen.Scene scene )
 		{
-			GL.DeleteProgramPipeline( pipeline );
-
 			nodeList.Dispose();
 			nodeList = null;
 		}
 
 		public void Render( RenderParams renderParams )
 		{
-			GL.BindProgramPipeline( pipeline );
-
-			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
-			vertexShader.BindShader( renderParams );
-
-			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
-			fragmentShader.BindShader( renderParams );
+			shader.Bind( renderParams );
 
 			foreach ( Node node in nodeList.Nodes )
 			{
@@ -85,7 +63,7 @@ namespace Kaiga.RenderPasses
 				node.geom.Unbind();
 			}
 
-			GL.BindProgramPipeline( 0 );
+			shader.Unbind();
 		}
 
 		public RenderPhase RenderPhase
