@@ -8,6 +8,7 @@ using OpenTK.Graphics.OpenGL4;
 using Kaiga.Components;
 using OpenTK;
 using OpenTK.Graphics;
+using System.Security.AccessControl;
 
 namespace Kaiga.Core
 {
@@ -286,7 +287,7 @@ namespace Kaiga.Core
 			renderTarget.Bind();
 
 			GL.Enable(EnableCap.DepthTest);
-			GL.ClearColor( 0.0f, 1.0f, 0.0f, 0.0f );
+			GL.ClearColor( System.Drawing.Color.AliceBlue );
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit );
 
 			// Material Pass
