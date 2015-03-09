@@ -33,11 +33,11 @@ namespace Kaiga.Core
 				GL.DeleteFramebuffer( FrameBuffer );
 
 				GL.DeleteRenderbuffer( DepthBuffer );
-				GL.DeleteRenderbuffer( NormalBuffer );
-				GL.DeleteRenderbuffer( PositionBuffer );
-				GL.DeleteRenderbuffer( LBuffer );
-				GL.DeleteRenderbuffer( MaterialBuffer );
-				GL.DeleteRenderbuffer( PostBuffer );
+				GL.DeleteTexture( NormalBuffer );
+				GL.DeleteTexture( PositionBuffer );
+				GL.DeleteTexture( LBuffer );
+				GL.DeleteTexture( MaterialBuffer );
+				GL.DeleteTexture( PostBuffer );
 			}
 
 			invalid = true;
@@ -63,6 +63,13 @@ namespace Kaiga.Core
 				Validate();
 				invalid = false;
 			}
+			
+			GL.BindFramebuffer( FramebufferTarget.Framebuffer, FrameBuffer );
+		}
+
+		public void Unbind()
+		{
+			GL.BindFramebuffer( FramebufferTarget.Framebuffer, 0 );
 		}
 
 		void Invalidate()
@@ -73,31 +80,54 @@ namespace Kaiga.Core
 
 		void Validate()
 		{
+			FrameBuffer = GL.GenFramebuffer();
+			GL.BindFramebuffer( FramebufferTarget.Framebuffer, FrameBuffer );
+
+			// Normal -> Colour0
+			NormalBuffer = GL.GenTexture();
+			GL.BindTexture( TextureTarget.Texture2D, NormalBuffer );
+			InitTexture();
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, NormalBuffer, 0 );
+
+			// Position -> Colour1
+			PositionBuffer = GL.GenTexture();
+			GL.BindTexture( TextureTarget.Texture2D, PositionBuffer );
+			InitTexture();
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, NormalBuffer, 0 );
+
+			// Light -> Colour2
+			LBuffer = GL.GenTexture();
+			GL.BindTexture( TextureTarget.Texture2D, LBuffer );
+			InitTexture();
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment2, TextureTarget.Texture2D, NormalBuffer, 0 );
+
+			// Material -> Colour3
+			MaterialBuffer = GL.GenTexture();
+			GL.BindTexture( TextureTarget.Texture2D, MaterialBuffer );
+			InitTexture();
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment3, TextureTarget.Texture2D, NormalBuffer, 0 );
+
+			// Post -> Colour4
+			PostBuffer = GL.GenTexture();
+			GL.BindTexture( TextureTarget.Texture2D, PostBuffer );
+			InitTexture();
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment4, TextureTarget.Texture2D, NormalBuffer, 0 );
+
+			// Depth -> Depth
 			DepthBuffer = GL.GenRenderbuffer();
 			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, DepthBuffer );
 			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, Width, Height );
+			GL.FramebufferRenderbuffer( FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, DepthBuffer );
 
-			NormalBuffer = GL.GenRenderbuffer();
-			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, NormalBuffer );
-			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, Width, Height );
 
-			PositionBuffer = GL.GenRenderbuffer();
-			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, PositionBuffer );
-			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, Width, Height );
+			GL.BindFramebuffer( FramebufferTarget.Framebuffer, 0 );
+		}
 
-			LBuffer = GL.GenRenderbuffer();
-			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, LBuffer );
-			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, Width, Height );
-
-			MaterialBuffer = GL.GenRenderbuffer();
-			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, MaterialBuffer );
-			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, Width, Height );
-
-			PostBuffer = GL.GenRenderbuffer();
-			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, PostBuffer );
-			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, Width, Height );
-
-			FrameBuffer = GL.GenFramebuffer();
+		void InitTexture()
+		{
+			GL.TexImage2D( TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, new IntPtr(0) );
+			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear );
+			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear );
 		}
 	}
 }

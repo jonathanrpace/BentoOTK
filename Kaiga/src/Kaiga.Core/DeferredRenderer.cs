@@ -66,6 +66,8 @@ namespace Kaiga.Core
 			{
 				renderPass.CreateGraphicsContextResources();
 			}
+
+			GL.ClearColor( System.Drawing.Color.AliceBlue );
 		}
 
 		public void DisposeGraphicsContextResources()
@@ -287,16 +289,16 @@ namespace Kaiga.Core
 			renderTarget.Bind();
 
 			GL.Enable(EnableCap.DepthTest);
-			GL.ClearColor( System.Drawing.Color.AliceBlue );
-			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit );
+			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 
 			// Material Pass
-			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
+			//GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 			RenderPassesInPhase( passesByPhase[ RenderPhase.Material ] );
 
+			renderTarget.Unbind();
 
 			// Copy to the back buffer
-			/*
+
 			GL.BindFramebuffer( FramebufferTarget.ReadFramebuffer, renderTarget.FrameBuffer );
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 
@@ -307,7 +309,7 @@ namespace Kaiga.Core
 				0, 0, renderTarget.Width, renderTarget.Height,
 				ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest
 			);
-			*/
+
 
 			scene.GameWindow.SwapBuffers();
 		}
