@@ -54,6 +54,7 @@
     <Compile Include="src\Kaiga.Shaders\TestShader.cs" />
     <Compile Include="src\Kaiga.Processes\OrbitCamera.cs" />
     <Compile Include="src\Kaiga.Components\Transform.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\GShader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -9,7 +9,7 @@ namespace Kaiga.Components
 
 		public Transform()
 		{
-
+			Matrix = Matrix4.Identity;
 		}
 
 		public Transform( Matrix4 matrix )

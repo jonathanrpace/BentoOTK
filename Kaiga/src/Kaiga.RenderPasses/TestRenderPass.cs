@@ -4,16 +4,19 @@ using Kaiga.Geom;
 using Kaiga.Core;
 using OpenTK.Graphics.OpenGL4;
 using Kaiga.Shaders;
+using Kaiga.Components;
 
 namespace Kaiga.RenderPasses
 {
 	class Node : Ramen.Node
 	{
 		public Geometry geom;
+		public Transform transform;
 
 		public Node()
 		{
 			geom = null;
+			transform = null;
 		}
 	}
 
@@ -54,11 +57,12 @@ namespace Kaiga.RenderPasses
 
 		public void Render( RenderParams renderParams )
 		{
-			shader.Bind( renderParams );
-
 			foreach ( Node node in nodeList.Nodes )
 			{
 				node.geom.Bind();
+				renderParams.SetModelMatrix( node.transform.Matrix );
+				shader.Bind( renderParams );
+
 				GL.DrawElements( PrimitiveType.Triangles, node.geom.NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
 				node.geom.Unbind();
 			}

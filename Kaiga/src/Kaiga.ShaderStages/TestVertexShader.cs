@@ -15,6 +15,12 @@ namespace Kaiga.ShaderStages
 		{
 			int mvpMatrixLocation = GL.GetUniformLocation( shaderProgram, "MVPMatrix" );
 			GL.UniformMatrix4( mvpMatrixLocation, false, ref renderParams.ViewProjectionMatrix );
+
+			int modelViewMatrixLocation = GL.GetUniformLocation( shaderProgram, "ModelViewMatrix" );
+			GL.UniformMatrix4( modelViewMatrixLocation, false, ref renderParams.ModelViewMatrix );
+
+			int normalModelViewMatrixLocation = GL.GetUniformLocation( shaderProgram, "NormalModelViewMatrix" );
+			GL.UniformMatrix3( normalModelViewMatrixLocation, false, ref renderParams.NormalModelViewMatrix );
 		}
 
 		override protected string GetShaderSource()
@@ -22,13 +28,17 @@ namespace Kaiga.ShaderStages
 			return @"
 			#version 440 core
 
+			// Uniforms
 			uniform mat4 MVPMatrix;
+			uniform mat4 ModelViewMatrix;
+			uniform mat3 NormalModelViewMatrix;
 
-			layout(location = 0) in vec3 in_position;
-			layout(location = 1) in vec3 in_normal;
-			layout(location = 2) in vec3 in_uv;
-			layout(location = 3) in vec4 in_color;
+			// Inputs
+			layout(location = 0) in vec3 in_Position;
+			layout(location = 1) in vec3 in_Normal;
+			layout(location = 2) in vec4 in_Color;
 
+			// Outputs
 			out gl_PerVertex 
 			{
 				vec4 gl_Position;
@@ -36,13 +46,17 @@ namespace Kaiga.ShaderStages
 
 			out Varying
 			{
-				 vec4 Color;
+				vec3 out_ViewNormal;
+				vec4 out_ViewPosition;
 			};
 
 			void main(void)
 			{
-				gl_Position = MVPMatrix * vec4(in_position, 1);
-				Color = in_color;
+				out_ViewNormal = normalize( in_Normal * NormalModelViewMatrix );
+				
+				out_ViewPosition = ModelViewMatrix * vec4(in_Position,1);
+
+				gl_Position = MVPMatrix * vec4(in_Position, 1);
 			} 
 			";
 		}

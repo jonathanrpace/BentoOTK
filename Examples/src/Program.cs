@@ -6,6 +6,7 @@ using Kaiga.Core;
 using Kaiga.RenderPasses;
 using Kaiga.Geom;
 using Kaiga.Processes;
+using Kaiga.Components;
 
 namespace Examples
 {
@@ -47,7 +48,7 @@ namespace Examples
 
 			var plane = new Entity();
 			plane.AddComponent( new PlaneGeometry() );
-			plane.AddComponent( Matrix4.Identity );
+			plane.AddComponent( new Transform() );
 			scene.AddEntity( plane );
 
 			scene.AddProcess( new GraphicsContextDependencyManager() );

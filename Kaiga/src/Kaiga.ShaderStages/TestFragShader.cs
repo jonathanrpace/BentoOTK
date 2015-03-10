@@ -16,17 +16,22 @@ namespace Kaiga.ShaderStages
 			return @"
 			#version 440 core
 
+			// Inputs
 			in Varying
 			{
-				 vec4 Color;
+				vec4 in_ViewNormal;
+				vec4 in_ViewPosition;
 			};
 
 			
-			out vec4 out_Color;
+			// Outputs
+			layout( location = 0 ) out vec4 out_ViewNormal;
+			layout( location = 1 ) out vec4 out_ViewPosition;
 
 			void main(void)
 			{ 
-				out_Color = Color;
+				out_ViewNormal = in_ViewNormal;
+				out_ViewPosition = in_ViewPosition;
 			}
 			";
 		}
