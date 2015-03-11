@@ -9,6 +9,7 @@ using Kaiga.Components;
 using OpenTK;
 using OpenTK.Graphics;
 using System.Security.AccessControl;
+using Kaiga.Shaders;
 
 namespace Kaiga.Core
 {
@@ -30,6 +31,8 @@ namespace Kaiga.Core
 
 		bool graphicsContextAvailable = false;
 
+		NormalBufferOutputShader normalBufferOutputShader;
+
 		public DeferredRenderer() : this( "Deferred Renderer" )
 		{
 
@@ -43,6 +46,8 @@ namespace Kaiga.Core
 			passesByType = new Dictionary<Type, IRenderPass>();
 			renderTarget = new RenderTarget2D();
 
+			renderParams.RenderTarget = renderTarget;
+
 			Camera = new Entity();
 			var lens = new PerspectiveLens();
 			Camera.AddComponent( lens );
@@ -53,6 +58,8 @@ namespace Kaiga.Core
 			AddRenderPhase( RenderPhase.Light );
 			AddRenderPhase( RenderPhase.Material );
 			AddRenderPhase( RenderPhase.Post );
+
+			normalBufferOutputShader = new NormalBufferOutputShader();
 		}
 
 		#region IGLContextDependant implementation
@@ -61,6 +68,7 @@ namespace Kaiga.Core
 		{
 			graphicsContextAvailable = true;
 			renderTarget.CreateGraphicsContextResources();
+			normalBufferOutputShader.CreateGraphicsContextResources();
 
 			foreach ( var renderPass in renderPasses )
 			{
@@ -74,6 +82,7 @@ namespace Kaiga.Core
 		{
 			graphicsContextAvailable = false;
 			renderTarget.DisposeGraphicsContextResources();
+			normalBufferOutputShader.DisposeGraphicsContextResources();
 
 			foreach ( var renderPass in renderPasses )
 			{
@@ -203,106 +212,21 @@ namespace Kaiga.Core
 			renderParams.cameraForward = renderParams.cameraTransform.getForward();
 			renderParams.cameraBackward = renderParams.cameraForward.clone();
 			renderParams.cameraBackward.negate();
-
-			renderParams.gBuffer = renderTarget.getGBuffer();
-			renderParams.lBuffer = renderTarget.getLBuffer();
-			renderParams.outBuffer = renderTarget.getOutBuffer();
-			renderParams.gBufferPost = renderTarget.getGBufferPost();
-			renderParams.outBufferPost = renderTarget.getOutBufferPost();
-			*/
-
-			/*
-			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, renderTarget.FrameBuffer );
-
-			float[] black = { 1.0f, 1.0f, 0.0f, 0.0f };
-
-			// G Phase
-
-			// Bind normal buffer to Color0
-			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, renderTarget.NormalBuffer );
-			GL.FramebufferRenderbuffer
-			( 
-				FramebufferTarget.DrawFramebuffer,
-				FramebufferAttachment.ColorAttachment0, 
-				RenderbufferTarget.Renderbuffer, 
-				renderTarget.NormalBuffer
-			);
-
-			// Bind position buffer to Color1
-			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, renderTarget.PositionBuffer );
-			GL.FramebufferRenderbuffer
-			( 
-				FramebufferTarget.DrawFramebuffer,
-				FramebufferAttachment.ColorAttachment1, 
-				RenderbufferTarget.Renderbuffer, 
-				renderTarget.PositionBuffer
-			);
-
-			// Bind depth buffer to Depth
-			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, renderTarget.DepthBuffer );
-			GL.FramebufferRenderbuffer
-			( 
-				FramebufferTarget.DrawFramebuffer,
-				FramebufferAttachment.DepthAttachment, 
-				RenderbufferTarget.Renderbuffer, 
-				renderTarget.DepthBuffer
-			);
-
-			var code = GL.CheckFramebufferStatus( FramebufferTarget.DrawFramebuffer );
-
-			GL.ClearBuffer( ClearBuffer.Color, renderTarget.FrameBuffer, black );
-			//GL.ClearBuffer( ClearBuffer.Depth, renderTarget.FrameBuffer, black );
-
-			//GL.ClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
-			//GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
-
-			RenderPassesInPhase( passesByPhase[ RenderPhase.G ] );
-
-			// Light Phase
-			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, renderTarget.LBuffer );
-			GL.FramebufferRenderbuffer
-			( 
-				FramebufferTarget.DrawFramebuffer,
-				FramebufferAttachment.ColorAttachment0, 
-				RenderbufferTarget.Renderbuffer, 
-				renderTarget.LBuffer
-			);
-
-			RenderPassesInPhase( passesByPhase[ RenderPhase.Light ] );
-
-			// Material Pass
-			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, renderTarget.MaterialBuffer );
-			GL.FramebufferRenderbuffer
-			( 
-				FramebufferTarget.DrawFramebuffer,
-				FramebufferAttachment.ColorAttachment0, 
-				RenderbufferTarget.Renderbuffer, 
-				renderTarget.MaterialBuffer
-			);
-
-			GL.ClearBuffer( ClearBuffer.Color, renderTarget.FrameBuffer, black ); 
-
-			RenderPassesInPhase( passesByPhase[ RenderPhase.Material ] );
-
 			*/
 
 			renderTarget.Bind();
 
 			GL.Enable(EnableCap.DepthTest);
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
-
-			// Material Pass
-			RenderPassesInPhase( passesByPhase[ RenderPhase.Material ] );
+			
+			RenderPassesInPhase( passesByPhase[ RenderPhase.G ] );
 
 			renderTarget.Unbind();
 
 			// Copy to the back buffer
-
-
+			/*
 			GL.BindFramebuffer( FramebufferTarget.ReadFramebuffer, renderTarget.FrameBuffer );
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
-
-
 
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 			GL.BlitFramebuffer
@@ -311,6 +235,13 @@ namespace Kaiga.Core
 				0, 0, renderTarget.Width, renderTarget.Height,
 				ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest
 			);
+			*/
+
+			// Draw NormalBuffer to the back buffer
+			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
+			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
+
+			normalBufferOutputShader.Render( renderParams );
 
 
 			scene.GameWindow.SwapBuffers();

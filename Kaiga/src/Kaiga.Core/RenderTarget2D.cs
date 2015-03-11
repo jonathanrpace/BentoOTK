@@ -9,22 +9,14 @@ namespace Kaiga.Core
 		public int Width { get; private set; }
 		public int Height { get; private set; }
 
-		public int FrameBuffer
-		{
-			get
-			{
-				return frameBuffer;
-			}
-		}
-			
-		int frameBuffer;
-		int depthBuffer;
-		int normalBuffer;
-		int positionBuffer;
-		int lBuffer;
-		int albedoBuffer;
-		int outputBuffer;
-		int postBuffer;
+		public int FrameBuffer { get; private set; }
+		public int DepthBuffer { get; private set; }
+		public int NormalBuffer { get; private set; }
+		public int PositionBuffer { get; private set; }
+		public int AlbedoBuffer { get; private set; }
+		public int MaterialBuffer { get; private set; }
+		public int OutputBuffer { get; private set; }
+		public int PostBuffer { get; private set; }
 
 		bool invalid = true;
 		
@@ -36,18 +28,18 @@ namespace Kaiga.Core
 		public void DisposeGraphicsContextResources()
 		{
 			// Dispose existing frameBuffer
-			if ( GL.IsFramebuffer( frameBuffer ) )
+			if ( GL.IsFramebuffer( FrameBuffer ) )
 			{
-				GL.DeleteFramebuffer( frameBuffer );
+				GL.DeleteFramebuffer( FrameBuffer );
 
-				GL.DeleteRenderbuffer( depthBuffer );
+				GL.DeleteRenderbuffer( DepthBuffer );
 
-				GL.DeleteTexture( normalBuffer );
-				GL.DeleteTexture( positionBuffer );
-				GL.DeleteTexture( lBuffer );
-				GL.DeleteTexture( albedoBuffer );
-				GL.DeleteTexture( outputBuffer );
-				GL.DeleteTexture( postBuffer );
+				GL.DeleteTexture( NormalBuffer );
+				GL.DeleteTexture( PositionBuffer );
+				GL.DeleteTexture( AlbedoBuffer );
+				GL.DeleteTexture( MaterialBuffer );
+				GL.DeleteTexture( OutputBuffer );
+				GL.DeleteTexture( PostBuffer );
 			}
 
 			invalid = true;
@@ -74,7 +66,7 @@ namespace Kaiga.Core
 				invalid = false;
 			}
 			
-			GL.BindFramebuffer( FramebufferTarget.Framebuffer, frameBuffer );
+			GL.BindFramebuffer( FramebufferTarget.Framebuffer, FrameBuffer );
 		}
 
 		public void Unbind()
@@ -90,50 +82,50 @@ namespace Kaiga.Core
 
 		void Validate()
 		{
-			frameBuffer = GL.GenFramebuffer();
-			GL.BindFramebuffer( FramebufferTarget.Framebuffer, frameBuffer );
+			FrameBuffer = GL.GenFramebuffer();
+			GL.BindFramebuffer( FramebufferTarget.Framebuffer, FrameBuffer );
 
 			// Normal -> Colour0
-			normalBuffer = GL.GenTexture();
-			GL.BindTexture( TextureTarget.Texture2D, normalBuffer );
+			NormalBuffer = GL.GenTexture();
+			GL.BindTexture( TextureTarget.Texture2D, NormalBuffer );
 			InitTexture();
-			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, normalBuffer, 0 );
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, NormalBuffer, 0 );
 
 			// Position -> Colour1
-			positionBuffer = GL.GenTexture();
-			GL.BindTexture( TextureTarget.Texture2D, positionBuffer );
+			PositionBuffer = GL.GenTexture();
+			GL.BindTexture( TextureTarget.Texture2D, PositionBuffer );
 			InitTexture();
-			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, positionBuffer, 0 );
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, PositionBuffer, 0 );
 
 			// Albedo -> Colour2
-			albedoBuffer = GL.GenTexture();
-			GL.BindTexture( TextureTarget.Texture2D, albedoBuffer );
+			AlbedoBuffer = GL.GenTexture();
+			GL.BindTexture( TextureTarget.Texture2D, AlbedoBuffer );
 			InitTexture();
-			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment2, TextureTarget.Texture2D, albedoBuffer, 0 );
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment2, TextureTarget.Texture2D, AlbedoBuffer, 0 );
 
-			// Light -> Colour3
-			lBuffer = GL.GenTexture();
-			GL.BindTexture( TextureTarget.Texture2D, lBuffer );
+			// Material -> Colour3
+			MaterialBuffer = GL.GenTexture();
+			GL.BindTexture( TextureTarget.Texture2D, MaterialBuffer );
 			InitTexture();
-			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment3, TextureTarget.Texture2D, lBuffer, 0 );
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment3, TextureTarget.Texture2D, MaterialBuffer, 0 );
 
 			// Output -> Colour4
-			outputBuffer = GL.GenTexture();
-			GL.BindTexture( TextureTarget.Texture2D, outputBuffer );
+			OutputBuffer = GL.GenTexture();
+			GL.BindTexture( TextureTarget.Texture2D, OutputBuffer );
 			InitTexture();
-			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment4, TextureTarget.Texture2D, outputBuffer, 0 );
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment4, TextureTarget.Texture2D, OutputBuffer, 0 );
 
 			// Post -> Colour5
-			postBuffer = GL.GenTexture();
-			GL.BindTexture( TextureTarget.Texture2D, postBuffer );
+			PostBuffer = GL.GenTexture();
+			GL.BindTexture( TextureTarget.Texture2D, PostBuffer );
 			InitTexture();
-			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment5, TextureTarget.Texture2D, postBuffer, 0 );
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment5, TextureTarget.Texture2D, PostBuffer, 0 );
 
 			// Depth -> Depth
-			depthBuffer = GL.GenRenderbuffer();
-			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, depthBuffer );
+			DepthBuffer = GL.GenRenderbuffer();
+			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, DepthBuffer );
 			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, Width, Height );
-			GL.FramebufferRenderbuffer( FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, depthBuffer );
+			GL.FramebufferRenderbuffer( FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, DepthBuffer );
 
 
 			GL.BindFramebuffer( FramebufferTarget.Framebuffer, 0 );

@@ -1,17 +1,19 @@
 ﻿<Properties StartupItem="Examples\Examples.csproj" GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Kaiga\src\Kaiga.Core\RenderTarget2D.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Kaiga\src\Kaiga.Core\DeferredRenderer.cs">
     <Files>
-      <File FileName="Kaiga\src\Kaiga.Geom\SphereGeometry.cs" Line="9" Column="9" />
-      <File FileName="Kaiga\src\Kaiga.Util\GeomUtil.cs" Line="6" Column="6" />
-      <File FileName="Kaiga\src\Kaiga.Geom\PlaneGeometry.cs" Line="13" Column="13" />
-      <File FileName="Examples\src\Program.cs" Line="4" Column="4" />
-      <File FileName="Kaiga\src\Kaiga.RenderPasses\TestRenderPass.cs" Line="5" Column="5" />
-      <File FileName="Kaiga\src\Kaiga.ShaderStages\TestFragShader.cs" Line="1" Column="1" />
-      <File FileName="Kaiga\src\Kaiga.Core\RenderTarget2D.cs" Line="4" Column="4" />
-      <File FileName="Kaiga\src\Kaiga.Core\IRenderTarget.cs" Line="26" Column="26" />
-      <File FileName="Kaiga\src\Kaiga.ShaderStages\TestVertexShader.cs" Line="13" Column="13" />
+      <File FileName="Kaiga\src\Kaiga.Geom\PlaneGeometry.cs" Line="67" Column="67" />
+      <File FileName="Kaiga\src\Kaiga.Geom\ScreenQuadGeometry.cs" Line="1" Column="1" />
+      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Geom\Geometry.cs" Line="37" Column="37" />
+      <File FileName="Kaiga\src\Kaiga.Geom\SphereGeometry.cs" Line="1" Column="1" />
       <File FileName="Kaiga\src\Kaiga.Core\DeferredRenderer.cs" Line="4" Column="4" />
+      <File FileName="Kaiga\src\Kaiga.Core\RenderTarget2D.cs" Line="3" Column="3" />
+      <File FileName="Kaiga\src\Kaiga.ShaderStages\NormalBufferFragShader.cs" Line="5" Column="5" />
+      <File FileName="Kaiga\src\Kaiga.ShaderStages\ScreenQuadVertexShader.cs" Line="3" Column="3" />
+      <File FileName="Kaiga\src\Kaiga.ShaderStages\TestVertexShader.cs" Line="2" Column="2" />
+      <File FileName="Kaiga\src\Kaiga.Shaders\TestShader.cs" Line="48" Column="48" />
+      <File FileName="Kaiga\src\Kaiga.Shaders\NormalBufferOutputShader.cs" Line="45" Column="45" />
+      <File FileName="c:\Coding\OpenTK\1.1\Source\OpenTK\Graphics\OpenGL4\ErrorHelper.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

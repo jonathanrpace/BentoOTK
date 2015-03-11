@@ -1,4 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using System;
 
 namespace Kaiga.Geom
 {
@@ -55,10 +56,38 @@ namespace Kaiga.Geom
 		}
 
 		public void Unbind()
-		{
+		{ 
 			GL.BindVertexArray( 0 );
 			GL.BindBuffer( BufferTarget.ElementArrayBuffer, 0 );
 		}
+
+		protected void BufferVertexData<T>( int attributeIndex, ref T[] data, int dataSize ) where T : struct
+		{
+			GL.BindBuffer( BufferTarget.ArrayBuffer, vertexBuffers[ attributeIndex ] );
+			GL.BufferData<T>
+			(
+				BufferTarget.ArrayBuffer, 
+				new IntPtr( dataSize * data.Length ), 
+				data, 
+				BufferUsageHint.StaticDraw 
+			);
+			GL.BindBuffer( BufferTarget.ArrayBuffer, 0 );
+		}
+
+		protected void BufferIndexData( int index, ref int[] indices )
+		{
+			GL.BindBuffer( BufferTarget.ElementArrayBuffer, indexBuffers[ index ] );
+			GL.BufferData<int>
+			(
+				BufferTarget.ElementArrayBuffer,
+				new IntPtr( indices.Length * sizeof(int) ),
+				indices,
+				BufferUsageHint.StaticDraw
+			);
+			GL.BindBuffer( BufferTarget.ElementArrayBuffer, 0 );
+		}
+
+
 	
 		protected abstract void Validate();
 	}

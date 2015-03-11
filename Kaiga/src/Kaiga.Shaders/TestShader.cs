@@ -2,6 +2,7 @@
 using Kaiga.Core;
 using Kaiga.ShaderStages;
 using OpenTK.Graphics.OpenGL4;
+using Kaiga.Materials;
 
 namespace Kaiga.Shaders
 {
@@ -48,12 +49,22 @@ namespace Kaiga.Shaders
 			GL.BindProgramPipeline( pipeline );
 		}
 
+		public void BindPerMaterial( StandardMaterial material )
+		{
+			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
+			//vertexShader.BindPerMaterial( material );
+
+			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
+			fragmentShader.BindPerMaterial( material );
+		}
+
 		public void BindPerModel( RenderParams renderParams )
 		{
 			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
 			vertexShader.BindPerModel( renderParams );
 
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
+			//fragmentShader.BindPerModel( renderParams );
 		}
 
 		public void End()

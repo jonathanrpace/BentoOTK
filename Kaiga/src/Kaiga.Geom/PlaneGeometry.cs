@@ -146,53 +146,11 @@ namespace Kaiga.Geom
 				}
 			}
 
-			GL.BindBuffer( BufferTarget.ArrayBuffer, vertexBuffers[ Attribute.Position ] );
-			GL.BufferData<float>
-			( 
-				BufferTarget.ArrayBuffer, 
-				new IntPtr( positions.Length * sizeof(float) ), 
-				positions, 
-				BufferUsageHint.StaticDraw 
-			);
-
-			GL.BindBuffer( BufferTarget.ArrayBuffer, vertexBuffers[ Attribute.Normal ] );
-			GL.BufferData<float>
-			( 
-				BufferTarget.ArrayBuffer, 
-				new IntPtr( normals.Length * sizeof(float) ), 
-				normals, 
-				BufferUsageHint.StaticDraw 
-			);
-
-			GL.BindBuffer( BufferTarget.ArrayBuffer, vertexBuffers[ Attribute.Uv ] );
-			GL.BufferData<float>
-			( 
-				BufferTarget.ArrayBuffer, 
-				new IntPtr( uvs.Length * sizeof(float) ), 
-				uvs, 
-				BufferUsageHint.StaticDraw 
-			);
-
-			GL.BindBuffer( BufferTarget.ArrayBuffer, vertexBuffers[ Attribute.Color] );
-			GL.BufferData<float>
-			( 
-				BufferTarget.ArrayBuffer, 
-				new IntPtr( colors.Length * sizeof(float) ), 
-				colors, 
-				BufferUsageHint.StaticDraw 
-			);
-
-			GL.BindBuffer( BufferTarget.ElementArrayBuffer, indexBuffers[ 0 ] );
-			GL.BufferData<int>
-			(
-				BufferTarget.ElementArrayBuffer,
-				new IntPtr( indices.Length * sizeof(int) ),
-				indices,
-				BufferUsageHint.StaticDraw
-			);
-
-			GL.BindBuffer( BufferTarget.ArrayBuffer, 0 );
-			GL.BindBuffer( BufferTarget.ElementArrayBuffer, 0 );
+			BufferVertexData( Attribute.Position, ref positions, sizeof(float) );
+			BufferVertexData( Attribute.Normal, ref normals, sizeof(float) );
+			BufferVertexData( Attribute.Uv, ref uvs, sizeof(float) );
+			BufferVertexData( Attribute.Color, ref colors, sizeof(float) );
+			BufferIndexData( 0, ref indices );
 		}
 
 		#region IMultiTypeObject implementation

@@ -5,19 +5,15 @@ using Kaiga.Core;
 using OpenTK.Graphics.OpenGL4;
 using Kaiga.Shaders;
 using Kaiga.Components;
+using Kaiga.Materials;
 
 namespace Kaiga.RenderPasses
 {
 	class Node : Ramen.Node
 	{
-		public Geometry geom;
-		public Transform transform;
-
-		public Node()
-		{
-			geom = null;
-			transform = null;
-		}
+		public Geometry geom = null;
+		public Transform transform = null;
+		public StandardMaterial material = null;
 	}
 
 	public class TestRenderPass : IRenderPass
@@ -60,11 +56,14 @@ namespace Kaiga.RenderPasses
 			shader.Begin();
 			foreach ( Node node in nodeList.Nodes )
 			{
-				node.geom.Bind();
 				renderParams.SetModelMatrix( node.transform.Matrix );
+
+				node.geom.Bind();
+				shader.BindPerMaterial( node.material );
 				shader.BindPerModel( renderParams );
 
 				GL.DrawElements( PrimitiveType.Triangles, node.geom.NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
+
 				node.geom.Unbind();
 			}
 
@@ -75,7 +74,7 @@ namespace Kaiga.RenderPasses
 		{
 			get
 			{
-				return RenderPhase.Material;
+				return RenderPhase.G;
 			}
 		}
 

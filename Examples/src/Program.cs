@@ -7,6 +7,7 @@ using Kaiga.RenderPasses;
 using Kaiga.Geom;
 using Kaiga.Processes;
 using Kaiga.Components;
+using Kaiga.Materials;
 
 namespace Examples
 {
@@ -54,6 +55,9 @@ namespace Examples
 				var geom = new SphereGeometry();
 				geom.Radius = (float)rand.NextDouble() * 0.2f;
 				entity.AddComponent( geom );
+
+				var material = new StandardMaterial();
+				entity.AddComponent( material );
 
 				var transform = new Transform();
 				transform.Matrix = Matrix4.Identity * Matrix4.CreateTranslation( (float)rand.NextDouble()-0.5f, (float)rand.NextDouble()-0.5f, (float)rand.NextDouble()-0.5f );

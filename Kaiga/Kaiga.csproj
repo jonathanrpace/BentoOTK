@@ -54,9 +54,13 @@
     <Compile Include="src\Kaiga.Shaders\TestShader.cs" />
     <Compile Include="src\Kaiga.Processes\OrbitCamera.cs" />
     <Compile Include="src\Kaiga.Components\Transform.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\GShader.cs" />
     <Compile Include="src\Kaiga.Util\GeomUtil.cs" />
     <Compile Include="src\Kaiga.Geom\SphereGeometry.cs" />
+    <Compile Include="src\Kaiga.Geom\ScreenQuadGeometry.cs" />
+    <Compile Include="src\Kaiga.Materials\StandardMaterial.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\ScreenQuadVertexShader.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\NormalBufferFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders\NormalBufferOutputShader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -83,5 +87,7 @@
     <Folder Include="src\Kaiga.ShaderStages\" />
     <Folder Include="src\Kaiga.Shaders\" />
     <Folder Include="src\Kaiga.Util\" />
+    <Folder Include="src\Kaiga.Materials\" />
+    <Folder Include="src\Kaiga.Textures\" />
   </ItemGroup>
 </Project>

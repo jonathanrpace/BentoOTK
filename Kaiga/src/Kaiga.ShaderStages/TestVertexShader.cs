@@ -60,4 +60,3 @@ namespace Kaiga.ShaderStages
 
 	}
 }
-
