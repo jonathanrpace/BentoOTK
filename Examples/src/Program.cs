@@ -46,10 +46,21 @@ namespace Examples
 			scene.AddProcess( renderer );
 			renderer.AddRenderPass( new TestRenderPass() );
 
-			var plane = new Entity();
-			plane.AddComponent( new PlaneGeometry() );
-			plane.AddComponent( new Transform() );
-			scene.AddEntity( plane );
+			var rand = new Random();
+			for ( int i = 0; i < 50; i++ )
+			{
+				var entity = new Entity();
+
+				var geom = new SphereGeometry();
+				geom.Radius = (float)rand.NextDouble() * 0.2f;
+				entity.AddComponent( geom );
+
+				var transform = new Transform();
+				transform.Matrix = Matrix4.Identity * Matrix4.CreateTranslation( (float)rand.NextDouble()-0.5f, (float)rand.NextDouble()-0.5f, (float)rand.NextDouble()-0.5f );
+				entity.AddComponent( transform );
+
+				scene.AddEntity( entity );
+			}
 
 			scene.AddProcess( new GraphicsContextDependencyManager() );
 			scene.AddProcess( new OrbitCamera() );

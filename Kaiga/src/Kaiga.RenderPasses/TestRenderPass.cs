@@ -57,17 +57,18 @@ namespace Kaiga.RenderPasses
 
 		public void Render( RenderParams renderParams )
 		{
+			shader.Begin();
 			foreach ( Node node in nodeList.Nodes )
 			{
 				node.geom.Bind();
 				renderParams.SetModelMatrix( node.transform.Matrix );
-				shader.Bind( renderParams );
+				shader.BindPerModel( renderParams );
 
 				GL.DrawElements( PrimitiveType.Triangles, node.geom.NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
 				node.geom.Unbind();
 			}
 
-			shader.Unbind();
+			shader.End();
 		}
 
 		public RenderPhase RenderPhase

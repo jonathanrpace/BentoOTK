@@ -43,19 +43,20 @@ namespace Kaiga.Shaders
 		}
 
 		#endregion
-
-		public void Bind( RenderParams renderParams )
+		public void Begin()
 		{
 			GL.BindProgramPipeline( pipeline );
-
-			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
-			vertexShader.BindShader( renderParams );
-
-			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
-			fragmentShader.BindShader( renderParams );
 		}
 
-		public void Unbind()
+		public void BindPerModel( RenderParams renderParams )
+		{
+			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
+			vertexShader.BindPerModel( renderParams );
+
+			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
+		}
+
+		public void End()
 		{
 			GL.BindProgramPipeline( 0 );
 		}

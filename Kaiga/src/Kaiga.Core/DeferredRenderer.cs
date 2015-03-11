@@ -292,15 +292,17 @@ namespace Kaiga.Core
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 
 			// Material Pass
-			//GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 			RenderPassesInPhase( passesByPhase[ RenderPhase.Material ] );
 
 			renderTarget.Unbind();
 
 			// Copy to the back buffer
 
+
 			GL.BindFramebuffer( FramebufferTarget.ReadFramebuffer, renderTarget.FrameBuffer );
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
+
+
 
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 			GL.BlitFramebuffer

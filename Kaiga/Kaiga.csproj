@@ -55,6 +55,8 @@
     <Compile Include="src\Kaiga.Processes\OrbitCamera.cs" />
     <Compile Include="src\Kaiga.Components\Transform.cs" />
     <Compile Include="src\Kaiga.ShaderStages\GShader.cs" />
+    <Compile Include="src\Kaiga.Util\GeomUtil.cs" />
+    <Compile Include="src\Kaiga.Geom\SphereGeometry.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -80,5 +82,6 @@
     <Folder Include="src\Kaiga.Processes\" />
     <Folder Include="src\Kaiga.ShaderStages\" />
     <Folder Include="src\Kaiga.Shaders\" />
+    <Folder Include="src\Kaiga.Util\" />
   </ItemGroup>
 </Project>
