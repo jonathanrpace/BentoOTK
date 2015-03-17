@@ -215,20 +215,33 @@ namespace Kaiga.Core
 			*/
 
 			renderTarget.Bind();
-
+			
 			GL.Enable(EnableCap.DepthTest);
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
-			
+
+			// Geometry pass
+
+			GL.DrawBuffers( 6, new [] {
+				DrawBuffersEnum.ColorAttachment0,
+				DrawBuffersEnum.ColorAttachment1,
+				DrawBuffersEnum.ColorAttachment2,
+				DrawBuffersEnum.ColorAttachment3,
+				DrawBuffersEnum.ColorAttachment4,
+				DrawBuffersEnum.ColorAttachment5
+			} );
+
 			RenderPassesInPhase( passesByPhase[ RenderPhase.G ] );
 
 			renderTarget.Unbind();
 
+			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
+			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
+
+
+
 			// Copy to the back buffer
 			/*
 			GL.BindFramebuffer( FramebufferTarget.ReadFramebuffer, renderTarget.FrameBuffer );
-			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
-
-			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 			GL.BlitFramebuffer
 			(
 				0, 0, renderTarget.Width, renderTarget.Height, 
@@ -238,9 +251,7 @@ namespace Kaiga.Core
 			*/
 
 			// Draw NormalBuffer to the back buffer
-			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
-			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
-
+			GL.Disable(EnableCap.DepthTest);
 			normalBufferOutputShader.Render( renderParams );
 
 

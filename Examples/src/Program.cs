@@ -29,7 +29,7 @@ namespace Examples
 			( 
 				800, 600,
 				new GraphicsMode(), "Bento", 0,
-				DisplayDevice.Default, 4, 3,
+				DisplayDevice.Default, 4, 5,
 				GraphicsContextFlags.ForwardCompatible | GraphicsContextFlags.Debug
 			)
 		{

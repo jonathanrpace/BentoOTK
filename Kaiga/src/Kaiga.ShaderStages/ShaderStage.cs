@@ -20,7 +20,7 @@ namespace Kaiga.ShaderStages
 
 		#region IGraphicsContextDependant implementation
 
-		public void CreateGraphicsContextResources()
+		public virtual void CreateGraphicsContextResources()
 		{
 			var shaderSource = new string[1];
 			shaderSource[ 0 ] = GetShaderSource();
@@ -35,7 +35,7 @@ namespace Kaiga.ShaderStages
 			Debug.Write( log );
 		}
 
-		public void DisposeGraphicsContextResources()
+		public virtual void DisposeGraphicsContextResources()
 		{
 			if ( GL.IsProgram( shaderProgram ) )
 			{

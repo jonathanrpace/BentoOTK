@@ -6,6 +6,8 @@ namespace Kaiga.Core
 	{
 		int FrameBuffer{ get; }
 		int NormalBuffer{ get; }
+		int PositionBuffer{ get; }
+		int AlbedoBuffer{ get; }
 		void Bind();
 	}
 }

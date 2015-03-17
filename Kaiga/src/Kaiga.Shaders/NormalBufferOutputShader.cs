@@ -14,6 +14,7 @@ namespace Kaiga.Shaders
 		private readonly ScreenQuadGeometry screenQuadGeom;
 
 		int pipeline;
+		int sampler;
 
 		public NormalBufferOutputShader()
 		{
@@ -34,6 +35,10 @@ namespace Kaiga.Shaders
 			GL.UseProgramStages( pipeline, ProgramStageMask.VertexShaderBit, vertexShader.ShaderProgram );
 			GL.UseProgramStages( pipeline, ProgramStageMask.FragmentShaderBit, fragmentShader.ShaderProgram );
 			GL.BindProgramPipeline( 0 );
+
+			sampler = GL.GenSampler();
+			GL.BindSampler( 0, sampler );
+
 		}
 
 		public void DisposeGraphicsContextResources()
@@ -55,18 +60,14 @@ namespace Kaiga.Shaders
 			GL.BindProgramPipeline( pipeline );
 
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
-
-			GL.ActiveTexture( TextureUnit.Texture0 );
-			GL.BindTexture( TextureTarget.Texture2D, renderParams.RenderTarget.NormalBuffer );
-			int texUniformLoc = GL.GetUniformLocation( fragmentShader.ShaderProgram, "tex" );
-			GL.Uniform1( texUniformLoc, renderParams.RenderTarget.NormalBuffer );
-
-
+			fragmentShader.Bind( renderParams );
+			
 			screenQuadGeom.Bind();
 
 			GL.DrawElements( PrimitiveType.Triangles, screenQuadGeom.NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
 
 			screenQuadGeom.Unbind();
+			fragmentShader.Unbind();
 
 			GL.BindProgramPipeline( 0 );
 		}

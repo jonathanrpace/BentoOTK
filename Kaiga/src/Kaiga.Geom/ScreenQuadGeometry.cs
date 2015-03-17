@@ -22,7 +22,7 @@ namespace Kaiga.Geom
 
 			GL.EnableVertexAttribArray(Attribute.Position);
 			GL.BindBuffer( BufferTarget.ArrayBuffer, vertexBuffers[ Attribute.Position ] );
-			GL.VertexAttribPointer( Attribute.Position, 4, VertexAttribPointerType.Float, false, sizeof(float) * 4, 0 );
+			GL.VertexAttribPointer( Attribute.Position, 2, VertexAttribPointerType.Float, false, sizeof(float) * 2, 0 );
 
 			GL.EnableVertexAttribArray(Attribute.Uv);
 			GL.BindBuffer( BufferTarget.ArrayBuffer, vertexBuffers[ Attribute.Uv ] );
@@ -40,9 +40,9 @@ namespace Kaiga.Geom
 			NumVertices = 4;
 			NumIndices = 6;
 
-			var positions = new float[] { -1, 1, 0, 1,  -1, -1, 0, 1,  1, -1, 0, 1,  1, 1, 0, 1 };
+			var positions = new float[] { -1, 1,  -1, -1,  1, -1,  1, 1 };
 			var uvs = new float[] { 0, 0,  0, 1,  1, 1,  1, 0 };
-			var indices = new int[] { 0, 1, 2, 2, 1, 3 };
+			var indices = new int[] { 0, 1, 3, 3, 1, 2 };
 
 			BufferVertexData( Attribute.Position, ref positions, sizeof(float) );
 			BufferVertexData( Attribute.Uv, ref uvs, sizeof(float) );
