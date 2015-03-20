@@ -5,7 +5,7 @@ using Kaiga.Materials;
 
 namespace Kaiga.ShaderStages
 {
-	public class TestFragShader : ShaderStage
+	public class GFragShader : ShaderStage
 	{
 		override protected ShaderType GetShaderType()
 		{

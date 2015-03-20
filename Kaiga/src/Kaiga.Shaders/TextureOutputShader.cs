@@ -7,19 +7,18 @@ using Kaiga.Geom;
 
 namespace Kaiga.Shaders
 {
-	public class NormalBufferOutputShader : IGraphicsContextDependant
+	public class TextureOutputShader : IGraphicsContextDependant
 	{
 		private readonly ScreenQuadVertexShader vertexShader;
-		private readonly NormalBufferFragShader fragmentShader;
+		private readonly TextureOutputFragShader fragmentShader;
 		private readonly ScreenQuadGeometry screenQuadGeom;
 
 		int pipeline;
-		int sampler;
 
-		public NormalBufferOutputShader()
+		public TextureOutputShader()
 		{
 			vertexShader = new ScreenQuadVertexShader();
-			fragmentShader = new NormalBufferFragShader();
+			fragmentShader = new TextureOutputFragShader();
 			screenQuadGeom = new ScreenQuadGeometry();
 		}
 
@@ -35,9 +34,6 @@ namespace Kaiga.Shaders
 			GL.UseProgramStages( pipeline, ProgramStageMask.VertexShaderBit, vertexShader.ShaderProgram );
 			GL.UseProgramStages( pipeline, ProgramStageMask.FragmentShaderBit, fragmentShader.ShaderProgram );
 			GL.BindProgramPipeline( 0 );
-
-			sampler = GL.GenSampler();
-			GL.BindSampler( 0, sampler );
 
 		}
 
@@ -55,12 +51,12 @@ namespace Kaiga.Shaders
 
 		#endregion
 
-		public void Render( RenderParams renderParams )
+		public void Render( int texture )
 		{
 			GL.BindProgramPipeline( pipeline );
 
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
-			fragmentShader.Bind( renderParams );
+			fragmentShader.Bind( texture );
 			
 			screenQuadGeom.Bind();
 

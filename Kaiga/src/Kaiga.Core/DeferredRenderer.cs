@@ -31,7 +31,7 @@ namespace Kaiga.Core
 
 		bool graphicsContextAvailable = false;
 
-		NormalBufferOutputShader normalBufferOutputShader;
+		TextureOutputShader textureOutputShader;
 
 		public DeferredRenderer() : this( "Deferred Renderer" )
 		{
@@ -59,7 +59,7 @@ namespace Kaiga.Core
 			AddRenderPhase( RenderPhase.Material );
 			AddRenderPhase( RenderPhase.Post );
 
-			normalBufferOutputShader = new NormalBufferOutputShader();
+			textureOutputShader = new TextureOutputShader();
 		}
 
 		#region IGLContextDependant implementation
@@ -68,7 +68,7 @@ namespace Kaiga.Core
 		{
 			graphicsContextAvailable = true;
 			renderTarget.CreateGraphicsContextResources();
-			normalBufferOutputShader.CreateGraphicsContextResources();
+			textureOutputShader.CreateGraphicsContextResources();
 
 			foreach ( var renderPass in renderPasses )
 			{
@@ -82,7 +82,7 @@ namespace Kaiga.Core
 		{
 			graphicsContextAvailable = false;
 			renderTarget.DisposeGraphicsContextResources();
-			normalBufferOutputShader.DisposeGraphicsContextResources();
+			textureOutputShader.DisposeGraphicsContextResources();
 
 			foreach ( var renderPass in renderPasses )
 			{
@@ -187,72 +187,24 @@ namespace Kaiga.Core
 			renderParams.ViewProjectionMatrix = renderParams.ViewMatrix * renderParams.ProjectionMatrix;
 			renderParams.InvViewProjectionMatrix = renderParams.ViewProjectionMatrix.Inverted();
 
-			/*
-			renderParams.renderTarget = renderTarget;
-			renderParams.surfaceSelector = surfaceSelector;
-			renderParams.cameraLens = camera.getComponent(PerspectiveLens);
-			renderParams.cameraTransform = camera.getComponent(Transform3D);
-			renderParams.cameraLens.aspectRatio = scene.viewport.width / scene.viewport.height;
-			renderParams.viewMatrix.copyFrom( renderParams.cameraTransform.matrix );
-			renderParams.normalViewMatrix.copyFrom( renderParams.cameraTransform.rotationMatrix );
-			renderParams.viewMatrix.invert();
-			renderParams.normalViewMatrix.invert();
-			renderParams.invViewMatrix.copyFrom( renderParams.cameraTransform.matrix );
-			renderParams.projectionMatrix.copyFrom( renderParams.cameraLens.matrix );
-			renderParams.viewProjectionMatrix.copyFrom( renderParams.viewMatrix );
-			renderParams.viewProjectionMatrix.append( renderParams.projectionMatrix );
-			renderParams.invProjectionMatrix.copyFrom( renderParams.projectionMatrix );
-			renderParams.invProjectionMatrix.invert();
-			renderParams.invViewProjectionMatrix.copyFrom( renderParams.invProjectionMatrix );
-			renderParams.invViewProjectionMatrix.append( renderParams.invViewMatrix );
-
-			renderParams.cameraPosition[0] = renderParams.cameraTransform.positionX;
-			renderParams.cameraPosition[1] = renderParams.cameraTransform.positionY;
-			renderParams.cameraPosition[2] = renderParams.cameraTransform.positionZ;
-			renderParams.cameraForward = renderParams.cameraTransform.getForward();
-			renderParams.cameraBackward = renderParams.cameraForward.clone();
-			renderParams.cameraBackward.negate();
-			*/
-
 			renderTarget.Bind();
-			
+
 			GL.Enable(EnableCap.DepthTest);
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 
 			// Geometry pass
-
-			GL.DrawBuffers( 6, new [] {
-				DrawBuffersEnum.ColorAttachment0,
-				DrawBuffersEnum.ColorAttachment1,
-				DrawBuffersEnum.ColorAttachment2,
-				DrawBuffersEnum.ColorAttachment3,
-				DrawBuffersEnum.ColorAttachment4,
-				DrawBuffersEnum.ColorAttachment5
-			} );
-
 			RenderPassesInPhase( passesByPhase[ RenderPhase.G ] );
 
 			renderTarget.Unbind();
 
+
+			// Switch draw target to back buffer
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
-
-
-
-			// Copy to the back buffer
-			/*
-			GL.BindFramebuffer( FramebufferTarget.ReadFramebuffer, renderTarget.FrameBuffer );
-			GL.BlitFramebuffer
-			(
-				0, 0, renderTarget.Width, renderTarget.Height, 
-				0, 0, renderTarget.Width, renderTarget.Height,
-				ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest
-			);
-			*/
-
+			
 			// Draw NormalBuffer to the back buffer
 			GL.Disable(EnableCap.DepthTest);
-			normalBufferOutputShader.Render( renderParams );
+			textureOutputShader.Render( renderTarget.AlbedoBuffer );
 
 
 			scene.GameWindow.SwapBuffers();

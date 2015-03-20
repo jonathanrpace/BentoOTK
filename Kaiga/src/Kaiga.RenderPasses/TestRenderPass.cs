@@ -19,11 +19,11 @@ namespace Kaiga.RenderPasses
 	public class TestRenderPass : IRenderPass
 	{
 		private NodeList<Node> nodeList;
-		private readonly TestShader shader;
+		private readonly GShader shader;
 
 		public TestRenderPass()
 		{
-			shader = new TestShader();
+			shader = new GShader();
 		}
 
 		#region IGraphicsContextDependant implementation

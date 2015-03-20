@@ -139,6 +139,15 @@ namespace Kaiga.Core
 				Debug.WriteLine( status );
 			}
 
+			GL.DrawBuffers( 6, new [] {
+				DrawBuffersEnum.ColorAttachment0,
+				DrawBuffersEnum.ColorAttachment1,
+				DrawBuffersEnum.ColorAttachment2,
+				DrawBuffersEnum.ColorAttachment3,
+				DrawBuffersEnum.ColorAttachment4,
+				DrawBuffersEnum.ColorAttachment5
+			} );
+
 			GL.BindFramebuffer( FramebufferTarget.Framebuffer, 0 );
 		}
 

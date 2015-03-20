@@ -48,10 +48,7 @@
     <Compile Include="src\Kaiga.Components\PerspectiveLens.cs" />
     <Compile Include="src\Kaiga.Core\IGraphicsContextDependant.cs" />
     <Compile Include="src\Kaiga.Processes\GraphicsContextDependencyManager.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\TestVertexShader.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\TestFragShader.cs" />
     <Compile Include="src\Kaiga.ShaderStages\ShaderStage.cs" />
-    <Compile Include="src\Kaiga.Shaders\TestShader.cs" />
     <Compile Include="src\Kaiga.Processes\OrbitCamera.cs" />
     <Compile Include="src\Kaiga.Components\Transform.cs" />
     <Compile Include="src\Kaiga.Util\GeomUtil.cs" />
@@ -59,8 +56,11 @@
     <Compile Include="src\Kaiga.Geom\ScreenQuadGeometry.cs" />
     <Compile Include="src\Kaiga.Materials\StandardMaterial.cs" />
     <Compile Include="src\Kaiga.ShaderStages\ScreenQuadVertexShader.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\NormalBufferFragShader.cs" />
-    <Compile Include="src\Kaiga.Shaders\NormalBufferOutputShader.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\GVertexShader.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\GFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders\GShader.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\TextureOutputFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders\TextureOutputShader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -6,17 +6,17 @@ using Kaiga.Materials;
 
 namespace Kaiga.Shaders
 {
-	public class TestShader : IGraphicsContextDependant
+	public class GShader : IGraphicsContextDependant
 	{
-		private readonly TestVertexShader vertexShader;
-		private readonly TestFragShader fragmentShader;
+		private readonly GVertexShader vertexShader;
+		private readonly GFragShader fragmentShader;
 
 		int pipeline;
 
-		public TestShader()
+		public GShader()
 		{
-			vertexShader = new TestVertexShader();
-			fragmentShader = new TestFragShader();
+			vertexShader = new GVertexShader();
+			fragmentShader = new GFragShader();
 		}
 
 		#region IGraphicsContextDependant implementation
