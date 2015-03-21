@@ -1,59 +1,42 @@
 ﻿using System;
-using Kaiga.Core;
 using Kaiga.ShaderStages;
 using OpenTK.Graphics.OpenGL4;
-using Kaiga.Materials;
 using Kaiga.Geom;
 
 namespace Kaiga.Shaders
 {
-	public class TextureOutputShader : IGraphicsContextDependant
+	public class TextureOutputShader : AbstractShader
 	{
-		private readonly ScreenQuadVertexShader vertexShader;
-		private readonly TextureOutputFragShader fragmentShader;
+		private new readonly ScreenQuadVertexShader vertexShader;
+		private new readonly TextureOutputFragShader fragmentShader;
 		private readonly ScreenQuadGeometry screenQuadGeom;
 
-		int pipeline;
-
-		public TextureOutputShader()
+		public TextureOutputShader() : base( new ScreenQuadVertexShader(), new TextureOutputFragShader() )
 		{
-			vertexShader = new ScreenQuadVertexShader();
-			fragmentShader = new TextureOutputFragShader();
+			vertexShader = (ScreenQuadVertexShader)base.vertexShader;
+			fragmentShader = (TextureOutputFragShader)base.fragmentShader;
 			screenQuadGeom = new ScreenQuadGeometry();
 		}
 
 		#region IGraphicsContextDependant implementation
 
-		public void CreateGraphicsContextResources()
+		override public void CreateGraphicsContextResources()
 		{
-			vertexShader.CreateGraphicsContextResources();
-			fragmentShader.CreateGraphicsContextResources();
+			base.CreateGraphicsContextResources();
 			screenQuadGeom.CreateGraphicsContextResources();
-
-			pipeline = GL.GenProgramPipeline();
-			GL.UseProgramStages( pipeline, ProgramStageMask.VertexShaderBit, vertexShader.ShaderProgram );
-			GL.UseProgramStages( pipeline, ProgramStageMask.FragmentShaderBit, fragmentShader.ShaderProgram );
-			GL.BindProgramPipeline( 0 );
-
 		}
 
-		public void DisposeGraphicsContextResources()
+		override public void DisposeGraphicsContextResources()
 		{
-			vertexShader.DisposeGraphicsContextResources();
-			fragmentShader.DisposeGraphicsContextResources();
+			base.DisposeGraphicsContextResources();
 			screenQuadGeom.DisposeGraphicsContextResources();
-
-			if ( GL.IsProgramPipeline( pipeline ) )
-			{
-				GL.DeleteProgramPipeline( pipeline );
-			}
 		}
 
 		#endregion
 
 		public void Render( int texture )
 		{
-			GL.BindProgramPipeline( pipeline );
+			BindPerPass();
 
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
 			fragmentShader.Bind( texture );
@@ -65,7 +48,7 @@ namespace Kaiga.Shaders
 			screenQuadGeom.Unbind();
 			fragmentShader.Unbind();
 
-			GL.BindProgramPipeline( 0 );
+			UnbindPerPass();
 		}
 	}
 }

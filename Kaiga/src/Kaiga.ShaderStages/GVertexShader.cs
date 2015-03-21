@@ -4,7 +4,7 @@ using Kaiga.Core;
 
 namespace Kaiga.ShaderStages
 {
-	public class GVertexShader : ShaderStage
+	public class GVertexShader : AbstractShaderStage
 	{
 		override protected ShaderType GetShaderType()
 		{

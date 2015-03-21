@@ -1,5 +1,1 @@
-Add support for cahing uniform locations in shader stage
-
 Add Shader base class that takes cares of the pipeline stuff
-
-Get normals rendering

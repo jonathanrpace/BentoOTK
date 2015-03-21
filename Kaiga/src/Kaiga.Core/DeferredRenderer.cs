@@ -204,7 +204,7 @@ namespace Kaiga.Core
 			
 			// Draw NormalBuffer to the back buffer
 			GL.Disable(EnableCap.DepthTest);
-			textureOutputShader.Render( renderTarget.AlbedoBuffer );
+			textureOutputShader.Render( renderTarget.NormalBuffer );
 
 
 			scene.GameWindow.SwapBuffers();

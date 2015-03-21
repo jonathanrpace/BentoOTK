@@ -5,7 +5,7 @@ using Kaiga.Materials;
 
 namespace Kaiga.ShaderStages
 {
-	public class GFragShader : ShaderStage
+	public class GFragShader : AbstractShaderStage
 	{
 		override protected ShaderType GetShaderType()
 		{
@@ -45,7 +45,7 @@ namespace Kaiga.ShaderStages
 				vec4 ViewPosition = in_ViewPosition;
 				ViewPosition.z = -ViewPosition.z;
 
-				out_ViewNormal = out_ViewNormal;
+				out_ViewNormal = in_ViewNormal;
 				out_ViewPosition = ViewPosition;
 				out_Albedo = in_Color;
 

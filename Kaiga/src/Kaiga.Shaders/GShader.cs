@@ -1,54 +1,21 @@
-﻿using System;
-using Kaiga.Core;
+﻿using Kaiga.Core;
 using Kaiga.ShaderStages;
 using OpenTK.Graphics.OpenGL4;
 using Kaiga.Materials;
 
 namespace Kaiga.Shaders
 {
-	public class GShader : IGraphicsContextDependant
+	public class GShader : AbstractShader
 	{
-		private readonly GVertexShader vertexShader;
-		private readonly GFragShader fragmentShader;
-
-		int pipeline;
-
-		public GShader()
+		private readonly new GVertexShader vertexShader;
+		private readonly new GFragShader fragmentShader;
+		
+		public GShader() : base( new GVertexShader(), new GFragShader() )
 		{
-			vertexShader = new GVertexShader();
-			fragmentShader = new GFragShader();
+			vertexShader = (GVertexShader)base.vertexShader;
+			fragmentShader = (GFragShader)base.fragmentShader;
 		}
-
-		#region IGraphicsContextDependant implementation
-
-		public void CreateGraphicsContextResources()
-		{
-			vertexShader.CreateGraphicsContextResources();
-			fragmentShader.CreateGraphicsContextResources();
-
-			pipeline = GL.GenProgramPipeline();
-			GL.UseProgramStages( pipeline, ProgramStageMask.VertexShaderBit, vertexShader.ShaderProgram );
-			GL.UseProgramStages( pipeline, ProgramStageMask.FragmentShaderBit, fragmentShader.ShaderProgram );
-			GL.BindProgramPipeline( 0 );
-		}
-
-		public void DisposeGraphicsContextResources()
-		{
-			vertexShader.DisposeGraphicsContextResources();
-			fragmentShader.DisposeGraphicsContextResources();
-
-			if ( GL.IsProgramPipeline( pipeline ) )
-			{
-				GL.DeleteProgramPipeline( pipeline );
-			}
-		}
-
-		#endregion
-		public void Begin()
-		{
-			GL.BindProgramPipeline( pipeline );
-		}
-
+		
 		public void BindPerMaterial( StandardMaterial material )
 		{
 			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
@@ -65,11 +32,6 @@ namespace Kaiga.Shaders
 
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
 			//fragmentShader.BindPerModel( renderParams );
-		}
-
-		public void End()
-		{
-			GL.BindProgramPipeline( 0 );
 		}
 	}
 }

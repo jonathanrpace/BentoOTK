@@ -6,7 +6,7 @@ using OpenTK;
 
 namespace Kaiga.ShaderStages
 {
-	abstract public class ShaderStage : IGraphicsContextDependant
+	abstract public class AbstractShaderStage : IGraphicsContextDependant
 	{
 		protected int shaderProgram;
 
@@ -45,6 +45,16 @@ namespace Kaiga.ShaderStages
 
 		#endregion
 
+		public virtual void BindPerPass()
+		{
+
+		}
+
+		public virtual void UnbindPerPass()
+		{
+
+		}
+
 		protected void SetUniformMatrix4( string name, ref Matrix4 matrix, bool transposed = false )
 		{
 			int location = GL.GetUniformLocation( shaderProgram, name );
@@ -58,6 +68,12 @@ namespace Kaiga.ShaderStages
 		}
 
 		protected void SetUniform1( string name, float value )
+		{
+			int location = GL.GetUniformLocation( shaderProgram, name );
+			GL.Uniform1( location, value );
+		}
+
+		protected void SetUniform1( string name, int value )
 		{
 			int location = GL.GetUniformLocation( shaderProgram, name );
 			GL.Uniform1( location, value );

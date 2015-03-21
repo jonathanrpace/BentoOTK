@@ -48,7 +48,6 @@
     <Compile Include="src\Kaiga.Components\PerspectiveLens.cs" />
     <Compile Include="src\Kaiga.Core\IGraphicsContextDependant.cs" />
     <Compile Include="src\Kaiga.Processes\GraphicsContextDependencyManager.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\ShaderStage.cs" />
     <Compile Include="src\Kaiga.Processes\OrbitCamera.cs" />
     <Compile Include="src\Kaiga.Components\Transform.cs" />
     <Compile Include="src\Kaiga.Util\GeomUtil.cs" />
@@ -61,6 +60,8 @@
     <Compile Include="src\Kaiga.Shaders\GShader.cs" />
     <Compile Include="src\Kaiga.ShaderStages\TextureOutputFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders\TextureOutputShader.cs" />
+    <Compile Include="src\Kaiga.Shaders\AbstractShader.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\AbstractShaderStage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
