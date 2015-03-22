@@ -20,7 +20,7 @@ namespace Kaiga.Core
 		private List<IRenderPass>							renderPasses;
 		private Dictionary<RenderPhase, List<IRenderPass>> 	passesByPhase;
 		private Dictionary<Type, IRenderPass>				passesByType;
-		private RenderTarget2D								renderTarget;
+		private DeferredRenderTarget						renderTarget;
 
 		public Entity									Camera { get; private set; }
 		public IEnumerable<IRenderPass>					RenderPasses { get { return renderPasses.Skip( 0 ); } }
@@ -32,7 +32,7 @@ namespace Kaiga.Core
 		bool graphicsContextAvailable = false;
 
 		TextureOutputShader textureOutputShader;
-
+		
 		public DeferredRenderer() : this( "Deferred Renderer" )
 		{
 
@@ -44,7 +44,7 @@ namespace Kaiga.Core
 			renderPasses = new List<IRenderPass>();
 			passesByPhase = new Dictionary<RenderPhase, List<IRenderPass>>();
 			passesByType = new Dictionary<Type, IRenderPass>();
-			renderTarget = new RenderTarget2D();
+			renderTarget = new DeferredRenderTarget();
 
 			renderParams.RenderTarget = renderTarget;
 
@@ -169,7 +169,7 @@ namespace Kaiga.Core
 
 		}
 
-		public void RenderToBackBuffer( RenderTarget2D renderTarget )
+		public void RenderToBackBuffer( DeferredRenderTarget renderTarget )
 		{
 			if (!graphicsContextAvailable )
 			{
@@ -186,25 +186,39 @@ namespace Kaiga.Core
 			renderParams.InvProjectionMatrix = renderParams.CameraLens.InvProjectionMatrix;
 			renderParams.ViewProjectionMatrix = renderParams.ViewMatrix * renderParams.ProjectionMatrix;
 			renderParams.InvViewProjectionMatrix = renderParams.ViewProjectionMatrix.Inverted();
-
-			renderTarget.Bind();
-
+				
 			GL.Enable(EnableCap.DepthTest);
-			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
+
 
 			// Geometry pass
+			renderTarget.BindForGPhase();
+			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
+
+			GL.DepthMask( true );
+			GL.BlendFunc( BlendingFactorSrc.One, BlendingFactorDest.Zero );
+			GL.BlendEquation( BlendEquationMode.FuncAdd );
 			RenderPassesInPhase( passesByPhase[ RenderPhase.G ] );
+
+			// Light pass
+			/*
+			renderTarget.BindForLightPhase();
+			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
+
+			GL.DepthMask( false );
+			GL.BlendFunc( BlendingFactorSrc.One, BlendingFactorDest.One );
+			GL.BlendEquation( BlendEquationMode.FuncAdd );
+			RenderPassesInPhase( passesByPhase[ RenderPhase.Light ] );
 
 			renderTarget.Unbind();
 
+			*/
 
 			// Switch draw target to back buffer
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 			
 			// Draw NormalBuffer to the back buffer
-			GL.Disable(EnableCap.DepthTest);
-			textureOutputShader.Render( renderTarget.NormalBuffer );
+			textureOutputShader.Render( renderParams, renderTarget.NormalBuffer );
 
 
 			scene.GameWindow.SwapBuffers();

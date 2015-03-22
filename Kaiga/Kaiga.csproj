@@ -39,7 +39,6 @@
     <Compile Include="src\Kaiga.Core\RenderParams.cs" />
     <Compile Include="src\Kaiga.Core\RenderPhase.cs" />
     <Compile Include="src\Kaiga.RenderPasses\IRenderPass.cs" />
-    <Compile Include="src\Kaiga.Core\RenderTarget2D.cs" />
     <Compile Include="src\Kaiga.RenderPasses\TestRenderPass.cs" />
     <Compile Include="src\Kaiga.Geom\IGeometry.cs" />
     <Compile Include="src\Kaiga.Geom\Geometry.cs" />
@@ -62,6 +61,15 @@
     <Compile Include="src\Kaiga.Shaders\TextureOutputShader.cs" />
     <Compile Include="src\Kaiga.Shaders\AbstractShader.cs" />
     <Compile Include="src\Kaiga.ShaderStages\AbstractShaderStage.cs" />
+    <Compile Include="src\Kaiga.Lights\PointLight.cs" />
+    <Compile Include="src\Kaiga.RenderPasses\PointLightRenderPass.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\PointLightVertexShader.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\PointLightFragShader.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\AbstractVertexShaderStage.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\AbstractFragmentShaderStage.cs" />
+    <Compile Include="src\Kaiga.Shaders\PointLightShader.cs" />
+    <Compile Include="src\Kaiga.Core\DeferredRenderTarget.cs" />
+    <Compile Include="src\Kaiga.Core\FBAttachmentName.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -90,5 +98,6 @@
     <Folder Include="src\Kaiga.Util\" />
     <Folder Include="src\Kaiga.Materials\" />
     <Folder Include="src\Kaiga.Textures\" />
+    <Folder Include="src\Kaiga.Lights\" />
   </ItemGroup>
 </Project>

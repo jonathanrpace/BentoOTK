@@ -8,6 +8,20 @@ namespace Kaiga.ShaderStages
 {
 	abstract public class AbstractShaderStage : IGraphicsContextDependant
 	{
+		static TextureUnit[] indexToTextureUnit = 
+		{ 
+			TextureUnit.Texture0, 
+			TextureUnit.Texture1,
+			TextureUnit.Texture2,
+			TextureUnit.Texture3,
+			TextureUnit.Texture4,
+			TextureUnit.Texture5,
+			TextureUnit.Texture6,
+			TextureUnit.Texture7,
+			TextureUnit.Texture8,
+			TextureUnit.Texture9,
+		};
+
 		protected int shaderProgram;
 
 		public int ShaderProgram
@@ -45,7 +59,7 @@ namespace Kaiga.ShaderStages
 
 		#endregion
 
-		public virtual void BindPerPass()
+		public virtual void BindPerPass( RenderParams renderParams )
 		{
 
 		}
@@ -95,6 +109,13 @@ namespace Kaiga.ShaderStages
 		{
 			int location = GL.GetUniformLocation( shaderProgram, name );
 			GL.Uniform4( location, value );
+		}
+
+		protected void SetUniformTexture( int index, string name, int texture, TextureTarget textureTarget )
+		{
+			SetUniform1( name, index );
+			GL.ActiveTexture( indexToTextureUnit[index] );
+			GL.BindTexture( textureTarget, texture );
 		}
 		
 		protected abstract string GetShaderSource();

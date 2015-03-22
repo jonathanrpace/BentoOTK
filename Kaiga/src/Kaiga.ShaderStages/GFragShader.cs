@@ -5,13 +5,8 @@ using Kaiga.Materials;
 
 namespace Kaiga.ShaderStages
 {
-	public class GFragShader : AbstractShaderStage
+	public class GFragShader : AbstractFragmentShaderStage
 	{
-		override protected ShaderType GetShaderType()
-		{
-			return ShaderType.FragmentShader;
-		}
-
 		public void BindPerMaterial( StandardMaterial material )
 		{
 			SetUniform1( "reflectivity", material.reflectivity );

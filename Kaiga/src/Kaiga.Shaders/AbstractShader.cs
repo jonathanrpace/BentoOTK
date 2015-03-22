@@ -44,14 +44,14 @@ namespace Kaiga.Shaders
 
 		#endregion
 
-		public void BindPerPass()
+		public void BindPerPass( RenderParams renderParams )
 		{
 			GL.BindProgramPipeline( pipeline );
 			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
-			vertexShader.BindPerPass();
+			vertexShader.BindPerPass( renderParams );
 
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
-			fragmentShader.BindPerPass();
+			fragmentShader.BindPerPass( renderParams );
 		}
 
 		public void UnbindPerPass()

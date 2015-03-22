@@ -2,6 +2,7 @@
 using Kaiga.ShaderStages;
 using OpenTK.Graphics.OpenGL4;
 using Kaiga.Geom;
+using Kaiga.Core;
 
 namespace Kaiga.Shaders
 {
@@ -34,9 +35,9 @@ namespace Kaiga.Shaders
 
 		#endregion
 
-		public void Render( int texture )
+		public void Render( RenderParams renderParams, int texture )
 		{
-			BindPerPass();
+			BindPerPass( renderParams );
 
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
 			fragmentShader.Bind( texture );
@@ -45,8 +46,6 @@ namespace Kaiga.Shaders
 
 			GL.DrawElements( PrimitiveType.Triangles, screenQuadGeom.NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
 
-			screenQuadGeom.Unbind();
-			fragmentShader.Unbind();
 
 			UnbindPerPass();
 		}

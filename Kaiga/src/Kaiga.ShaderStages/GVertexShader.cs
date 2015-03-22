@@ -4,13 +4,8 @@ using Kaiga.Core;
 
 namespace Kaiga.ShaderStages
 {
-	public class GVertexShader : AbstractShaderStage
+	public class GVertexShader : AbstractVertexShaderStage
 	{
-		override protected ShaderType GetShaderType()
-		{
-			return ShaderType.VertexShader;
-		}
-
 		public void BindPerModel( RenderParams renderParams )
 		{
 			SetUniformMatrix4( "MVPMatrix", ref renderParams.ModelViewProjectionMatrix );

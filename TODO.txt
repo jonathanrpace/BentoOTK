@@ -1,1 +1,1 @@
-Add Shader base class that takes cares of the pipeline stuff
+ShaderStages and Shaders should statically create and dish-out their GL resources

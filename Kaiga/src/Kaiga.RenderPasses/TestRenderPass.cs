@@ -9,15 +9,15 @@ using Kaiga.Materials;
 
 namespace Kaiga.RenderPasses
 {
-	class Node : Ramen.Node
-	{
-		public Geometry geom = null;
-		public Transform transform = null;
-		public StandardMaterial material = null;
-	}
-
 	public class TestRenderPass : IRenderPass
 	{
+		class Node : Ramen.Node
+		{
+			public Geometry geom = null;
+			public Transform transform = null;
+			public StandardMaterial material = null;
+		}
+
 		private NodeList<Node> nodeList;
 		private readonly GShader shader;
 
@@ -53,7 +53,7 @@ namespace Kaiga.RenderPasses
 
 		public void Render( RenderParams renderParams )
 		{
-			shader.BindPerPass();
+			shader.BindPerPass( renderParams );
 			foreach ( Node node in nodeList.Nodes )
 			{
 				renderParams.SetModelMatrix( node.transform.Matrix );

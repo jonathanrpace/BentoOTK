@@ -8,6 +8,7 @@ using Kaiga.Geom;
 using Kaiga.Processes;
 using Kaiga.Components;
 using Kaiga.Materials;
+using Kaiga.Lights;
 
 namespace Examples
 {
@@ -46,6 +47,7 @@ namespace Examples
 			var renderer = new DeferredRenderer();
 			scene.AddProcess( renderer );
 			renderer.AddRenderPass( new TestRenderPass() );
+			renderer.AddRenderPass( new PointLightRenderPass() );
 
 			var rand = new Random();
 			for ( int i = 0; i < 50; i++ )
@@ -65,6 +67,13 @@ namespace Examples
 
 				scene.AddEntity( entity );
 			}
+
+			var lightEntity = new Entity();
+			var lightTransform = new Transform();
+			var lightComponent = new PointLight( new Vector3( 1.0f, 1.0f, 1.0f ) );
+			lightEntity.AddComponent( lightTransform );
+			lightEntity.AddComponent( lightComponent );
+			scene.AddEntity( lightEntity );
 
 			scene.AddProcess( new GraphicsContextDependencyManager() );
 			scene.AddProcess( new OrbitCamera() );

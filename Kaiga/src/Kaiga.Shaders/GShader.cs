@@ -7,8 +7,8 @@ namespace Kaiga.Shaders
 {
 	public class GShader : AbstractShader
 	{
-		private readonly new GVertexShader vertexShader;
-		private readonly new GFragShader fragmentShader;
+		readonly new GVertexShader vertexShader;
+		readonly new GFragShader fragmentShader;
 		
 		public GShader() : base( new GVertexShader(), new GFragShader() )
 		{
