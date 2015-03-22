@@ -24,6 +24,7 @@ namespace Kaiga.RenderPasses
 		{
 			shader = new PointLightShader();
 			geom = new SphereGeometry();
+			geom.Radius = 0.5f;
 		}
 
 		#region IRenderPass implementation

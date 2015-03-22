@@ -35,8 +35,8 @@ namespace Kaiga.Processes
 		public OrbitCamera()
 		{
 			Dolly = DollyTarget = 2.0f;
-			DollySpeed = 0.5f;
-			DollyEase = 0.2f;
+			DollySpeed = 0.1f;
+			DollyEase = 0.1f;
 			MinDolly = 0.1f;
 			MaxDolly = 5.0f;
 

@@ -4,6 +4,7 @@ using Kaiga.Lights;
 using Kaiga.Core;
 using Kaiga.Geom;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK;
 
 namespace Kaiga.Shaders
 {
@@ -24,7 +25,7 @@ namespace Kaiga.Shaders
 			vertexShader.BindPerLight( renderParams );
 
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
-			fragmentShader.BindPerLight( pointLight );
+			fragmentShader.BindPerLight( renderParams, pointLight );
 		}
 
 		public void Render( RenderParams renderParams, Geometry geom )

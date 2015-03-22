@@ -25,7 +25,7 @@ namespace Kaiga.Core
 			DrawBufferName.Normal, 
 			DrawBufferName.Position, 
 			DrawBufferName.Albedo, 
-			DrawBufferName.Material 
+			DrawBufferName.Material
 		};
 
 		DrawBuffersEnum[] lightPhaseDrawBuffers = { 
@@ -122,7 +122,7 @@ namespace Kaiga.Core
 			textureByFrameBufferAttachment.Add( frameBufferAttachment, texture );
 
 			GL.BindTexture( TextureTarget.TextureRectangle, texture );
-			GL.TexImage2D( TextureTarget.TextureRectangle, 0, PixelInternalFormat.Rgba, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, new IntPtr(0) );
+			GL.TexImage2D( TextureTarget.TextureRectangle, 0, PixelInternalFormat.Rgba16f, Width, Height, 0, PixelFormat.Rgba, PixelType.Float, new IntPtr(0) );
 			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest );
 			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge );

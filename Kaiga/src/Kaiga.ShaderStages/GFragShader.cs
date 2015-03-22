@@ -38,9 +38,7 @@ namespace Kaiga.ShaderStages
 			void main(void)
 			{ 
 				vec4 ViewPosition = in_ViewPosition;
-				ViewPosition.z = -ViewPosition.z;
-
-				out_ViewNormal = in_ViewNormal;
+				out_ViewNormal = vec4( in_ViewNormal.xyz, 1.0 );
 				out_ViewPosition = ViewPosition;
 				out_Albedo = in_Color;
 

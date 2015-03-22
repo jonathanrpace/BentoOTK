@@ -1,15 +1,9 @@
 ﻿<Properties StartupItem="Examples\Examples.csproj" GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="TODO.txt">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Kaiga\src\Kaiga.Core\DeferredRenderer.cs">
     <Files>
-      <File FileName="Kaiga\src\Kaiga.Shaders\GShader.cs" Line="3" Column="3" />
-      <File FileName="Kaiga\src\Kaiga.ShaderStages\GVertexShader.cs" Line="3" Column="3" />
-      <File FileName="Kaiga\src\Kaiga.ShaderStages\GFragShader.cs" Line="26" Column="26" />
       <File FileName="Kaiga\src\Kaiga.Core\DeferredRenderer.cs" Line="4" Column="4" />
-      <File FileName="Kaiga\src\Kaiga.Shaders\TextureOutputShader.cs" Line="4" Column="4" />
-      <File FileName="Kaiga\src\Kaiga.ShaderStages\TextureOutputFragShader.cs" Line="19" Column="19" />
-      <File FileName="Kaiga\src\Kaiga.Core\RenderTarget2D.cs" Line="37" Column="37" />
-      <File FileName="TODO.txt" Line="22" Column="22" />
+      <File FileName="Kaiga\src\Kaiga.Core\DeferredRenderTarget.cs" Line="18" Column="18" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

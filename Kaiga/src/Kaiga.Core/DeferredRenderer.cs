@@ -193,32 +193,26 @@ namespace Kaiga.Core
 			// Geometry pass
 			renderTarget.BindForGPhase();
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
-
 			GL.DepthMask( true );
 			GL.BlendFunc( BlendingFactorSrc.One, BlendingFactorDest.Zero );
 			GL.BlendEquation( BlendEquationMode.FuncAdd );
 			RenderPassesInPhase( passesByPhase[ RenderPhase.G ] );
 
 			// Light pass
-			/*
 			renderTarget.BindForLightPhase();
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
-
 			GL.DepthMask( false );
 			GL.BlendFunc( BlendingFactorSrc.One, BlendingFactorDest.One );
 			GL.BlendEquation( BlendEquationMode.FuncAdd );
 			RenderPassesInPhase( passesByPhase[ RenderPhase.Light ] );
 
-			renderTarget.Unbind();
-
-			*/
 
 			// Switch draw target to back buffer
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 			
 			// Draw NormalBuffer to the back buffer
-			textureOutputShader.Render( renderParams, renderTarget.NormalBuffer );
+			textureOutputShader.Render( renderParams, renderTarget.OutputBuffer );
 
 
 			scene.GameWindow.SwapBuffers();
