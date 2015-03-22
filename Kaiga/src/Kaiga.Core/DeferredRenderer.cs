@@ -75,7 +75,7 @@ namespace Kaiga.Core
 				renderPass.CreateGraphicsContextResources();
 			}
 
-			GL.ClearColor( System.Drawing.Color.AliceBlue );
+			//GL.Enable( EnableCap.FramebufferSrgb );
 		}
 
 		public void DisposeGraphicsContextResources()
@@ -176,6 +176,7 @@ namespace Kaiga.Core
 				return;
 			}
 			renderTarget.SetSize( scene.GameWindow.Width, scene.GameWindow.Height );
+			GL.Viewport( 0, 0, scene.GameWindow.Width, scene.GameWindow.Height );
 
 			renderParams.CameraLens = Camera.GetComponentByType<ILens>();
 			renderParams.CameraLens.AspectRatio = (float)scene.GameWindow.Width / scene.GameWindow.Height;
@@ -186,22 +187,22 @@ namespace Kaiga.Core
 			renderParams.InvProjectionMatrix = renderParams.CameraLens.InvProjectionMatrix;
 			renderParams.ViewProjectionMatrix = renderParams.ViewMatrix * renderParams.ProjectionMatrix;
 			renderParams.InvViewProjectionMatrix = renderParams.ViewProjectionMatrix.Inverted();
-				
-			GL.Enable(EnableCap.DepthTest);
-
-
+		
 			// Geometry pass
 			renderTarget.BindForGPhase();
+			GL.Enable(EnableCap.DepthTest);
+			GL.ClearColor( System.Drawing.Color.Black );
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 			GL.DepthMask( true );
-			GL.BlendFunc( BlendingFactorSrc.One, BlendingFactorDest.Zero );
-			GL.BlendEquation( BlendEquationMode.FuncAdd );
+			GL.Disable( EnableCap.Blend );
 			RenderPassesInPhase( passesByPhase[ RenderPhase.G ] );
 
 			// Light pass
 			renderTarget.BindForLightPhase();
+			GL.ClearColor( System.Drawing.Color.Black );
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 			GL.DepthMask( false );
+			GL.Enable( EnableCap.Blend );
 			GL.BlendFunc( BlendingFactorSrc.One, BlendingFactorDest.One );
 			GL.BlendEquation( BlendEquationMode.FuncAdd );
 			RenderPassesInPhase( passesByPhase[ RenderPhase.Light ] );
@@ -209,7 +210,8 @@ namespace Kaiga.Core
 
 			// Switch draw target to back buffer
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
-			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
+			GL.Disable( EnableCap.Blend );
+			//GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 			
 			// Draw NormalBuffer to the back buffer
 			textureOutputShader.Render( renderParams, renderTarget.OutputBuffer );

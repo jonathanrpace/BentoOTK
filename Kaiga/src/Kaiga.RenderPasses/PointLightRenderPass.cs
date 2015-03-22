@@ -4,6 +4,7 @@ using Kaiga.Lights;
 using Ramen;
 using Kaiga.Shaders;
 using Kaiga.Geom;
+using OpenTK;
 
 namespace Kaiga.RenderPasses
 {
@@ -47,7 +48,9 @@ namespace Kaiga.RenderPasses
 
 			foreach ( Node node in nodeList.Nodes )
 			{
-				renderParams.SetModelMatrix( node.transform.Matrix );
+				var scale = 1.5f;//CalcPointLightRadius( node.light );
+				Matrix4 mat = node.transform.Matrix * Matrix4.CreateScale( scale );
+				renderParams.SetModelMatrix( mat );
 				shader.BindPerLight( renderParams, node.light );
 
 				shader.Render( renderParams, geom );
@@ -89,6 +92,17 @@ namespace Kaiga.RenderPasses
 		}
 
 		#endregion
+
+		static float CalcPointLightRadius(PointLight light)
+		{
+			float maxChannel = Math.Max( Math.Max( light.Color.X, light.Color.Y ), light.Color.Z ) * light.Intensity;
+
+			float ret = -light.AttenuationLinear + (float)Math.Sqrt( light.AttenuationLinear * light.AttenuationLinear -
+				4.0f * light.AttenuationExp * ( light.AttenuationConstant - 256.0f * maxChannel ) );
+			ret /= 2.0f * light.AttenuationExp;
+				
+			return ret;
+		}
 	}
 }
 

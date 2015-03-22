@@ -50,30 +50,48 @@ namespace Examples
 			renderer.AddRenderPass( new PointLightRenderPass() );
 
 			var rand = new Random();
-			for ( int i = 0; i < 50; i++ )
+			for ( int i = 0; i < 30; i++ )
 			{
 				var entity = new Entity();
 
 				var geom = new SphereGeometry();
-				geom.Radius = (float)rand.NextDouble() * 0.2f;
+				geom.Radius = 0.01f + (float)rand.NextDouble() * 0.2f;
 				entity.AddComponent( geom );
 
 				var material = new StandardMaterial();
+				material.glossiness = (float)rand.NextDouble();
+				material.reflectivity = 1.0f;//(float)rand.NextDouble();
 				entity.AddComponent( material );
 
 				var transform = new Transform();
-				transform.Matrix = Matrix4.Identity * Matrix4.CreateTranslation( (float)rand.NextDouble()-0.5f, (float)rand.NextDouble()-0.5f, (float)rand.NextDouble()-0.5f );
+				const float positionScale = 1.0f;
+				transform.Matrix = Matrix4.Identity * Matrix4.CreateTranslation( 
+					(float)(rand.NextDouble()-0.5f)*positionScale, 
+					(float)(rand.NextDouble()-0.5f)*positionScale, 
+					(float)(rand.NextDouble()-0.5f)*positionScale );
 				entity.AddComponent( transform );
 
 				scene.AddEntity( entity );
 			}
 
-			var lightEntity = new Entity();
-			var lightTransform = new Transform();
-			var lightComponent = new PointLight( new Vector3( 1.0f, 1.0f, 1.0f ) );
-			lightEntity.AddComponent( lightTransform );
-			lightEntity.AddComponent( lightComponent );
-			scene.AddEntity( lightEntity );
+			for ( int i = 0; i < 1; i++ )
+			{
+				var entity = new Entity();
+				var transform = new Transform();
+				const float positionScale = 0.0f;
+				transform.Matrix = Matrix4.Identity * Matrix4.CreateTranslation( 
+					(float)(rand.NextDouble()-0.5f)*positionScale, 
+					(float)(rand.NextDouble()-0.5f)*positionScale, 
+					(float)(rand.NextDouble()-0.5f)*positionScale );
+				entity.AddComponent( transform );
+
+				var attenuationExp = 1.0f;//(float)rand.NextDouble() * 100.0f + 100.0f;
+				var lightComponent = new PointLight( new Vector3( (float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble() ), 1.0f, 1.0f, 1.0f, attenuationExp );
+
+				entity.AddComponent( lightComponent );
+
+				scene.AddEntity( entity );
+			}
 
 			scene.AddProcess( new GraphicsContextDependencyManager() );
 			scene.AddProcess( new OrbitCamera() );
