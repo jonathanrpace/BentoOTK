@@ -2,6 +2,7 @@
 using OpenTK.Graphics.OpenGL4;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Kaiga.Core
 {
@@ -31,6 +32,15 @@ namespace Kaiga.Core
 		DrawBuffersEnum[] lightPhaseDrawBuffers = { 
 			DrawBufferName.Output
 		};
+
+		DrawBuffersEnum[] allDrawBuffers = { 
+			DrawBufferName.Normal, 
+			DrawBufferName.Position, 
+			DrawBufferName.Albedo, 
+			DrawBufferName.Material,
+			DrawBufferName.Output,
+			DrawBufferName.Post
+		};
 		
 		public void CreateGraphicsContextResources()
 		{
@@ -49,7 +59,7 @@ namespace Kaiga.Core
 			// Depth -> Depth
 			DepthBuffer = GL.GenRenderbuffer();
 			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, DepthBuffer );
-			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, Width, Height );
+			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, Width, Height );
 			GL.FramebufferRenderbuffer( FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, DepthBuffer );
 
 			var status = GL.CheckFramebufferStatus( FramebufferTarget.Framebuffer );
@@ -94,6 +104,15 @@ namespace Kaiga.Core
 			CreateGraphicsContextResources();
 		}
 
+		public void Clear()
+		{
+			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
+			GL.DrawBuffers( allDrawBuffers.Length, allDrawBuffers );
+			GL.ClearColor( Color.Black );
+			GL.ClearDepth( 1.0 );
+			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
+		}
+
 		public void BindForGPhase()
 		{
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
@@ -122,7 +141,7 @@ namespace Kaiga.Core
 			textureByFrameBufferAttachment.Add( frameBufferAttachment, texture );
 
 			GL.BindTexture( TextureTarget.TextureRectangle, texture );
-			GL.TexImage2D( TextureTarget.TextureRectangle, 0, PixelInternalFormat.Rgba16f, Width, Height, 0, PixelFormat.Rgba, PixelType.Float, new IntPtr(0) );
+			GL.TexImage2D( TextureTarget.TextureRectangle, 0, PixelInternalFormat.Rgba32f, Width, Height, 0, PixelFormat.Rgba, PixelType.Float, new IntPtr(0) );
 			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest );
 			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge );

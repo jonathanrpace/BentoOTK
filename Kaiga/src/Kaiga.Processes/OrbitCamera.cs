@@ -41,7 +41,7 @@ namespace Kaiga.Processes
 			MaxDolly = 5.0f;
 
 			Position = PositionTarget = new Vector3( 0.0f, 0.0f, 0.0f );
-			PositionSpeed = new Vector3( 0.1f, 0.1f, 0.1f );
+			PositionSpeed = new Vector3( 0.01f, 0.01f, 0.01f );
 			PositionEase = new Vector3( 0.2f, 0.2f, 0.2f );
 
 			Rotation = RotationTarget = new Vector2( 0.0f, 0.0f );

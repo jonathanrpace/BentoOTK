@@ -91,39 +91,80 @@ vec3 cookTorrence( vec3 normal, vec3 viewer, vec3 lightDir, float roughness, flo
     float denominator = nDotV * nDotL;
     vec3 rs = vec3( numerator/ denominator );
  	
-    vec3 final = max(0.0, nDotL) * (specularColor * rs + diffuseColor);
+    vec3 final = nDotL * (specularColor * rs + diffuseColor);
  	
-    return vec3(final);
+    return final;
+}
+
+float G1V(float dotNV, float k)
+{
+	return 1.0f/(dotNV*(1.0f-k)+k);
+}
+
+float LightingFuncGGX_REF(vec3 N, vec3 V, vec3 L, float roughness, float F0)
+{
+	float alpha = roughness*roughness;
+
+	vec3 H = normalize(V+L);
+
+	float dotNL = clamp(dot(N,L), 0.0f, 1.0f);
+	float dotNV = clamp(dot(N,V), 0.0f, 1.0f);
+	float dotNH = clamp(dot(N,H), 0.0f, 1.0f);
+	float dotLH = clamp(dot(L,H), 0.0f, 1.0f);
+
+	// D
+	float alphaSqr = alpha*alpha;
+	float pi = 3.14159f;
+	float denom = dotNH * dotNH *(alphaSqr-1.0) + 1.0f;
+	float D = alphaSqr/(pi * denom * denom);
+
+	// F
+	float dotLH5 = pow(1.0f-dotLH,5);
+	float F = F0 + (1.0-F0)*(dotLH5);
+
+	// V
+	float k = alpha/2.0f;
+	float vis = G1V(dotNL,k)*G1V(dotNV,k);
+
+	float numerator = D * F * vis;
+    float denominator = dotNL;
+    float rs = numerator/ denominator;
+
+	//return (roughness * dotNL) + (1-roughness) * (dotNL * D * F * vis);
+
+	return dotNL * D * F * vis;
 }
 
 void main(void)
 {
-	vec4 position = texture2DRect( s_positionBuffer, gl_FragCoord.xy );
-	vec4 normal = texture2DRect( s_normalBuffer, gl_FragCoord.xy );
+	vec3 position = texture2DRect( s_positionBuffer, gl_FragCoord.xy ).xyz;
+	vec3 normal = texture2DRect( s_normalBuffer, gl_FragCoord.xy ).xyz;
 	vec4 material = texture2DRect( s_materialBuffer, gl_FragCoord.xy );
 
 	vec3 lightDir = u_lightPosition - position.xyz;
 	float distance = length( lightDir );
+	lightDir = normalize( lightDir );
 
+	vec3 viewDir = normalize( -position );
+
+	float roughness = material.x;
+	float reflectivity = material.y;
 
 	float attenuation = u_attenuationConstant + 
 						u_attenuationLinear * distance + 
 						u_attenuationExp * distance * distance;
 
-	if ( attenuation < 1.0/255.0 )
-	{
-		out_color = vec4( 0.0, 0.0, 0.0, 1.0 );
-	}
-	else
-	{
+	//vec3 light = cookTorrence( normal, viewDir, lightDir, roughness, reflectivity, u_color, u_color );
+	//vec3 light = vec3( clamp( dot( lightDir, normal ), 0.0, 1.0 ) );
 
-		vec3 light = cookTorrence( normal.xyz, vec3( 0.0, 0.0, 1.0 ), normalize( lightDir ), material.y, material.x, u_color, u_color );
+	vec3 light = vec3( LightingFuncGGX_REF( normal, viewDir, lightDir, roughness, reflectivity ) );
+	
 
-		light *= u_intensity;
-		light /= attenuation;
+	light *= u_color;
+	light *= u_intensity;
+	light /= attenuation;
 
-		out_color = vec4( light.xyz, 1.0 );
-	}
+	out_color = vec4( light, 1.0 );
 }
 ";
 		}

@@ -48,7 +48,7 @@ namespace Kaiga.RenderPasses
 
 			foreach ( Node node in nodeList.Nodes )
 			{
-				var scale = 1.5f;//CalcPointLightRadius( node.light );
+				var scale = 2.5f;//CalcPointLightRadius( node.light );
 				Matrix4 mat = node.transform.Matrix * Matrix4.CreateScale( scale );
 				renderParams.SetModelMatrix( mat );
 				shader.BindPerLight( renderParams, node.light );

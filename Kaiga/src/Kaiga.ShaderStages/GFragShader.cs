@@ -10,7 +10,7 @@ namespace Kaiga.ShaderStages
 		public void BindPerMaterial( StandardMaterial material )
 		{
 			SetUniform1( "reflectivity", material.reflectivity );
-			SetUniform1( "glossiness", material.glossiness );
+			SetUniform1( "roughness", material.roughness );
 		}
 		
 		override protected string GetShaderSource()
@@ -26,8 +26,8 @@ namespace Kaiga.ShaderStages
 				vec4 in_Color;
 			};
 
+			uniform float roughness;
 			uniform float reflectivity;
-			uniform float glossiness;
 			
 			// Outputs
 			layout( location = 0 ) out vec4 out_ViewNormal;
@@ -42,7 +42,7 @@ namespace Kaiga.ShaderStages
 				out_ViewPosition = ViewPosition;
 				out_Albedo = in_Color;
 
-				vec4 material = vec4( reflectivity, glossiness, 1, 1 );
+				vec4 material = vec4( roughness, reflectivity, 1, 1 );
 				out_Material = material;
 			}
 			";

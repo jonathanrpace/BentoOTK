@@ -75,7 +75,7 @@ namespace Kaiga.Core
 				renderPass.CreateGraphicsContextResources();
 			}
 
-			//GL.Enable( EnableCap.FramebufferSrgb );
+			GL.Enable( EnableCap.FramebufferSrgb );
 		}
 
 		public void DisposeGraphicsContextResources()
@@ -188,34 +188,33 @@ namespace Kaiga.Core
 			renderParams.ViewProjectionMatrix = renderParams.ViewMatrix * renderParams.ProjectionMatrix;
 			renderParams.InvViewProjectionMatrix = renderParams.ViewProjectionMatrix.Inverted();
 		
+			GL.Enable( EnableCap.CullFace );
+			GL.CullFace( CullFaceMode.Back );
+
+			renderTarget.Clear();
+
 			// Geometry pass
 			renderTarget.BindForGPhase();
 			GL.Enable(EnableCap.DepthTest);
-			GL.ClearColor( System.Drawing.Color.Black );
-			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 			GL.DepthMask( true );
 			GL.Disable( EnableCap.Blend );
 			RenderPassesInPhase( passesByPhase[ RenderPhase.G ] );
 
 			// Light pass
 			renderTarget.BindForLightPhase();
-			GL.ClearColor( System.Drawing.Color.Black );
-			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 			GL.DepthMask( false );
 			GL.Enable( EnableCap.Blend );
 			GL.BlendFunc( BlendingFactorSrc.One, BlendingFactorDest.One );
 			GL.BlendEquation( BlendEquationMode.FuncAdd );
 			RenderPassesInPhase( passesByPhase[ RenderPhase.Light ] );
-
+			GL.DepthMask( true );
+			GL.Disable( EnableCap.Blend );
 
 			// Switch draw target to back buffer
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
-			GL.Disable( EnableCap.Blend );
-			//GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
-			
-			// Draw NormalBuffer to the back buffer
+			GL.DepthFunc( DepthFunction.Always );
 			textureOutputShader.Render( renderParams, renderTarget.OutputBuffer );
-
+			GL.DepthFunc( DepthFunction.Less );
 
 			scene.GameWindow.SwapBuffers();
 		}

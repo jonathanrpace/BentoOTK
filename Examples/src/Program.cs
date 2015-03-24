@@ -27,9 +27,9 @@ namespace Examples
 
 		public Program()
 			: base
-			( 
-				800, 600,
-				new GraphicsMode(), "Bento", 0,
+			(
+				1280, 720,
+				new GraphicsMode( 8, 0 ), "Bento", 0,
 				DisplayDevice.Default, 4, 5,
 				GraphicsContextFlags.ForwardCompatible | GraphicsContextFlags.Debug
 			)
@@ -50,21 +50,24 @@ namespace Examples
 			renderer.AddRenderPass( new PointLightRenderPass() );
 
 			var rand = new Random();
-			for ( int i = 0; i < 30; i++ )
+			for ( int i = 0; i < 50; i++ )
 			{
 				var entity = new Entity();
 
+				var ratio = (float)i / 50;
+
 				var geom = new SphereGeometry();
 				geom.Radius = 0.01f + (float)rand.NextDouble() * 0.2f;
+				geom.SubDivisions = 32;
 				entity.AddComponent( geom );
 
 				var material = new StandardMaterial();
-				material.glossiness = (float)rand.NextDouble();
-				material.reflectivity = 1.0f;//(float)rand.NextDouble();
+				material.roughness = 0.4f + ratio * 2.0f;
+				material.reflectivity = ( 1 - ratio ) * 0.9f;
 				entity.AddComponent( material );
 
 				var transform = new Transform();
-				const float positionScale = 1.0f;
+				const float positionScale = 1.5f;
 				transform.Matrix = Matrix4.Identity * Matrix4.CreateTranslation( 
 					(float)(rand.NextDouble()-0.5f)*positionScale, 
 					(float)(rand.NextDouble()-0.5f)*positionScale, 
@@ -74,19 +77,20 @@ namespace Examples
 				scene.AddEntity( entity );
 			}
 
-			for ( int i = 0; i < 1; i++ )
+			for ( int i = 0; i < 10; i++ )
 			{
 				var entity = new Entity();
 				var transform = new Transform();
-				const float positionScale = 0.0f;
+				const float positionScale = 1.0f;
 				transform.Matrix = Matrix4.Identity * Matrix4.CreateTranslation( 
 					(float)(rand.NextDouble()-0.5f)*positionScale, 
 					(float)(rand.NextDouble()-0.5f)*positionScale, 
 					(float)(rand.NextDouble()-0.5f)*positionScale );
 				entity.AddComponent( transform );
-
-				var attenuationExp = 1.0f;//(float)rand.NextDouble() * 100.0f + 100.0f;
-				var lightComponent = new PointLight( new Vector3( (float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble() ), 1.0f, 1.0f, 1.0f, attenuationExp );
+				
+				var lightComponent = new PointLight( 
+					new Vector3( (float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble() ), 
+					2.0f, 1.0f, 1.0f, 200f );
 
 				entity.AddComponent( lightComponent );
 
