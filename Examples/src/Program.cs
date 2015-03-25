@@ -50,55 +50,97 @@ namespace Examples
 			renderer.AddRenderPass( new PointLightRenderPass() );
 
 			var rand = new Random();
-			for ( int i = 0; i < 50; i++ )
+			const int numColumns = 10;
+			const int numRows = 10;
+			const float spacing = 0.2f;
+			const float radius = 0.1f;
+
+			for ( int i = 0; i < numColumns; i++ )
 			{
-				var entity = new Entity();
+				var columnRatio = (float)i / ( numColumns - 1 );
+				for ( int j = 0; j < numRows; j++ )
+				{
+					var rowRatio = (float)j / ( numRows - 1 );
 
-				var ratio = (float)i / 50;
+					var entity = new Entity();
+					
+					var geom = new SphereGeometry();
+					geom.Radius = radius;
+					geom.SubDivisions = 32;
+					entity.AddComponent( geom );
 
-				var geom = new SphereGeometry();
-				geom.Radius = 0.01f + (float)rand.NextDouble() * 0.2f;
-				geom.SubDivisions = 32;
-				entity.AddComponent( geom );
+					var material = new StandardMaterial();
+					material.roughness = columnRatio;
+					material.reflectivity = rowRatio;
+					entity.AddComponent( material );
 
-				var material = new StandardMaterial();
-				material.roughness = 0.4f + ratio * 2.0f;
-				material.reflectivity = ( 1 - ratio ) * 0.9f;
-				entity.AddComponent( material );
+					var transform = new Transform();
+					transform.Matrix = Matrix4.Identity * Matrix4.CreateTranslation( 
+						(i-numColumns*0.5f) * spacing, 
+						0.0f, 
+						(j-numRows*0.5f) * spacing );
+					entity.AddComponent( transform );
 
-				var transform = new Transform();
-				const float positionScale = 1.5f;
-				transform.Matrix = Matrix4.Identity * Matrix4.CreateTranslation( 
-					(float)(rand.NextDouble()-0.5f)*positionScale, 
-					(float)(rand.NextDouble()-0.5f)*positionScale, 
-					(float)(rand.NextDouble()-0.5f)*positionScale );
-				entity.AddComponent( transform );
-
-				scene.AddEntity( entity );
+					scene.AddEntity( entity );
+				}
 			}
 
-			for ( int i = 0; i < 10; i++ )
+			var light0 = CreateLight();
+			light0.GetComponentByType<Transform>().TranslateBy( 0.0f, 0.5f, 0.0f );
+
+			var light1 = CreateLight();
+			light1.GetComponentByType<Transform>().TranslateBy( 0.0f, -0.25f, 0.5f );
+			light1.GetComponentByType<PointLight>().Color = new Vector3( 0.0f, 0.6f, 1.0f );
+			light1.GetComponentByType<PointLight>().Intensity = 0.5f;
+
+			/*
+			for ( int i = 0; i < 1; i++ )
 			{
 				var entity = new Entity();
 				var transform = new Transform();
+
 				const float positionScale = 1.0f;
 				transform.Matrix = Matrix4.Identity * Matrix4.CreateTranslation( 
 					(float)(rand.NextDouble()-0.5f)*positionScale, 
 					(float)(rand.NextDouble()-0.5f)*positionScale, 
 					(float)(rand.NextDouble()-0.5f)*positionScale );
+
+				transform.Matrix = Matrix4.Identity * Matrix4.CreateTranslation( 
+					0.0f, 
+					0.5f,
+					0.0f );
 				entity.AddComponent( transform );
-				
+
 				var lightComponent = new PointLight( 
 					new Vector3( (float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble() ), 
-					2.0f, 1.0f, 1.0f, 200f );
+					2.0f, 1.0f, 1.0f, 10 );
+
+				var lightComponent = new PointLight( 
+					new Vector3( 1.0f, 1.0f, 1.0f ), 
+					2.0f, 1.0f, 1.0f, 1.0f );
 
 				entity.AddComponent( lightComponent );
 
 				scene.AddEntity( entity );
 			}
+			*/
+
 
 			scene.AddProcess( new GraphicsContextDependencyManager() );
 			scene.AddProcess( new OrbitCamera() );
+		}
+
+		Entity CreateLight()
+		{
+			var entity = new Entity();
+			var transform = new Transform();
+			entity.AddComponent( transform );
+			var lightComponent = new PointLight();
+			entity.AddComponent( lightComponent );
+
+			scene.AddEntity( entity );
+
+			return entity;
 		}
 
 		protected override void OnUnload( System.EventArgs e )
