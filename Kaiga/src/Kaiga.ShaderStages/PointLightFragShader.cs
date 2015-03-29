@@ -20,6 +20,7 @@ namespace Kaiga.ShaderStages
 			SetUniform1( "u_attenuationConstant", light.AttenuationLinear );
 			SetUniform1( "u_attenuationLinear", light.AttenuationLinear );
 			SetUniform1( "u_attenuationExp", light.AttenuationExp );
+			SetUniform1( "u_radius", light.Radius );
 			SetUniform3( "u_color", light.Color );
 			SetUniform1( "u_intensity", light.Intensity );
 			SetUniform3( "u_lightPosition", renderParams.ModelViewMatrix.ExtractTranslation() );
@@ -38,6 +39,7 @@ uniform sampler2DRect s_materialBuffer;
 uniform float u_attenuationConstant;
 uniform float u_attenuationLinear;
 uniform float u_attenuationExp;
+uniform float u_radius;
 uniform vec3 u_color;
 uniform float u_intensity;
 uniform vec3 u_lightPosition;
@@ -153,7 +155,8 @@ void main(void)
 	float attenuation = u_attenuationConstant + 
 						u_attenuationLinear * distance + 
 						u_attenuationExp * distance * distance;
-
+	attenuation = max( attenuation, 1.0f );
+	
 	//vec3 light = cookTorrence( normal, viewDir, lightDir, roughness, reflectivity, u_color, u_color );
 	//vec3 light = vec3( clamp( dot( lightDir, normal ), 0.0, 1.0 ) );
 
@@ -162,9 +165,15 @@ void main(void)
 
 	light *= u_color;
 	light *= u_intensity;
+
+
+	//float attenuation = 1.0f - min( distance / u_radius, 1.0f );
+	//light *= attenuation;
+
 	light /= attenuation;
 
 	out_color = vec4( light, 1.0 );
+	//out_color = vec4( 0.5, 0.5, 0.5, 1.0 );
 }
 ";
 		}

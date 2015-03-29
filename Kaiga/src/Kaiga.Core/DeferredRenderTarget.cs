@@ -59,8 +59,8 @@ namespace Kaiga.Core
 			// Depth -> Depth
 			DepthBuffer = GL.GenRenderbuffer();
 			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, DepthBuffer );
-			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, Width, Height );
-			GL.FramebufferRenderbuffer( FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, DepthBuffer );
+			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Depth24Stencil8, Width, Height );
+			GL.FramebufferRenderbuffer( FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, DepthBuffer );
 
 			var status = GL.CheckFramebufferStatus( FramebufferTarget.Framebuffer );
 
@@ -110,7 +110,8 @@ namespace Kaiga.Core
 			GL.DrawBuffers( allDrawBuffers.Length, allDrawBuffers );
 			GL.ClearColor( Color.Black );
 			GL.ClearDepth( 1.0 );
-			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
+			GL.ClearStencil( 0 );
+			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit );
 		}
 
 		public void BindForGPhase()
@@ -123,6 +124,12 @@ namespace Kaiga.Core
 		{
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
 			GL.DrawBuffers( lightPhaseDrawBuffers.Length, lightPhaseDrawBuffers );
+		}
+
+		public void BindForNoDraw()
+		{
+			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
+			GL.DrawBuffer( DrawBufferMode.None );
 		}
 		
 		public void Unbind()

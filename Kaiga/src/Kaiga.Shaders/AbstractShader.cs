@@ -22,19 +22,32 @@ namespace Kaiga.Shaders
 
 		public virtual void CreateGraphicsContextResources()
 		{
-			vertexShader.CreateGraphicsContextResources();
-			fragmentShader.CreateGraphicsContextResources();
-
 			pipeline = GL.GenProgramPipeline();
-			GL.UseProgramStages( pipeline, ProgramStageMask.VertexShaderBit, vertexShader.ShaderProgram );
-			GL.UseProgramStages( pipeline, ProgramStageMask.FragmentShaderBit, fragmentShader.ShaderProgram );
+
+			if ( vertexShader != null )
+			{
+				vertexShader.CreateGraphicsContextResources();
+				GL.UseProgramStages( pipeline, ProgramStageMask.VertexShaderBit, vertexShader.ShaderProgram );
+			}
+			if ( fragmentShader != null )
+			{
+				fragmentShader.CreateGraphicsContextResources();
+				GL.UseProgramStages( pipeline, ProgramStageMask.FragmentShaderBit, fragmentShader.ShaderProgram );
+			}
+			
 			GL.BindProgramPipeline( 0 );
 		}
 
 		public virtual void DisposeGraphicsContextResources()
 		{
-			vertexShader.DisposeGraphicsContextResources();
-			fragmentShader.DisposeGraphicsContextResources();
+			if ( vertexShader != null )
+			{
+				vertexShader.DisposeGraphicsContextResources();
+			}
+			if ( fragmentShader != null )
+			{
+				fragmentShader.DisposeGraphicsContextResources();
+			}
 
 			if ( GL.IsProgramPipeline( pipeline ) )
 			{
@@ -47,18 +60,31 @@ namespace Kaiga.Shaders
 		public void BindPerPass( RenderParams renderParams )
 		{
 			GL.BindProgramPipeline( pipeline );
-			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
-			vertexShader.BindPerPass( renderParams );
 
-			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
-			fragmentShader.BindPerPass( renderParams );
+			if ( vertexShader != null )
+			{
+				GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
+				vertexShader.BindPerPass( renderParams );
+			}
+
+			if ( fragmentShader != null )
+			{
+				GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
+				fragmentShader.BindPerPass( renderParams );
+			}
 		}
 
 		public void UnbindPerPass()
 		{
 			GL.BindProgramPipeline( 0 );
-			vertexShader.UnbindPerPass();
-			fragmentShader.UnbindPerPass();
+			if ( vertexShader != null )
+			{
+				vertexShader.UnbindPerPass();
+			}
+			if ( fragmentShader != null )
+			{
+				fragmentShader.UnbindPerPass();
+			}
 		}
 	}
 }

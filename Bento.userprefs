@@ -1,11 +1,15 @@
 ﻿<Properties StartupItem="Examples\Examples.csproj" GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Examples\src\Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Kaiga\src\Kaiga.Lights\PointLight.cs">
     <Files>
-      <File FileName="Examples\src\Program.cs" Line="37" Column="37" />
-      <File FileName="Kaiga\src\Kaiga.ShaderStages\GFragShader.cs" Line="14" Column="14" />
-      <File FileName="Kaiga\src\Kaiga.ShaderStages\PointLightFragShader.cs" Line="2" Column="2" />
-      <File FileName="Kaiga\src\Kaiga.Core\DeferredRenderer.cs" Line="4" Column="4" />
+      <File FileName="Examples\src\Program.cs" Line="140" Column="32" />
+      <File FileName="Kaiga\src\Kaiga.Components\Transform.cs" Line="1" Column="1" />
+      <File FileName="Kaiga\src\Kaiga.RenderPasses\PointLightRenderPass.cs" Line="131" Column="33" />
+      <File FileName="Kaiga\src\Kaiga.Core\DeferredRenderer.cs" Line="206" Column="4" />
+      <File FileName="Kaiga\src\Kaiga.Shaders\PointLightStencilShader.cs" Line="25" Column="52" />
+      <File FileName="Kaiga\src\Kaiga.Core\DeferredRenderTarget.cs" Line="79" Column="5" />
+      <File FileName="Kaiga\src\Kaiga.ShaderStages\PointLightFragShader.cs" Line="173" Column="23" />
+      <File FileName="Kaiga\src\Kaiga.Lights\PointLight.cs" Line="40" Column="33" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -70,6 +70,8 @@
     <Compile Include="src\Kaiga.Shaders\PointLightShader.cs" />
     <Compile Include="src\Kaiga.Core\DeferredRenderTarget.cs" />
     <Compile Include="src\Kaiga.Core\FBAttachmentName.cs" />
+    <Compile Include="src\Kaiga.Shaders\PointLightStencilShader.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\NullFragShader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

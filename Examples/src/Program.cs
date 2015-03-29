@@ -136,6 +136,8 @@ namespace Examples
 			var transform = new Transform();
 			entity.AddComponent( transform );
 			var lightComponent = new PointLight();
+			lightComponent.Radius = 1.0f;
+			lightComponent.Intensity = 5.0f;
 			entity.AddComponent( lightComponent );
 
 			scene.AddEntity( entity );

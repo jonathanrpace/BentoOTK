@@ -199,18 +199,18 @@ namespace Kaiga.Core
 			GL.DepthMask( true );
 			GL.Disable( EnableCap.Blend );
 			RenderPassesInPhase( passesByPhase[ RenderPhase.G ] );
+			GL.DepthMask( false );		// Only geometry pass writes to depth buffer
 
 			// Light pass
 			renderTarget.BindForLightPhase();
-			GL.DepthMask( false );
 			GL.Enable( EnableCap.Blend );
 			GL.BlendFunc( BlendingFactorSrc.One, BlendingFactorDest.One );
 			GL.BlendEquation( BlendEquationMode.FuncAdd );
 			RenderPassesInPhase( passesByPhase[ RenderPhase.Light ] );
-			GL.DepthMask( true );
 			GL.Disable( EnableCap.Blend );
 
 			// Switch draw target to back buffer
+			GL.DepthMask( true );		// Only geometry pass writes to depth buffer
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 			GL.DepthFunc( DepthFunction.Always );
 			textureOutputShader.Render( renderParams, renderTarget.OutputBuffer );
