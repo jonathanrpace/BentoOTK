@@ -47,72 +47,35 @@ uniform vec3 u_lightPosition;
 // Outputs
 layout( location = 0 ) out vec4 out_color;
 
-float geomTerm( float vDotH, float nDotH, float nDotV, float nDotL )
-{
-	float geo_numerator   = 2.0f * nDotH;
-	float geo_denominator = vDotH;
- 
-	float geo_b = (geo_numerator * nDotV ) / geo_denominator;
-	float geo_c = (geo_numerator * nDotL) / geo_denominator;
-	float geo = min( 1.0, min( geo_b, geo_c ) );
-
-	return geo;
-}
-
-float roughnessTerm( float roughness, float nDotH )
-{
-	float roughness_a = 1.0 / ( 4.0 * roughness * roughness * pow( nDotH, 4 ) );
-	float roughness_b = nDotH * nDotH - 1.0;
-	float roughness_c = roughness * roughness * nDotH * nDotH;
- 
-	return roughness_a * exp( roughness_b / roughness_c );
-}
-
-float fresnelTerm( float vDotH, float min )
-{
-	float ret = pow( 1.0 - vDotH, 5.0 );
-	ret *= ( 1.0 - min );
-	ret += min;
-	return ret;
-}
-
-vec3 cookTorrence( vec3 normal, vec3 viewer, vec3 lightDir, float roughness, float reflectivity, vec3 specularColor, vec3 diffuseColor )
-{
-	vec3 halfVector = normalize( lightDir + viewer );
-    float nDotL		= clamp( dot( normal, lightDir ), 0.0, 1.0 );
-    float nDotH 	= clamp( dot( normal, halfVector ), 0.0, 1.0 );
-    float nDotV		= clamp( dot( normal, viewer ), 0.0, 1.0 );
-    float vDotH		= clamp( dot( viewer, halfVector ), 0.0, 1.0 );
-
-	float g = geomTerm( vDotH, nDotH, nDotV, nDotL );
-	float r = roughnessTerm( roughness, nDotH );
-	float f = fresnelTerm( vDotH, reflectivity );
-
-
-    float numerator = f * g * r ;
-    float denominator = nDotV * nDotL;
-    vec3 rs = vec3( numerator/ denominator );
- 	
-    vec3 final = nDotL * (specularColor * rs + diffuseColor);
- 	
-    return final;
-}
-
 float G1V(float dotNV, float k)
 {
 	return 1.0f/(dotNV*(1.0f-k)+k);
 }
 
-float LightingFuncGGX_REF(vec3 N, vec3 V, vec3 L, float roughness, float F0)
+float angularDot( vec3 A, vec3 B, in float angularSize )
+{
+	float dotValue = clamp( dot( A, B ), 0.0f, 1.0f );
+	float pi = 3.14159f;
+
+	float angle = 1.0f - acos(dotValue) * (2.0f / pi);
+	angle = min( angle, angularSize );
+	angle *= rcp( angularSize );
+
+	float ret = sin( angle * pi * 0.5f );
+	
+	return ret;
+}
+
+float LightingFuncGGX_REF( vec3 N, vec3 V, vec3 L, float roughness, float F0, float angularSize )
 {
 	float alpha = roughness*roughness;
 
 	vec3 H = normalize(V+L);
 
-	float dotNL = clamp(dot(N,L), 0.0f, 1.0f);
+	float dotNL = angularDot(N,L,angularSize);
 	float dotNV = clamp(dot(N,V), 0.0f, 1.0f);
-	float dotNH = clamp(dot(N,H), 0.0f, 1.0f);
-	float dotLH = clamp(dot(L,H), 0.0f, 1.0f);
+	float dotNH = angularDot(N,H,angularSize);
+	float dotLH = angularDot(L,H,angularSize);
 
 	// D
 	float alphaSqr = alpha*alpha;
@@ -132,8 +95,6 @@ float LightingFuncGGX_REF(vec3 N, vec3 V, vec3 L, float roughness, float F0)
     float denominator = dotNL;
     float rs = numerator/ denominator;
 
-	//return (roughness * dotNL) + (1-roughness) * (dotNL * D * F * vis);
-
 	return dotNL * D * F * vis;
 }
 
@@ -147,33 +108,31 @@ void main(void)
 	float distance = length( lightDir );
 	lightDir = normalize( lightDir );
 
+	float angularSize = clamp( atan( u_radius / distance ), 0.0f, 1.0f );
+	angularSize = 1.0f - angularSize;
+
 	vec3 viewDir = normalize( -position );
 
 	float roughness = material.x;
 	float reflectivity = material.y;
+	float emissive = material.z;
 
 	float attenuation = u_attenuationConstant + 
 						u_attenuationLinear * distance + 
 						u_attenuationExp * distance * distance;
 	attenuation = max( attenuation, 1.0f );
 	
-	//vec3 light = cookTorrence( normal, viewDir, lightDir, roughness, reflectivity, u_color, u_color );
 	//vec3 light = vec3( clamp( dot( lightDir, normal ), 0.0, 1.0 ) );
 
-	vec3 light = vec3( LightingFuncGGX_REF( normal, viewDir, lightDir, roughness, reflectivity ) );
+	vec3 light = vec3( LightingFuncGGX_REF( normal, viewDir, lightDir, roughness, reflectivity, angularSize ) );
 	
-
 	light *= u_color;
 	light *= u_intensity;
-
-
-	//float attenuation = 1.0f - min( distance / u_radius, 1.0f );
-	//light *= attenuation;
-
 	light /= attenuation;
+	light += emissive;
 
 	out_color = vec4( light, 1.0 );
-	//out_color = vec4( 0.5, 0.5, 0.5, 1.0 );
+	//out_color = vec4( angularSize, angularSize, angularSize, 1.0f );
 }
 ";
 		}

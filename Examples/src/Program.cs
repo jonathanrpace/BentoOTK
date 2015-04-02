@@ -9,6 +9,7 @@ using Kaiga.Processes;
 using Kaiga.Components;
 using Kaiga.Materials;
 using Kaiga.Lights;
+using System.Diagnostics;
 
 namespace Examples
 {
@@ -24,6 +25,8 @@ namespace Examples
 		}
 
 		private Scene scene;
+		private Entity MainLight;
+		private double elapsed = 0.0f;
 
 		public Program()
 			: base
@@ -85,13 +88,13 @@ namespace Examples
 				}
 			}
 
-			var light0 = CreateLight();
-			light0.GetComponentByType<Transform>().TranslateBy( 0.0f, 0.5f, 0.0f );
+			MainLight = CreateLight();
+			MainLight.GetComponentByType<Transform>().TranslateBy( 0.0f, 0.5f, 0.0f );
 
-			var light1 = CreateLight();
-			light1.GetComponentByType<Transform>().TranslateBy( 0.0f, -0.25f, 0.5f );
-			light1.GetComponentByType<PointLight>().Color = new Vector3( 0.0f, 0.6f, 1.0f );
-			light1.GetComponentByType<PointLight>().Intensity = 0.5f;
+			//var light1 = CreateLight();
+			//light1.GetComponentByType<Transform>().TranslateBy( 0.0f, -0.25f, 0.5f );
+			//light1.GetComponentByType<PointLight>().Color = new Vector3( 0.0f, 0.6f, 1.0f );
+			//light1.GetComponentByType<PointLight>().Intensity = 0.5f;
 
 			/*
 			for ( int i = 0; i < 1; i++ )
@@ -136,9 +139,17 @@ namespace Examples
 			var transform = new Transform();
 			entity.AddComponent( transform );
 			var lightComponent = new PointLight();
-			lightComponent.Radius = 1.0f;
+			lightComponent.Radius = 0.1f;
 			lightComponent.Intensity = 5.0f;
 			entity.AddComponent( lightComponent );
+
+			var lightGeom = new SphereGeometry();
+			lightGeom.Radius = lightComponent.Radius;
+			entity.AddComponent( lightGeom );
+
+			var lightMaterial = new StandardMaterial();
+			lightMaterial.emissive = lightComponent.Intensity;
+			entity.AddComponent( lightMaterial );
 
 			scene.AddEntity( entity );
 
@@ -166,6 +177,21 @@ namespace Examples
 
 		protected override void OnRenderFrame(FrameEventArgs e)
 		{
+			elapsed += e.Time;
+			var radius = 0.01f + ((float)Math.Sin( elapsed )+1.0f) * 0.1f;
+			MainLight.GetComponentByType<PointLight>().Radius = radius;
+			MainLight.GetComponentByType<SphereGeometry>().Radius = radius;
+
+			MainLight.GetComponentByType<PointLight>().Intensity = 100f * radius;
+
+			const double speed = 0.01;
+			const float translateRadius = 1.0f;
+			var x = (float)Math.Sin( elapsed * 17 * speed ) * translateRadius;
+			var y = (float)Math.Cos( elapsed * 19 * speed ) * translateRadius;
+			var z = (float)Math.Sin( elapsed * 23 * speed ) * translateRadius * 0.25f;
+
+			MainLight.GetComponentByType<Transform>().Matrix = Matrix4.Identity * Matrix4.CreateTranslation( x, y, z );
+
 			scene.Update( 1 / RenderFrequency );
 		}
 	}
