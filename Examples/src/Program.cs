@@ -25,8 +25,10 @@ namespace Examples
 		}
 
 		private Scene scene;
-		private Entity MainLight;
-		private double elapsed = 0.0f;
+		Random rand;
+
+		//private Entity MainLight;
+		//private double elapsed = 0.0f;
 
 		public Program()
 			: base
@@ -37,7 +39,7 @@ namespace Examples
 				GraphicsContextFlags.ForwardCompatible | GraphicsContextFlags.Debug
 			)
 		{
-
+			rand = new Random();
 		}
 
 		protected override void OnLoad( System.EventArgs e )
@@ -51,8 +53,7 @@ namespace Examples
 			scene.AddProcess( renderer );
 			renderer.AddRenderPass( new TestRenderPass() );
 			renderer.AddRenderPass( new PointLightRenderPass() );
-
-			var rand = new Random();
+			
 			const int numColumns = 10;
 			const int numRows = 10;
 			const float spacing = 0.2f;
@@ -73,8 +74,8 @@ namespace Examples
 					entity.AddComponent( geom );
 
 					var material = new StandardMaterial();
-					material.roughness = columnRatio;
-					material.reflectivity = rowRatio;
+					material.Roughness = columnRatio;
+					material.Reflectivity = rowRatio;
 					entity.AddComponent( material );
 
 					var transform = new Transform();
@@ -88,49 +89,22 @@ namespace Examples
 				}
 			}
 
-			MainLight = CreateLight();
-			MainLight.GetComponentByType<Transform>().TranslateBy( 0.0f, 0.5f, 0.0f );
+			for ( int i = 0; i < 20; i++ )
+			{
+				CreateLight();
+			}
+
+			//MainLight = CreateLight();
+			//MainLight.GetComponentByType<Transform>().TranslateBy( 0.0f, 0.5f, 0.0f );
 
 			//var light1 = CreateLight();
 			//light1.GetComponentByType<Transform>().TranslateBy( 0.0f, -0.25f, 0.5f );
 			//light1.GetComponentByType<PointLight>().Color = new Vector3( 0.0f, 0.6f, 1.0f );
 			//light1.GetComponentByType<PointLight>().Intensity = 0.5f;
 
-			/*
-			for ( int i = 0; i < 1; i++ )
-			{
-				var entity = new Entity();
-				var transform = new Transform();
-
-				const float positionScale = 1.0f;
-				transform.Matrix = Matrix4.Identity * Matrix4.CreateTranslation( 
-					(float)(rand.NextDouble()-0.5f)*positionScale, 
-					(float)(rand.NextDouble()-0.5f)*positionScale, 
-					(float)(rand.NextDouble()-0.5f)*positionScale );
-
-				transform.Matrix = Matrix4.Identity * Matrix4.CreateTranslation( 
-					0.0f, 
-					0.5f,
-					0.0f );
-				entity.AddComponent( transform );
-
-				var lightComponent = new PointLight( 
-					new Vector3( (float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble() ), 
-					2.0f, 1.0f, 1.0f, 10 );
-
-				var lightComponent = new PointLight( 
-					new Vector3( 1.0f, 1.0f, 1.0f ), 
-					2.0f, 1.0f, 1.0f, 1.0f );
-
-				entity.AddComponent( lightComponent );
-
-				scene.AddEntity( entity );
-			}
-			*/
-
-
 			scene.AddProcess( new GraphicsContextDependencyManager() );
 			scene.AddProcess( new OrbitCamera() );
+			scene.AddProcess( new SwarmProcess() );
 		}
 
 		Entity CreateLight()
@@ -138,18 +112,30 @@ namespace Examples
 			var entity = new Entity();
 			var transform = new Transform();
 			entity.AddComponent( transform );
-			var lightComponent = new PointLight();
-			lightComponent.Radius = 0.1f;
-			lightComponent.Intensity = 5.0f;
-			entity.AddComponent( lightComponent );
 
-			var lightGeom = new SphereGeometry();
-			lightGeom.Radius = lightComponent.Radius;
-			entity.AddComponent( lightGeom );
+			var radius = 0.01f + (float)rand.NextDouble() * 0.05f;
+			var color = new Vector3( (float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble() );
 
-			var lightMaterial = new StandardMaterial();
-			lightMaterial.emissive = lightComponent.Intensity;
-			entity.AddComponent( lightMaterial );
+			var pointLight = new PointLight();
+			pointLight.Radius = radius;
+			pointLight.Intensity = 10.0f;
+			pointLight.Color = color;
+			entity.AddComponent( pointLight );
+
+			var sphereGeom = new SphereGeometry();
+			sphereGeom.Radius = pointLight.Radius;
+			entity.AddComponent( sphereGeom );
+
+			var material = new StandardMaterial();
+			material.Diffuse = color;
+			material.Emissive = 0.1f;
+			entity.AddComponent( material );
+
+			var swarmMember = new SwarmMember( 
+				                  	new Vector3( (float)rand.NextDouble() * 2.0f, (float)rand.NextDouble() * 0.5f, (float)rand.NextDouble() * 2.0f ),
+									new Vector3( (float)rand.NextDouble() * 0.5f, (float)rand.NextDouble() * 0.5f, (float)rand.NextDouble() * 0.5f ) 
+			                  );
+			entity.AddComponent( swarmMember );
 
 			scene.AddEntity( entity );
 
@@ -177,21 +163,20 @@ namespace Examples
 
 		protected override void OnRenderFrame(FrameEventArgs e)
 		{
+			/*
 			elapsed += e.Time;
 			var radius = 0.01f + ((float)Math.Sin( elapsed )+1.0f) * 0.1f;
 			MainLight.GetComponentByType<PointLight>().Radius = radius;
 			MainLight.GetComponentByType<SphereGeometry>().Radius = radius;
-
-			MainLight.GetComponentByType<PointLight>().Intensity = 100f * radius;
 
 			const double speed = 0.01;
 			const float translateRadius = 1.0f;
 			var x = (float)Math.Sin( elapsed * 17 * speed ) * translateRadius;
 			var y = (float)Math.Cos( elapsed * 19 * speed ) * translateRadius;
 			var z = (float)Math.Sin( elapsed * 23 * speed ) * translateRadius * 0.25f;
-
+			
 			MainLight.GetComponentByType<Transform>().Matrix = Matrix4.Identity * Matrix4.CreateTranslation( x, y, z );
-
+			*/
 			scene.Update( 1 / RenderFrequency );
 		}
 	}

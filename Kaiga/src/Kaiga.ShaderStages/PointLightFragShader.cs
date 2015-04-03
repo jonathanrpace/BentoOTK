@@ -13,6 +13,7 @@ namespace Kaiga.ShaderStages
 			SetUniformTexture( 0, "s_positionBuffer", renderParams.RenderTarget.GetTexture( FBAttachmentName.Position ), TextureTarget.TextureRectangle );
 			SetUniformTexture( 1, "s_normalBuffer", renderParams.RenderTarget.GetTexture( FBAttachmentName.Normal ), TextureTarget.TextureRectangle );
 			SetUniformTexture( 2, "s_materialBuffer", renderParams.RenderTarget.GetTexture( FBAttachmentName.Material ), TextureTarget.TextureRectangle );
+			SetUniformTexture( 3, "s_albedoBuffer", renderParams.RenderTarget.GetTexture( FBAttachmentName.Albedo ), TextureTarget.TextureRectangle );
 		}
 
 		public void BindPerLight( RenderParams renderParams, PointLight light )
@@ -22,7 +23,11 @@ namespace Kaiga.ShaderStages
 			SetUniform1( "u_attenuationExp", light.AttenuationExp );
 			SetUniform1( "u_radius", light.Radius );
 			SetUniform3( "u_color", light.Color );
-			SetUniform1( "u_intensity", light.Intensity );
+
+			// Scale intensity by surface area
+			var surfaceArea = 4.0f * (float)Math.PI * light.Radius * light.Radius;
+			var intensity = surfaceArea * light.Intensity;
+			SetUniform1( "u_intensity", intensity );
 			SetUniform3( "u_lightPosition", renderParams.ModelViewMatrix.ExtractTranslation() );
 		}
 
@@ -35,6 +40,7 @@ namespace Kaiga.ShaderStages
 uniform sampler2DRect s_positionBuffer;
 uniform sampler2DRect s_normalBuffer;
 uniform sampler2DRect s_materialBuffer;
+uniform sampler2DRect s_albedoBuffer;
 
 uniform float u_attenuationConstant;
 uniform float u_attenuationLinear;
@@ -103,6 +109,7 @@ void main(void)
 	vec3 position = texture2DRect( s_positionBuffer, gl_FragCoord.xy ).xyz;
 	vec3 normal = texture2DRect( s_normalBuffer, gl_FragCoord.xy ).xyz;
 	vec4 material = texture2DRect( s_materialBuffer, gl_FragCoord.xy );
+	vec3 albedo = texture2DRect( s_albedoBuffer, gl_FragCoord.xy ).xyz;
 
 	vec3 lightDir = u_lightPosition - position.xyz;
 	float distance = length( lightDir );
@@ -110,7 +117,7 @@ void main(void)
 
 	float angularSize = clamp( atan( u_radius / distance ), 0.0f, 1.0f );
 	angularSize = 1.0f - angularSize;
-
+	
 	vec3 viewDir = normalize( -position );
 
 	float roughness = material.x;
@@ -129,7 +136,8 @@ void main(void)
 	light *= u_color;
 	light *= u_intensity;
 	light /= attenuation;
-	light += emissive;
+
+	light += emissive * albedo;
 
 	out_color = vec4( light, 1.0 );
 	//out_color = vec4( angularSize, angularSize, angularSize, 1.0f );

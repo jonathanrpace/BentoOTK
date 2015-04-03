@@ -72,6 +72,8 @@
     <Compile Include="src\Kaiga.Core\FBAttachmentName.cs" />
     <Compile Include="src\Kaiga.Shaders\PointLightStencilShader.cs" />
     <Compile Include="src\Kaiga.ShaderStages\NullFragShader.cs" />
+    <Compile Include="src\Kaiga.Components\SwarmMember.cs" />
+    <Compile Include="src\Kaiga.Processes\SwarmProcess.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

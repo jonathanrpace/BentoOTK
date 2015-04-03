@@ -9,9 +9,10 @@ namespace Kaiga.ShaderStages
 	{
 		public void BindPerMaterial( StandardMaterial material )
 		{
-			SetUniform1( "u_reflectivity", material.reflectivity );
-			SetUniform1( "u_roughness", material.roughness );
-			SetUniform1( "u_emissive", material.emissive );
+			SetUniform1( "u_reflectivity", material.Reflectivity );
+			SetUniform1( "u_roughness", material.Roughness );
+			SetUniform1( "u_emissive", material.Emissive );
+			SetUniform3( "u_albedo", material.Diffuse );
 		}
 		
 		override protected string GetShaderSource()
@@ -30,6 +31,7 @@ namespace Kaiga.ShaderStages
 			uniform float u_roughness;
 			uniform float u_reflectivity;
 			uniform float u_emissive;
+			uniform vec3 u_albedo;
 
 			// Outputs
 			layout( location = 0 ) out vec4 out_ViewNormal;
@@ -40,9 +42,9 @@ namespace Kaiga.ShaderStages
 			void main(void)
 			{ 
 				vec4 ViewPosition = in_ViewPosition;
-				out_ViewNormal = vec4( in_ViewNormal.xyz, 1.0 );
+				out_ViewNormal = vec4( in_ViewNormal.xyz, 1.0f );
 				out_ViewPosition = ViewPosition;
-				out_Albedo = in_Color;
+				out_Albedo = vec4( u_albedo, 1.0f );
 
 				vec4 material = vec4( u_roughness, u_reflectivity, u_emissive, 1 );
 				out_Material = material;
