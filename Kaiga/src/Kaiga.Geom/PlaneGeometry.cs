@@ -119,7 +119,7 @@ namespace Kaiga.Geom
 
 					normals[ float3Index ] = 0;
 					normals[ float3Index + 1] = 0;
-					normals[ float3Index + 2] = 1;
+					normals[ float3Index + 2] = -1;
 
 					uvs[float2Index] = xRatio;
 					uvs[float2Index + 1] = 1-yRatio;

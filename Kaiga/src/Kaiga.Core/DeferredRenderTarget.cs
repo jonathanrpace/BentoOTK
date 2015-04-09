@@ -20,6 +20,9 @@ namespace Kaiga.Core
 		public int OutputBuffer { get; private set; }
 		public int PostBuffer { get; private set; }
 
+		public int HalfResFrameBuffer { get; private set; }
+		public int AOBuffer { get; private set; }
+
 		Dictionary<FramebufferAttachment,int> textureByFrameBufferAttachment;
 
 		DrawBuffersEnum[] gPhaseDrawBuffers = { 
@@ -27,6 +30,10 @@ namespace Kaiga.Core
 			DrawBufferName.Position, 
 			DrawBufferName.Albedo, 
 			DrawBufferName.Material
+		};
+
+		DrawBuffersEnum[] aoPhaseDrawBuffers = { 
+			DrawBufferName.AO
 		};
 
 		DrawBuffersEnum[] lightPhaseDrawBuffers = { 
@@ -40,6 +47,10 @@ namespace Kaiga.Core
 			DrawBufferName.Material,
 			DrawBufferName.Output,
 			DrawBufferName.Post
+		};
+
+		DrawBuffersEnum[] justPositionBuffer = { 
+			DrawBufferName.Position
 		};
 		
 		public void CreateGraphicsContextResources()
@@ -56,17 +67,34 @@ namespace Kaiga.Core
 			OutputBuffer = InitTextureBuffer( FBAttachmentName.Output );
 			PostBuffer = InitTextureBuffer( FBAttachmentName.Post );
 
+
 			// Depth -> Depth
 			DepthBuffer = GL.GenRenderbuffer();
 			GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, DepthBuffer );
 			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Depth24Stencil8, Width, Height );
 			GL.FramebufferRenderbuffer( FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, DepthBuffer );
 
-			var status = GL.CheckFramebufferStatus( FramebufferTarget.Framebuffer );
-
-			if ( status != FramebufferErrorCode.FramebufferComplete )
 			{
-				Debug.WriteLine( status );
+				var status = GL.CheckFramebufferStatus( FramebufferTarget.Framebuffer );
+				if ( status != FramebufferErrorCode.FramebufferComplete )
+				{
+					Debug.WriteLine( status );
+				}
+			}
+
+
+
+			// AO FrameBuffer
+			HalfResFrameBuffer = GL.GenFramebuffer();
+			GL.BindFramebuffer( FramebufferTarget.Framebuffer, HalfResFrameBuffer );
+
+			AOBuffer = InitHalfResTextureBuffer( FBAttachmentName.AO );
+			{
+				var status = GL.CheckFramebufferStatus( FramebufferTarget.Framebuffer );
+				if ( status != FramebufferErrorCode.FramebufferComplete )
+				{
+					Debug.WriteLine( status );
+				}
 			}
 
 			GL.BindFramebuffer( FramebufferTarget.Framebuffer, 0 );
@@ -87,6 +115,11 @@ namespace Kaiga.Core
 				GL.DeleteTexture( MaterialBuffer );
 				GL.DeleteTexture( OutputBuffer );
 				GL.DeleteTexture( PostBuffer );
+
+
+				GL.DeleteFramebuffer( HalfResFrameBuffer );
+
+				GL.DeleteTexture( AOBuffer );
 			}
 		}
 
@@ -112,6 +145,17 @@ namespace Kaiga.Core
 			GL.ClearDepth( 1.0 );
 			GL.ClearStencil( 0 );
 			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit );
+
+
+			GL.DrawBuffers( justPositionBuffer.Length, justPositionBuffer );
+			GL.ClearColor( 0.0f, 0.0f, -9999999.0f, 0.0f );
+			GL.Clear( ClearBufferMask.ColorBufferBit );
+
+
+			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, HalfResFrameBuffer );
+			GL.DrawBuffers( aoPhaseDrawBuffers.Length, aoPhaseDrawBuffers );
+			GL.ClearColor( Color.Black );
+			GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit );
 		}
 
 		public void BindForGPhase()
@@ -124,6 +168,12 @@ namespace Kaiga.Core
 		{
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
 			GL.DrawBuffers( lightPhaseDrawBuffers.Length, lightPhaseDrawBuffers );
+		}
+
+		public void BindForAOPhase()
+		{
+			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, HalfResFrameBuffer );
+			GL.DrawBuffers( aoPhaseDrawBuffers.Length, aoPhaseDrawBuffers );
 		}
 
 		public void BindForNoDraw()
@@ -142,15 +192,31 @@ namespace Kaiga.Core
 			return textureByFrameBufferAttachment[ fba ];
 		}
 		
-		int InitTextureBuffer( FramebufferAttachment frameBufferAttachment )
+		int InitTextureBuffer( FramebufferAttachment frameBufferAttachment, PixelInternalFormat format = PixelInternalFormat.Rgba32f)
 		{
 			var texture = GL.GenTexture();
 			textureByFrameBufferAttachment.Add( frameBufferAttachment, texture );
 
 			GL.BindTexture( TextureTarget.TextureRectangle, texture );
-			GL.TexImage2D( TextureTarget.TextureRectangle, 0, PixelInternalFormat.Rgba32f, Width, Height, 0, PixelFormat.Rgba, PixelType.Float, new IntPtr(0) );
+			GL.TexImage2D( TextureTarget.TextureRectangle, 0, format, Width, Height, 0, PixelFormat.Rgba, PixelType.Float, new IntPtr(0) );
 			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest );
+			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge );
+			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge );
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, frameBufferAttachment, TextureTarget.TextureRectangle, texture, 0 );
+
+			return texture;
+		}
+
+		int InitHalfResTextureBuffer( FramebufferAttachment frameBufferAttachment, PixelInternalFormat format = PixelInternalFormat.R8)
+		{
+			var texture = GL.GenTexture();
+			textureByFrameBufferAttachment.Add( frameBufferAttachment, texture );
+
+			GL.BindTexture( TextureTarget.TextureRectangle, texture );
+			GL.TexImage2D( TextureTarget.TextureRectangle, 0, format, Width >> 1, Height >> 1, 0, PixelFormat.Rgba, PixelType.Float, new IntPtr(0) );
+			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear );
 			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge );
 			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge );
 			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, frameBufferAttachment, TextureTarget.TextureRectangle, texture, 0 );

@@ -74,6 +74,10 @@
     <Compile Include="src\Kaiga.ShaderStages\NullFragShader.cs" />
     <Compile Include="src\Kaiga.Components\SwarmMember.cs" />
     <Compile Include="src\Kaiga.Processes\SwarmProcess.cs" />
+    <Compile Include="src\Kaiga.Shaders\FFAOShader.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\FFAOFragShader.cs" />
+    <Compile Include="src\Kaiga.RenderPasses\AORenderPass.cs" />
+    <Compile Include="src\Kaiga.Textures\RandomDirectionTexture.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -5,6 +5,7 @@
 		G,
 		Light,
 		Material,
+		AO,
 		Post
 	}
 }

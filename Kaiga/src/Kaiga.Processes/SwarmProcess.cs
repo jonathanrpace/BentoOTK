@@ -56,7 +56,7 @@ namespace Kaiga.Processes
 				var swarmMember = node.swarmMember;
 
 				float x = (float)Math.Sin( ( elapsed + offset.X ) * swarmMember.Speed.X ) * swarmMember.Radius.X;
-				float y = swarmMember.Radius.Y < 0.25f ? -0.5f : 0.5f;//(float)Math.Sin( ( elapsed + offset.Y ) * swarmMember.Speed.Y ) * swarmMember.Radius.Y;
+				float y = ((float)Math.Sin( ( elapsed + offset.Y ) * swarmMember.Speed.Y ) + 1.0f )* swarmMember.Radius.Y;
 				float z = (float)Math.Sin( ( elapsed + offset.Z ) * swarmMember.Speed.Z ) * swarmMember.Radius.Z;
 
 				node.transform.Matrix = Matrix4.Identity * Matrix4.CreateTranslation( x, y, z );

@@ -1,0 +1,4 @@
+<ListOfTask>
+  <Task file="" description="Split light pass into direct and indirect. That way AO can just multiply over the top" />
+  <Task file="" description="Add util to shader/pass base classes to automatically register and create/dispose context resources (Use introspection?)" />
+</ListOfTask>

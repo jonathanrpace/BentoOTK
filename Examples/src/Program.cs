@@ -33,7 +33,7 @@ namespace Examples
 		public Program()
 			: base
 			(
-				1280, 720,
+				1920, 1080,
 				new GraphicsMode( 8, 0 ), "Bento", 0,
 				DisplayDevice.Default, 4, 5,
 				GraphicsContextFlags.ForwardCompatible | GraphicsContextFlags.Debug
@@ -53,7 +53,8 @@ namespace Examples
 			scene.AddProcess( renderer );
 			renderer.AddRenderPass( new TestRenderPass() );
 			renderer.AddRenderPass( new PointLightRenderPass() );
-			
+			renderer.AddRenderPass( new AORenderPass() );
+
 			const int numColumns = 10;
 			const int numRows = 10;
 			const float spacing = 0.2f;
@@ -89,6 +90,15 @@ namespace Examples
 				}
 			}
 
+			var floor = new Entity();
+			var floorGeom = new PlaneGeometry();
+			floorGeom.Width = numColumns * spacing;
+			floorGeom.Height = numRows * spacing;
+			floor.AddComponent( floorGeom );
+			floor.AddComponent( new Transform( Matrix4.Identity * Matrix4.CreateRotationX( (float)Math.PI * 0.5f )) );
+			floor.AddComponent( new StandardMaterial() );
+			scene.AddEntity( floor );
+
 			for ( int i = 0; i < 20; i++ )
 			{
 				CreateLight();
@@ -113,7 +123,7 @@ namespace Examples
 			var transform = new Transform();
 			entity.AddComponent( transform );
 
-			var radius = 0.01f + (float)rand.NextDouble() * 0.05f;
+			var radius = 0.01f + (float)rand.NextDouble() * 0.1f;
 			var color = new Vector3( (float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble() );
 
 			var pointLight = new PointLight();
@@ -132,7 +142,7 @@ namespace Examples
 			entity.AddComponent( material );
 
 			var swarmMember = new SwarmMember( 
-				                  	new Vector3( (float)rand.NextDouble() * 2.0f, (float)rand.NextDouble() * 0.5f, (float)rand.NextDouble() * 2.0f ),
+				                  	new Vector3( (float)rand.NextDouble() * 2.0f, (float)rand.NextDouble() * 2.0f, (float)rand.NextDouble() * 2.0f ),
 									new Vector3( (float)rand.NextDouble() * 0.5f, (float)rand.NextDouble() * 0.5f, (float)rand.NextDouble() * 0.5f ) 
 			                  );
 			entity.AddComponent( swarmMember );

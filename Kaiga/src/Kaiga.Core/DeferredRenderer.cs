@@ -57,6 +57,7 @@ namespace Kaiga.Core
 			AddRenderPhase( RenderPhase.G );
 			AddRenderPhase( RenderPhase.Light );
 			AddRenderPhase( RenderPhase.Material );
+			AddRenderPhase( RenderPhase.AO );
 			AddRenderPhase( RenderPhase.Post );
 
 			textureOutputShader = new TextureOutputShader();
@@ -201,6 +202,10 @@ namespace Kaiga.Core
 			RenderPassesInPhase( passesByPhase[ RenderPhase.G ] );
 			GL.DepthMask( false );		// Only geometry pass writes to depth buffer
 
+			// AO pass
+			renderTarget.BindForAOPhase();
+			RenderPassesInPhase( passesByPhase[ RenderPhase.AO ] );
+
 			// Light pass
 			renderTarget.BindForLightPhase();
 			GL.Enable( EnableCap.Blend );
@@ -210,7 +215,7 @@ namespace Kaiga.Core
 			GL.Disable( EnableCap.Blend );
 
 			// Switch draw target to back buffer
-			GL.DepthMask( true );		// Only geometry pass writes to depth buffer
+			GL.DepthMask( true );
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 			GL.DepthFunc( DepthFunction.Always );
 			textureOutputShader.Render( renderParams, renderTarget.OutputBuffer );
