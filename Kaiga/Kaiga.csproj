@@ -80,6 +80,9 @@
     <Compile Include="src\Kaiga.Shaders\BoxBlurShader.cs" />
     <Compile Include="src\Kaiga.Textures\RectangleTexture.cs" />
     <Compile Include="src\Kaiga.Core\AbstractValidatable.cs" />
+    <Compile Include="src\Kaiga.Core\AbstractRenderTarget.cs" />
+    <Compile Include="src\Kaiga.Textures\ITexture.cs" />
+    <Compile Include="src\Kaiga.Core\AORenderTarget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

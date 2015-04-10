@@ -7,6 +7,7 @@ namespace Kaiga.Core
 	public class RenderParams
 	{
 		public DeferredRenderTarget RenderTarget;
+		public AORenderTarget AORenderTarget;
 		public ILens CameraLens;
 		public Vector3 CameraPosition;
 		public Vector3 CameraForward;

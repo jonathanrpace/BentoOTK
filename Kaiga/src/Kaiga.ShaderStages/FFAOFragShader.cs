@@ -109,9 +109,10 @@ void main()
 	
 	vec3 randomDirection = normalize( randomSample.xyz );
 	
-	float cutoff = 0.03;
-	float radius = 0.08;
-	float depthRadius = cutoff + radius * 2.0f;
+	float depthCutoff = 0.03f;
+	float dotCutoff = 0.001f;
+	float radius = 0.08f;
+	float depthRadius = depthCutoff + radius * 2.0f;
 	
 	float radiusOverDepth = radius / position.z * position.z;
 	
@@ -124,10 +125,10 @@ void main()
 		// Flip direction of rays pointing towards surface
 		ray *= sign( dot( ray, normal.xyz ) );
 
+		float dotValue = dot( ray, normal.xyz );
+
 		vec4 hemiRay = vec4( position + ray, 1.0 );
 	
-		//hemiRay = vec4( position + normal * radiusOverDepth, 1.0 );
-
 		// Convert to screen-space UV coord
 		vec4 screenCoord = projectionMatrix * hemiRay;
 		screenCoord /= screenCoord.w;
@@ -138,11 +139,12 @@ void main()
 		
 		//float difference = ((-position.z) - (-occPositionSample.z));
 		float difference = occPositionSample.z - position.z;
-		occlusion += step(cutoff, difference) * (1.0 - smoothstep(cutoff, depthRadius, difference));
+		occlusion += step(dotCutoff, dotValue) * step(depthCutoff, difference) * (1.0 - smoothstep(depthCutoff, depthRadius, difference));
 	}
 	
 	occlusion /= NUM_SAMPLES;
 	occlusion *= 2.0f;
+	occlusion = min( occlusion, 1.0f );
 	occlusion = 1.0 - occlusion;
 	
 	out_ao = occlusion;

@@ -19,6 +19,7 @@ namespace Kaiga.Core
 		private Dictionary<RenderPhase, List<IRenderPass>> 	passesByPhase;
 		private Dictionary<Type, IRenderPass>				passesByType;
 		private DeferredRenderTarget						renderTarget;
+		private AORenderTarget								aoRenderTarget;
 
 		public Entity									Camera { get; private set; }
 		public IEnumerable<IRenderPass>					RenderPasses { get { return renderPasses.Skip( 0 ); } }
@@ -40,9 +41,9 @@ namespace Kaiga.Core
 			renderPasses = new List<IRenderPass>();
 			passesByPhase = new Dictionary<RenderPhase, List<IRenderPass>>();
 			passesByType = new Dictionary<Type, IRenderPass>();
-			renderTarget = new DeferredRenderTarget();
 
-			renderParams.RenderTarget = renderTarget;
+			renderTarget = renderParams.RenderTarget = new DeferredRenderTarget();
+			aoRenderTarget = renderParams.AORenderTarget = new AORenderTarget();
 
 			Camera = new Entity();
 			var lens = new PerspectiveLens();
@@ -156,6 +157,8 @@ namespace Kaiga.Core
 		public void RenderToBackBuffer( DeferredRenderTarget renderTarget )
 		{
 			renderTarget.SetSize( scene.GameWindow.Width, scene.GameWindow.Height );
+			aoRenderTarget.SetSize( scene.GameWindow.Width >> 1, scene.GameWindow.Height >> 1 );
+
 			GL.Viewport( 0, 0, scene.GameWindow.Width, scene.GameWindow.Height );
 
 			renderParams.CameraLens = Camera.GetComponentByType<ILens>();
@@ -182,7 +185,7 @@ namespace Kaiga.Core
 			GL.DepthMask( false );		// Only geometry pass writes to depth buffer
 
 			// AO pass
-			renderTarget.BindForAOPhase();
+			aoRenderTarget.BindForAOPhase();
 			RenderPassesInPhase( passesByPhase[ RenderPhase.AO ] );
 
 			// Light pass

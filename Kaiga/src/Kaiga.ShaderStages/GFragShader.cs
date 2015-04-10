@@ -34,8 +34,8 @@ namespace Kaiga.ShaderStages
 			uniform vec3 u_albedo;
 
 			// Outputs
-			layout( location = 0 ) out vec4 out_ViewNormal;
-			layout( location = 1 ) out vec4 out_ViewPosition;
+			layout( location = 0 ) out vec4 out_ViewPosition;
+			layout( location = 1 ) out vec4 out_ViewNormal;
 			layout( location = 2 ) out vec4 out_Albedo;
 			layout( location = 3 ) out vec4 out_Material;
 
@@ -54,4 +54,3 @@ namespace Kaiga.ShaderStages
 
 	}
 }
-

@@ -14,7 +14,7 @@ namespace Kaiga.ShaderStages
 			SetUniformTexture( 1, "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, TextureTarget.TextureRectangle );
 			SetUniformTexture( 2, "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture, TextureTarget.TextureRectangle );
 			SetUniformTexture( 3, "s_albedoBuffer", renderParams.RenderTarget.AlbedoBuffer.Texture, TextureTarget.TextureRectangle );
-			SetUniformTexture( 4, "s_aoBuffer", renderParams.RenderTarget.AOBuffer.Texture, TextureTarget.TextureRectangle );
+			SetUniformTexture( 4, "s_aoBuffer", renderParams.AORenderTarget.AOBuffer.Texture, TextureTarget.TextureRectangle );
 		}
 
 		public void BindPerLight( RenderParams renderParams, PointLight light )
@@ -44,6 +44,7 @@ uniform sampler2DRect s_materialBuffer;
 uniform sampler2DRect s_albedoBuffer;
 uniform sampler2DRect s_aoBuffer;
 
+// Scalars
 uniform float u_attenuationConstant;
 uniform float u_attenuationLinear;
 uniform float u_attenuationExp;
@@ -106,7 +107,7 @@ float LightingFuncGGX_REF( vec3 N, vec3 V, vec3 L, float roughness, float F0, fl
 	return dotNL * D * F * vis;
 }
 
-void main(void)
+void main()
 {
 	vec3 position = texture2DRect( s_positionBuffer, gl_FragCoord.xy ).xyz;
 	vec3 normal = texture2DRect( s_normalBuffer, gl_FragCoord.xy ).xyz;
@@ -132,8 +133,6 @@ void main(void)
 						u_attenuationExp * distance * distance;
 	attenuation = max( attenuation, 1.0f );
 	
-	//vec3 light = vec3( clamp( dot( lightDir, normal ), 0.0, 1.0 ) );
-
 	vec3 light = vec3( LightingFuncGGX_REF( normal, viewDir, lightDir, roughness, reflectivity, angularSize ) );
 	
 	light *= (ao + (1.0-angularSize));
@@ -145,7 +144,6 @@ void main(void)
 	light += emissive * albedo;
 
 	out_color = vec4( light, 1.0 );
-	//out_color = vec4( angularSize, angularSize, angularSize, 1.0f );
 }
 ";
 		}
