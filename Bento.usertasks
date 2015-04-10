@@ -1,4 +1,7 @@
 <ListOfTask>
   <Task file="" description="Split light pass into direct and indirect. That way AO can just multiply over the top" />
   <Task file="" description="Add util to shader/pass base classes to automatically register and create/dispose context resources (Use introspection?)" />
+  <Task file="" description="But there aren't 48 enumerators. Which is why glActiveTexture doesn't really take enumerators. The correct way to call glActiveTexture is as follows:&#xA;&#xA;glActiveTexture(GL_TEXTURE0 + i);" />
+  <Task file="" description="Dot product ao ray?" />
+  <Task file="" description="Shift, don't multiply ao with point light angular radius (think it should look more realistic)" />
 </ListOfTask>

@@ -26,19 +26,15 @@ namespace Kaiga.RenderPasses
 			shader = new GShader();
 		}
 
-		#region IGraphicsContextDependant implementation
-
-		public void CreateGraphicsContextResources()
+		public void Dispose()
 		{
-			shader.CreateGraphicsContextResources();
+			shader.Dispose();
+			if ( nodeList != null )
+			{
+				nodeList.Dispose();
+				nodeList = null;
+			}
 		}
-
-		public void DisposeGraphicsContextResources()
-		{
-			shader.DisposeGraphicsContextResources();
-		}
-
-		#endregion
 
 		public void OnAddedToScene( Scene scene )
 		{
@@ -47,8 +43,11 @@ namespace Kaiga.RenderPasses
 
 		public void OnRemovedFromScene( Ramen.Scene scene )
 		{
-			nodeList.Dispose();
-			nodeList = null;
+			if ( nodeList != null )
+			{
+				nodeList.Dispose();
+				nodeList = null;
+			}
 		}
 
 		public void Render( RenderParams renderParams )

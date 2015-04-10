@@ -16,24 +16,18 @@ namespace Kaiga.ShaderStages
 		{
 			randomTexture = new RandomDirectionTexture();
 		}
-
-		public override void CreateGraphicsContextResources()
+		
+		override public void Dispose()
 		{
-			base.CreateGraphicsContextResources();
-			randomTexture.CreateGraphicsContextResources();
+			base.Dispose();
+			randomTexture.Dispose();
 		}
 
-		public override void DisposeGraphicsContextResources()
+		override public void BindPerPass( RenderParams renderParams )
 		{
-			base.DisposeGraphicsContextResources();
-			randomTexture.DisposeGraphicsContextResources();
-		}
-
-		public override void BindPerPass( RenderParams renderParams )
-		{
-			SetUniformTexture( 0, "s_positionBuffer", renderParams.RenderTarget.GetTexture(FBAttachmentName.Position), 
+			SetUniformTexture( 0, "s_positionBuffer", renderParams.RenderTarget.PositionBuffer.Texture, 
 								TextureTarget.TextureRectangle );
-			SetUniformTexture( 1, "s_normalBuffer", renderParams.RenderTarget.GetTexture(FBAttachmentName.Normal), 
+			SetUniformTexture( 1, "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, 
 				TextureTarget.TextureRectangle );
 
 			SetUniformTexture( 2, "s_randomTexture", randomTexture.Texture, TextureTarget.Texture2D );

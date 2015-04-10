@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using System;
+using Kaiga.Core;
 
 namespace Kaiga.Geom
 {
@@ -11,10 +12,8 @@ namespace Kaiga.Geom
 		public const int Color = 3;
 	}
 
-	public abstract class Geometry : IGeometry
+	public abstract class Geometry : AbstractValidatable, IGeometry
 	{
-		protected bool invalid = true;
-
 		protected int vertexArrayBuffer;
 		protected int[] vertexBuffers;
 		protected int[] indexBuffers;
@@ -22,15 +21,8 @@ namespace Kaiga.Geom
 		public int NumVertices { get; protected set; }
 		public int NumTriangles { get; protected set; }
 		public int NumIndices { get; protected set; }
-		
-		#region IGLContextDependant implementation
 
-		public virtual void CreateGraphicsContextResources()
-		{
-			invalid = true;
-		}
-
-		public virtual void DisposeGraphicsContextResources()
+		override protected void onInvalidate()
 		{
 			if ( GL.IsVertexArray( vertexArrayBuffer ) )
 			{
@@ -38,18 +30,11 @@ namespace Kaiga.Geom
 				GL.DeleteBuffers( vertexBuffers.Length, vertexBuffers );
 				GL.DeleteBuffers( indexBuffers.Length, indexBuffers );
 			}
-			invalid = true;
 		}
-
-		#endregion
 		
 		public void Bind()
 		{
-			if ( invalid )
-			{
-				Validate();
-				invalid = false;
-			}
+			validate();
 
 			GL.BindVertexArray( vertexArrayBuffer );
 			GL.BindBuffer( BufferTarget.ElementArrayBuffer, indexBuffers[ 0 ] );
@@ -86,10 +71,6 @@ namespace Kaiga.Geom
 			);
 			GL.BindBuffer( BufferTarget.ElementArrayBuffer, 0 );
 		}
-
-
-	
-		protected abstract void Validate();
 	}
 }
 

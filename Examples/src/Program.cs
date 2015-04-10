@@ -9,7 +9,6 @@ using Kaiga.Processes;
 using Kaiga.Components;
 using Kaiga.Materials;
 using Kaiga.Lights;
-using System.Diagnostics;
 
 namespace Examples
 {
@@ -26,9 +25,6 @@ namespace Examples
 
 		private Scene scene;
 		Random rand;
-
-		//private Entity MainLight;
-		//private double elapsed = 0.0f;
 
 		public Program()
 			: base
@@ -104,15 +100,6 @@ namespace Examples
 				CreateLight();
 			}
 
-			//MainLight = CreateLight();
-			//MainLight.GetComponentByType<Transform>().TranslateBy( 0.0f, 0.5f, 0.0f );
-
-			//var light1 = CreateLight();
-			//light1.GetComponentByType<Transform>().TranslateBy( 0.0f, -0.25f, 0.5f );
-			//light1.GetComponentByType<PointLight>().Color = new Vector3( 0.0f, 0.6f, 1.0f );
-			//light1.GetComponentByType<PointLight>().Intensity = 0.5f;
-
-			scene.AddProcess( new GraphicsContextDependencyManager() );
 			scene.AddProcess( new OrbitCamera() );
 			scene.AddProcess( new SwarmProcess() );
 		}
@@ -152,20 +139,16 @@ namespace Examples
 			return entity;
 		}
 
-		protected override void OnUnload( System.EventArgs e )
+		protected override void OnClosing( System.ComponentModel.CancelEventArgs e )
 		{
-			scene.Clear();
+			scene.Dispose();
 			scene = null;
 
-			base.OnUnload(e);
+			base.OnClosing(e);
 		}
 
 		protected override void OnUpdateFrame(FrameEventArgs e)
 		{
-			//Matrix4 rotation = Matrix4.CreateRotationY((float)e.Time);
-			//Matrix4.Mult(ref rotation, ref modelviewMatrix, out modelviewMatrix);
-			//GL.UniformMatrix4(modelviewMatrixLocation, false, ref modelviewMatrix);
-
 			var keyboard = OpenTK.Input.Keyboard.GetState();
 			if (keyboard[OpenTK.Input.Key.Escape])
 				Exit();
@@ -173,20 +156,6 @@ namespace Examples
 
 		protected override void OnRenderFrame(FrameEventArgs e)
 		{
-			/*
-			elapsed += e.Time;
-			var radius = 0.01f + ((float)Math.Sin( elapsed )+1.0f) * 0.1f;
-			MainLight.GetComponentByType<PointLight>().Radius = radius;
-			MainLight.GetComponentByType<SphereGeometry>().Radius = radius;
-
-			const double speed = 0.01;
-			const float translateRadius = 1.0f;
-			var x = (float)Math.Sin( elapsed * 17 * speed ) * translateRadius;
-			var y = (float)Math.Cos( elapsed * 19 * speed ) * translateRadius;
-			var z = (float)Math.Sin( elapsed * 23 * speed ) * translateRadius * 0.25f;
-			
-			MainLight.GetComponentByType<Transform>().Matrix = Matrix4.Identity * Matrix4.CreateTranslation( x, y, z );
-			*/
 			scene.Update( 1 / RenderFrequency );
 		}
 	}

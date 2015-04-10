@@ -67,26 +67,34 @@ namespace Ramen
 
 		~Scene()
 		{
-			Clear();
 			Stop();
 			timer.Elapsed -= OnTimerElapsed;
 		}
 
-		public void Clear()
+		public void Dispose()
 		{
 			while ( entities.Count > 0 )
 			{
-				RemoveEntity( entities[ 0 ] );
+				var entity = entities[ 0 ];
+				RemoveEntity( entity );
+				entity.Dispose();
 			}
 
 			while ( resources.Count > 0 )
 			{
-				RemoveResource( resources[ 0 ] );
+				var resource = resources[ 0 ];
+				RemoveResource( resource );
+				if ( resource is IDisposable )
+				{
+					( resource as IDisposable ).Dispose();
+				}
 			}
 
 			while ( processes.Count > 0 )
 			{
-				RemoveProcess( processes[ 0 ] );
+				var process = processes[ 0 ];
+				RemoveProcess( process );
+				process.Dispose();
 			}
 		}
 

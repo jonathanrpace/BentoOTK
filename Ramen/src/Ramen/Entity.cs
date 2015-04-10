@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Ramen
 {
-	public class Entity : NamedObject
+	public class Entity : NamedObject, IDisposable
 	{
 		// Fields
 		private readonly List<Object> components;
@@ -29,6 +29,19 @@ namespace Ramen
 		{
 			components = new List<Object> ();
 			componentsByType = new Dictionary<Type, Object> ();
+		}
+
+		public void Dispose()
+		{
+			foreach ( var component in components )
+			{
+				if ( component is IDisposable )
+				{
+					( component as IDisposable ).Dispose();
+				}
+			}
+			components.Clear();
+			componentsByType.Clear();
 		}
 
 		public void AddComponent( Object component, int index = -1 )

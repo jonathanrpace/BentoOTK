@@ -14,7 +14,7 @@ namespace Kaiga.Geom
 			set
 			{
 				_width = value;
-				invalid = true;
+				invalidate();
 			}
 		}
 
@@ -25,7 +25,7 @@ namespace Kaiga.Geom
 			set
 			{
 				_height = value;
-				invalid = true;
+				invalidate();
 			}
 		}
 
@@ -36,7 +36,7 @@ namespace Kaiga.Geom
 			set
 			{
 				_numDivisionsX = value;
-				invalid = true;
+				invalidate();
 			}
 		}
 
@@ -47,15 +47,13 @@ namespace Kaiga.Geom
 			set
 			{
 				_numDivisionsY = value;
-				invalid = true;
+				invalidate();
 			}
 		}
 		
 
-		override public void CreateGraphicsContextResources()
+		override protected void onValidate()
 		{
-			base.CreateGraphicsContextResources();
-
 			vertexArrayBuffer = GL.GenVertexArray();
 			GL.BindVertexArray( vertexArrayBuffer );
 
@@ -83,10 +81,7 @@ namespace Kaiga.Geom
 
 			indexBuffers = new int[1];
 			GL.GenBuffers( indexBuffers.Length, indexBuffers );
-		}
 
-		protected override void Validate()
-		{
 			int numVerticesX = 2 + _numDivisionsX;
 			int numVerticesY = 2 + _numDivisionsY;
 			NumVertices = numVerticesX * numVerticesY;
@@ -152,10 +147,10 @@ namespace Kaiga.Geom
 			BufferVertexData( Attribute.Color, ref colors, sizeof(float) );
 			BufferIndexData( 0, ref indices );
 		}
-
+		
 		#region IMultiTypeObject implementation
 
-	 	static readonly Type[] types = { typeof(Geometry), typeof(PlaneGeometry), typeof(IGraphicsContextDependant) };
+	 	static readonly Type[] types = { typeof(Geometry), typeof(PlaneGeometry) };
 		public Type[] Types { get { return types; } }
 
 		#endregion

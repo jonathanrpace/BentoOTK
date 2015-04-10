@@ -19,6 +19,11 @@ namespace Kaiga.Processes
 		Random rand;
 		double elapsed;
 
+		public void Dispose()
+		{
+			nodeList.Dispose();
+		}
+
 		#region IProcess implementation
 
 		public void OnAddedToScene( Scene scene )
@@ -40,10 +45,7 @@ namespace Kaiga.Processes
 		public void OnRemovedFromScene( Scene scene )
 		{
 			nodeList.Dispose();
-			nodeList = null;
 			offsetTable.Clear();
-			offsetTable = null;
-			rand = null;
 		}
 
 		public void Update( double dt )

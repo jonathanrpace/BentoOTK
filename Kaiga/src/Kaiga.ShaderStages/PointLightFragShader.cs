@@ -10,11 +10,11 @@ namespace Kaiga.ShaderStages
 	{
 		override public void BindPerPass( RenderParams renderParams )
 		{
-			SetUniformTexture( 0, "s_positionBuffer", renderParams.RenderTarget.GetTexture( FBAttachmentName.Position ), TextureTarget.TextureRectangle );
-			SetUniformTexture( 1, "s_normalBuffer", renderParams.RenderTarget.GetTexture( FBAttachmentName.Normal ), TextureTarget.TextureRectangle );
-			SetUniformTexture( 2, "s_materialBuffer", renderParams.RenderTarget.GetTexture( FBAttachmentName.Material ), TextureTarget.TextureRectangle );
-			SetUniformTexture( 3, "s_albedoBuffer", renderParams.RenderTarget.GetTexture( FBAttachmentName.Albedo ), TextureTarget.TextureRectangle );
-			SetUniformTexture( 4, "s_aoBuffer", renderParams.RenderTarget.GetTexture( FBAttachmentName.AO ), TextureTarget.TextureRectangle );
+			SetUniformTexture( 0, "s_positionBuffer", renderParams.RenderTarget.PositionBuffer.Texture, TextureTarget.TextureRectangle );
+			SetUniformTexture( 1, "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, TextureTarget.TextureRectangle );
+			SetUniformTexture( 2, "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture, TextureTarget.TextureRectangle );
+			SetUniformTexture( 3, "s_albedoBuffer", renderParams.RenderTarget.AlbedoBuffer.Texture, TextureTarget.TextureRectangle );
+			SetUniformTexture( 4, "s_aoBuffer", renderParams.RenderTarget.AOBuffer.Texture, TextureTarget.TextureRectangle );
 		}
 
 		public void BindPerLight( RenderParams renderParams, PointLight light )

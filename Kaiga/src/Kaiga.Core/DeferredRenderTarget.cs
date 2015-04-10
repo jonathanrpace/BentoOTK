@@ -3,27 +3,28 @@ using OpenTK.Graphics.OpenGL4;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Drawing;
+using Kaiga.Textures;
 
 namespace Kaiga.Core
 {
-	public class DeferredRenderTarget : IRenderTarget
+	public class DeferredRenderTarget : AbstractValidatable, IRenderTarget
 	{
 		public int Width { get; private set; }
 		public int Height { get; private set; }
 
 		public int FrameBuffer { get; private set; }
 		public int DepthBuffer { get; private set; }
-		public int NormalBuffer { get; private set; }
-		public int PositionBuffer { get; private set; }
-		public int AlbedoBuffer { get; private set; }
-		public int MaterialBuffer { get; private set; }
-		public int OutputBuffer { get; private set; }
-		public int PostBuffer { get; private set; }
+		public RectangleTexture NormalBuffer { get; private set; }
+		public RectangleTexture PositionBuffer { get; private set; }
+		public RectangleTexture AlbedoBuffer { get; private set; }
+		public RectangleTexture MaterialBuffer { get; private set; }
+		public RectangleTexture OutputBuffer { get; private set; }
+		public RectangleTexture PostBuffer { get; private set; }
 
 		public int HalfResFrameBuffer { get; private set; }
-		public int AOBuffer { get; private set; }
+		public RectangleTexture AOBuffer { get; private set; }
 
-		Dictionary<FramebufferAttachment,int> textureByFrameBufferAttachment;
+		Dictionary<FramebufferAttachment,RectangleTexture> textureByFrameBufferAttachment;
 
 		DrawBuffersEnum[] gPhaseDrawBuffers = { 
 			DrawBufferName.Normal, 
@@ -52,21 +53,33 @@ namespace Kaiga.Core
 		DrawBuffersEnum[] justPositionBuffer = { 
 			DrawBufferName.Position
 		};
-		
-		public void CreateGraphicsContextResources()
+
+		public DeferredRenderTarget()
 		{
-			textureByFrameBufferAttachment = new Dictionary<FramebufferAttachment, int>();
+			NormalBuffer = new RectangleTexture( PixelInternalFormat.Rgba32f );
+			PositionBuffer = new RectangleTexture( PixelInternalFormat.Rgba32f );
+			AlbedoBuffer = new RectangleTexture( PixelInternalFormat.Rgba32f );
+			MaterialBuffer = new RectangleTexture( PixelInternalFormat.Rgba32f );
+			OutputBuffer = new RectangleTexture( PixelInternalFormat.Rgba32f );
+			PostBuffer = new RectangleTexture( PixelInternalFormat.Rgba32f );
+
+			AOBuffer = new RectangleTexture( PixelInternalFormat.R8 );
+		}
+		
+		override protected void onValidate()
+		{
+			textureByFrameBufferAttachment = new Dictionary<FramebufferAttachment, RectangleTexture>();
 
 			FrameBuffer = GL.GenFramebuffer();
 			GL.BindFramebuffer( FramebufferTarget.Framebuffer, FrameBuffer );
 
-			NormalBuffer = InitTextureBuffer( FBAttachmentName.Normal );
-			PositionBuffer = InitTextureBuffer( FBAttachmentName.Position );
-			AlbedoBuffer = InitTextureBuffer( FBAttachmentName.Albedo );
-			MaterialBuffer = InitTextureBuffer( FBAttachmentName.Material );
-			OutputBuffer = InitTextureBuffer( FBAttachmentName.Output );
-			PostBuffer = InitTextureBuffer( FBAttachmentName.Post );
 
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FBAttachmentName.Normal, TextureTarget.TextureRectangle, NormalBuffer.Texture, 0 );
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FBAttachmentName.Position, TextureTarget.TextureRectangle, PositionBuffer.Texture, 0 );
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FBAttachmentName.Albedo, TextureTarget.TextureRectangle, AlbedoBuffer.Texture, 0 );
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FBAttachmentName.Material, TextureTarget.TextureRectangle, MaterialBuffer.Texture, 0 );
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FBAttachmentName.Output, TextureTarget.TextureRectangle, OutputBuffer.Texture, 0 );
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FBAttachmentName.Post, TextureTarget.TextureRectangle, PostBuffer.Texture, 0 );
 
 			// Depth -> Depth
 			DepthBuffer = GL.GenRenderbuffer();
@@ -74,6 +87,7 @@ namespace Kaiga.Core
 			GL.RenderbufferStorage( RenderbufferTarget.Renderbuffer, RenderbufferStorage.Depth24Stencil8, Width, Height );
 			GL.FramebufferRenderbuffer( FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, DepthBuffer );
 
+			// Check status of frame buffer
 			{
 				var status = GL.CheckFramebufferStatus( FramebufferTarget.Framebuffer );
 				if ( status != FramebufferErrorCode.FramebufferComplete )
@@ -81,14 +95,14 @@ namespace Kaiga.Core
 					Debug.WriteLine( status );
 				}
 			}
-
-
-
+			
 			// AO FrameBuffer
 			HalfResFrameBuffer = GL.GenFramebuffer();
 			GL.BindFramebuffer( FramebufferTarget.Framebuffer, HalfResFrameBuffer );
 
-			AOBuffer = InitHalfResTextureBuffer( FBAttachmentName.AO );
+			GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, FBAttachmentName.AO, TextureTarget.TextureRectangle, AOBuffer.Texture, 0 );
+
+			// Check status of frame buffer
 			{
 				var status = GL.CheckFramebufferStatus( FramebufferTarget.Framebuffer );
 				if ( status != FramebufferErrorCode.FramebufferComplete )
@@ -100,26 +114,14 @@ namespace Kaiga.Core
 			GL.BindFramebuffer( FramebufferTarget.Framebuffer, 0 );
 		}
 
-		public void DisposeGraphicsContextResources()
+		override protected void onInvalidate()
 		{
 			// Dispose existing frameBuffer
 			if ( GL.IsFramebuffer( FrameBuffer ) )
 			{
 				GL.DeleteFramebuffer( FrameBuffer );
-
 				GL.DeleteRenderbuffer( DepthBuffer );
-
-				GL.DeleteTexture( NormalBuffer );
-				GL.DeleteTexture( PositionBuffer );
-				GL.DeleteTexture( AlbedoBuffer );
-				GL.DeleteTexture( MaterialBuffer );
-				GL.DeleteTexture( OutputBuffer );
-				GL.DeleteTexture( PostBuffer );
-
-
 				GL.DeleteFramebuffer( HalfResFrameBuffer );
-
-				GL.DeleteTexture( AOBuffer );
 			}
 		}
 
@@ -133,12 +135,22 @@ namespace Kaiga.Core
 			Width = width;
 			Height = height;
 
-			DisposeGraphicsContextResources();
-			CreateGraphicsContextResources();
+			NormalBuffer.SetSize( Width, Height );
+			PositionBuffer.SetSize( Width, Height );
+			AlbedoBuffer.SetSize( Width, Height );
+			MaterialBuffer.SetSize( Width, Height );
+			OutputBuffer.SetSize( Width, Height );
+			PostBuffer.SetSize( Width, Height );
+
+			AOBuffer.SetSize( Width >> 1, Height >> 1 );
+
+			invalidate();
 		}
 
 		public void Clear()
 		{
+			validate();
+
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
 			GL.DrawBuffers( allDrawBuffers.Length, allDrawBuffers );
 			GL.ClearColor( Color.Black );
@@ -160,38 +172,51 @@ namespace Kaiga.Core
 
 		public void BindForGPhase()
 		{
+			validate();
+
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
 			GL.DrawBuffers( gPhaseDrawBuffers.Length, gPhaseDrawBuffers );
 		}
 
 		public void BindForLightPhase()
 		{
+			validate();
+
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
 			GL.DrawBuffers( lightPhaseDrawBuffers.Length, lightPhaseDrawBuffers );
 		}
 
 		public void BindForAOPhase()
 		{
+			validate();
+
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, HalfResFrameBuffer );
 			GL.DrawBuffers( aoPhaseDrawBuffers.Length, aoPhaseDrawBuffers );
 		}
 
 		public void BindForNoDraw()
 		{
+			validate();
+
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
 			GL.DrawBuffer( DrawBufferMode.None );
 		}
 		
 		public void Unbind()
 		{
+			validate();
+
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 		}
-
+		/*
 		public int GetTexture( FramebufferAttachment fba )
 		{
-			return textureByFrameBufferAttachment[ fba ];
+			validate();
+
+			return textureByFrameBufferAttachment[ fba ].Texture;
 		}
-		
+		*/
+		/*
 		int InitTextureBuffer( FramebufferAttachment frameBufferAttachment, PixelInternalFormat format = PixelInternalFormat.Rgba32f)
 		{
 			var texture = GL.GenTexture();
@@ -223,6 +248,7 @@ namespace Kaiga.Core
 
 			return texture;
 		}
+		*/
 	}
 }
 

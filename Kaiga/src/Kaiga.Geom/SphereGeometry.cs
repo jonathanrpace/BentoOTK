@@ -3,7 +3,6 @@ using Ramen;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK;
 using Kaiga.Util;
-using Kaiga.Core;
 
 namespace Kaiga.Geom
 {
@@ -16,7 +15,7 @@ namespace Kaiga.Geom
 			set
 			{
 				_radius = value;
-				invalid = true;
+				invalidate();
 			}
 		}
 
@@ -27,19 +26,12 @@ namespace Kaiga.Geom
 			set
 			{
 				_subDivisions = value;
-				invalid = true;
+				invalidate();
 			}
 		}
 			
-		public SphereGeometry()
+		override protected void onValidate()
 		{
-
-		}
-
-		override public void CreateGraphicsContextResources()
-		{
-			base.CreateGraphicsContextResources();
-
 			vertexArrayBuffer = GL.GenVertexArray();
 			GL.BindVertexArray( vertexArrayBuffer );
 
@@ -67,11 +59,8 @@ namespace Kaiga.Geom
 
 			indexBuffers = new int[1];
 			GL.GenBuffers( indexBuffers.Length, indexBuffers );
-		}
 
 
-		protected override void Validate()
-		{
 			int subs = _subDivisions + 2;
 
 			int numVerticesPerPlane = subs*subs;
@@ -158,7 +147,7 @@ namespace Kaiga.Geom
 
 
 			//GeometryUtil.generateTangents(this);
-			
+
 			BufferVertexData( Attribute.Position, ref positions, sizeof(float) );
 			BufferVertexData( Attribute.Normal, ref normals, sizeof(float) );
 			BufferVertexData( Attribute.Uv, ref uvs, sizeof(float) );
@@ -179,7 +168,7 @@ namespace Kaiga.Geom
 
 		#region IMultiTypeObject implementation
 
-		static readonly Type[] types = { typeof(Geometry), typeof(SphereGeometry), typeof(IGraphicsContextDependant) };
+		static readonly Type[] types = { typeof(Geometry), typeof(SphereGeometry) };
 		public Type[] Types { get { return types; } }
 
 		#endregion

@@ -5,7 +5,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Kaiga.Shaders
 {
-	abstract public class AbstractShader : IGraphicsContextDependant
+	abstract public class AbstractShader : IDisposable
 	{
 		protected readonly AbstractShaderStage vertexShader;
 		protected readonly AbstractShaderStage fragmentShader;
@@ -16,37 +16,30 @@ namespace Kaiga.Shaders
 		{
 			this.vertexShader = vertexShader;
 			this.fragmentShader = fragmentShader;
-		}
 
-		#region IGraphicsContextDependant implementation
-
-		public virtual void CreateGraphicsContextResources()
-		{
 			pipeline = GL.GenProgramPipeline();
 
 			if ( vertexShader != null )
 			{
-				vertexShader.CreateGraphicsContextResources();
 				GL.UseProgramStages( pipeline, ProgramStageMask.VertexShaderBit, vertexShader.ShaderProgram );
 			}
 			if ( fragmentShader != null )
 			{
-				fragmentShader.CreateGraphicsContextResources();
 				GL.UseProgramStages( pipeline, ProgramStageMask.FragmentShaderBit, fragmentShader.ShaderProgram );
 			}
-			
+
 			GL.BindProgramPipeline( 0 );
 		}
 
-		public virtual void DisposeGraphicsContextResources()
+		public virtual void Dispose()
 		{
 			if ( vertexShader != null )
 			{
-				vertexShader.DisposeGraphicsContextResources();
+				vertexShader.Dispose();
 			}
 			if ( fragmentShader != null )
 			{
-				fragmentShader.DisposeGraphicsContextResources();
+				fragmentShader.Dispose();
 			}
 
 			if ( GL.IsProgramPipeline( pipeline ) )
@@ -54,8 +47,6 @@ namespace Kaiga.Shaders
 				GL.DeleteProgramPipeline( pipeline );
 			}
 		}
-
-		#endregion
 
 		public void BindPerPass( RenderParams renderParams )
 		{

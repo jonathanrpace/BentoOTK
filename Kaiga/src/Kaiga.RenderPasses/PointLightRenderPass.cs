@@ -32,6 +32,14 @@ namespace Kaiga.RenderPasses
 			geom.Radius = 1.0f;
 		}
 
+		public void Dispose()
+		{
+			nodeList.Dispose();
+			shader.Dispose();
+			stencilShader.Dispose();
+			geom.Dispose();
+		}
+
 		#region IRenderPass implementation
 
 		public void OnAddedToScene( Ramen.Scene scene )
@@ -42,41 +50,7 @@ namespace Kaiga.RenderPasses
 		public void OnRemovedFromScene( Ramen.Scene scene )
 		{
 			nodeList.Dispose();
-			nodeList = null;
 		}
-
-		/*
-void DSStencilPass(unsigned int PointLightIndex)
-{
-    m_nullTech.Enable();
-
-    // Disable color/depth write and enable stencil
-    m_gbuffer.BindForStencilPass();
-    glEnable(GL_DEPTH_TEST);
-
-    glDisable(GL_CULL_FACE);
-
-    glClear(GL_STENCIL_BUFFER_BIT);
-
-    // We need the stencil test to be enabled but we want it
-    // to succeed always. Only the depth test matters.
-    glStencilFunc(GL_ALWAYS, 0, 0);
-
-    glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
-    glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-
-    Pipeline p;
-    p.WorldPos(m_pointLight[PointLightIndex].Position);
-    float BBoxScale = CalcPointLightBSphere(m_pointLight[PointLightIndex].Color, 
-        m_pointLight[PointLightIndex].DiffuseIntensity);
-    p.Scale(BBoxScale, BBoxScale, BBoxScale);	
-    p.SetCamera(m_pGameCamera->GetPos(), m_pGameCamera->GetTarget(), m_pGameCamera->GetUp());
-    p.SetPerspectiveProj(m_persProjInfo);
-
-    m_nullTech.SetWVP(p.GetWVPTrans());
-    m_bsphere.Render(); 
-}
-*/
 
 		public void Render( Kaiga.Core.RenderParams renderParams )
 		{
@@ -94,14 +68,7 @@ void DSStencilPass(unsigned int PointLightIndex)
 			GL.StencilFunc( StencilFunction.Always, 0, 0 );
 			GL.StencilOpSeparate( StencilFace.Back, StencilOp.Keep, StencilOp.IncrWrap, StencilOp.Keep );
 			GL.StencilOpSeparate( StencilFace.Front, StencilOp.Keep, StencilOp.DecrWrap, StencilOp.Keep );
-			/*
-			Need to reorder and Interleaved stencil with lighting
-			Light0-Stencil
-			Light0-Shader
-			Light1-Stencil
-			Light1-Shader
-			...
-				*/
+
 			( (DeferredRenderTarget)renderParams.RenderTarget ).BindForNoDraw();
 			foreach ( Node node in nodeList.Nodes )
 			{
@@ -159,25 +126,7 @@ void DSStencilPass(unsigned int PointLightIndex)
 		}
 
 		#endregion
-
-		#region IGraphicsContextDependant implementation
-
-		public void CreateGraphicsContextResources()
-		{
-			shader.CreateGraphicsContextResources();
-			stencilShader.CreateGraphicsContextResources();
-			geom.CreateGraphicsContextResources();
-		}
-
-		public void DisposeGraphicsContextResources()
-		{
-			shader.DisposeGraphicsContextResources();
-			stencilShader.DisposeGraphicsContextResources();
-			geom.DisposeGraphicsContextResources();
-		}
-
-		#endregion
-
+		
 		static float CalcPointLightRadius(PointLight light)
 		{
 			float maxChannel = Math.Max( Math.Max( light.Color.X, light.Color.Y ), light.Color.Z ) * light.Intensity;

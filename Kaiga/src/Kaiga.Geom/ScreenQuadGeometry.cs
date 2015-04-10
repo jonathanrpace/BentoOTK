@@ -5,15 +5,8 @@ namespace Kaiga.Geom
 {
 	public class ScreenQuadGeometry : Geometry
 	{
-		public ScreenQuadGeometry()
+		override protected void onValidate()
 		{
-
-		}
-
-		override public void CreateGraphicsContextResources()
-		{
-			base.CreateGraphicsContextResources();
-
 			vertexArrayBuffer = GL.GenVertexArray();
 			GL.BindVertexArray( vertexArrayBuffer );
 
@@ -33,10 +26,7 @@ namespace Kaiga.Geom
 
 			indexBuffers = new int[1];
 			GL.GenBuffers( indexBuffers.Length, indexBuffers );
-		}
 
-		protected override void Validate()
-		{
 			NumVertices = 4;
 			NumIndices = 6;
 

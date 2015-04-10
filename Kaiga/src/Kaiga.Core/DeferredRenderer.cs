@@ -7,13 +7,11 @@ using System.Diagnostics;
 using OpenTK.Graphics.OpenGL4;
 using Kaiga.Components;
 using OpenTK;
-using OpenTK.Graphics;
-using System.Security.AccessControl;
 using Kaiga.Shaders;
 
 namespace Kaiga.Core
 {
-	public class DeferredRenderer : NamedObject, IRenderer, IGraphicsContextDependant, IMultiTypeObject
+	public class DeferredRenderer : NamedObject, IRenderer, IDisposable, IMultiTypeObject
 	{
 		private Scene										scene;
 		private RenderParams 								renderParams;
@@ -28,8 +26,6 @@ namespace Kaiga.Core
 
 		public event RenderPassDelegate OnRenderPassAdded;
 		public event RenderPassDelegate OnRenderPassRemoved;
-
-		bool graphicsContextAvailable = false;
 
 		TextureOutputShader textureOutputShader;
 		
@@ -61,38 +57,25 @@ namespace Kaiga.Core
 			AddRenderPhase( RenderPhase.Post );
 
 			textureOutputShader = new TextureOutputShader();
-		}
-
-		#region IGLContextDependant implementation
-
-		public void CreateGraphicsContextResources()
-		{
-			graphicsContextAvailable = true;
-			renderTarget.CreateGraphicsContextResources();
-			textureOutputShader.CreateGraphicsContextResources();
-
-			foreach ( var renderPass in renderPasses )
-			{
-				renderPass.CreateGraphicsContextResources();
-			}
 
 			GL.Enable( EnableCap.FramebufferSrgb );
 		}
 
-		public void DisposeGraphicsContextResources()
+		public void Dispose()
 		{
-			graphicsContextAvailable = false;
-			renderTarget.DisposeGraphicsContextResources();
-			textureOutputShader.DisposeGraphicsContextResources();
-
 			foreach ( var renderPass in renderPasses )
 			{
-				renderPass.DisposeGraphicsContextResources();
+				renderPass.Dispose();
 			}
+
+			renderPasses.Clear();
+			passesByPhase.Clear();
+			passesByType.Clear();
+
+			renderTarget.Dispose();
+			textureOutputShader.Dispose();
 		}
-
-		#endregion
-
+		
 		public void OnAddedToScene( Scene scene )
 		{
 			this.scene = scene;
@@ -172,10 +155,6 @@ namespace Kaiga.Core
 
 		public void RenderToBackBuffer( DeferredRenderTarget renderTarget )
 		{
-			if (!graphicsContextAvailable )
-			{
-				return;
-			}
 			renderTarget.SetSize( scene.GameWindow.Width, scene.GameWindow.Height );
 			GL.Viewport( 0, 0, scene.GameWindow.Width, scene.GameWindow.Height );
 
@@ -218,7 +197,7 @@ namespace Kaiga.Core
 			GL.DepthMask( true );
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 			GL.DepthFunc( DepthFunction.Always );
-			textureOutputShader.Render( renderParams, renderTarget.OutputBuffer );
+			textureOutputShader.Render( renderParams, renderTarget.OutputBuffer.Texture );
 			GL.DepthFunc( DepthFunction.Less );
 
 			scene.GameWindow.SwapBuffers();

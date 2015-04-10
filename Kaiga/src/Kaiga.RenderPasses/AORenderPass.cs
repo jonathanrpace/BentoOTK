@@ -14,6 +14,11 @@ namespace Kaiga.RenderPasses
 			shader = new FFAOShader();
 		}
 
+		public void Dispose()
+		{
+			shader.Dispose();
+		}
+
 		#region IRenderPass implementation
 
 		public void OnAddedToScene( Scene scene )
@@ -45,20 +50,6 @@ namespace Kaiga.RenderPasses
 			{
 				return true;
 			}
-		}
-
-		#endregion
-
-		#region IGraphicsContextDependant implementation
-
-		public void CreateGraphicsContextResources()
-		{
-			shader.CreateGraphicsContextResources();
-		}
-
-		public void DisposeGraphicsContextResources()
-		{
-			shader.DisposeGraphicsContextResources();
 		}
 
 		#endregion

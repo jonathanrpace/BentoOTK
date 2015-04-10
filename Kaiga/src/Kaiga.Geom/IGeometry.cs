@@ -3,7 +3,7 @@ using Kaiga.Core;
 
 namespace Kaiga.Geom
 {
-	public interface IGeometry : IGraphicsContextDependant
+	public interface IGeometry : IDisposable
 	{
 
 	}

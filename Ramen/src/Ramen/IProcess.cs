@@ -2,7 +2,7 @@
 
 namespace Ramen
 {
-	public interface IProcess
+	public interface IProcess : IDisposable
 	{
 		void OnAddedToScene( Scene scene );
 		void OnRemovedFromScene( Scene scene );

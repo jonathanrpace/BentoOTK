@@ -6,9 +6,9 @@ using OpenTK;
 
 namespace Kaiga.ShaderStages
 {
-	abstract public class AbstractShaderStage : IGraphicsContextDependant
+	abstract public class AbstractShaderStage : AbstractValidatable
 	{
-		static TextureUnit[] indexToTextureUnit = 
+		static readonly TextureUnit[] indexToTextureUnit = 
 		{ 
 			TextureUnit.Texture0, 
 			TextureUnit.Texture1,
@@ -23,18 +23,21 @@ namespace Kaiga.ShaderStages
 		};
 
 		protected int shaderProgram;
-
 		public int ShaderProgram
 		{
 			get
 			{
+				validate();
 				return shaderProgram;
 			}
 		}
 
-		#region IGraphicsContextDependant implementation
+		protected AbstractShaderStage()
+		{
+			
+		}
 
-		public virtual void CreateGraphicsContextResources()
+		protected override void onValidate()
 		{
 			var shaderSource = new string[1];
 			shaderSource[ 0 ] = GetShaderSource();
@@ -49,16 +52,14 @@ namespace Kaiga.ShaderStages
 			Debug.Write( log );
 		}
 
-		public virtual void DisposeGraphicsContextResources()
+		protected override void onInvalidate()
 		{
 			if ( GL.IsProgram( shaderProgram ) )
 			{
 				GL.DeleteProgram( shaderProgram );
 			}
 		}
-
-		#endregion
-
+		
 		public virtual void BindPerPass( RenderParams renderParams )
 		{
 
@@ -68,6 +69,11 @@ namespace Kaiga.ShaderStages
 		{
 
 		}
+
+		protected abstract string GetShaderSource();
+		protected abstract ShaderType GetShaderType();
+
+		#region Util
 
 		protected void SetUniformMatrix4( string name, ref Matrix4 matrix, bool transposed = false )
 		{
@@ -117,9 +123,8 @@ namespace Kaiga.ShaderStages
 			GL.ActiveTexture( indexToTextureUnit[index] );
 			GL.BindTexture( textureTarget, texture );
 		}
-		
-		protected abstract string GetShaderSource();
-		protected abstract ShaderType GetShaderType();
+
+		#endregion
 	}
 }
 

@@ -59,10 +59,9 @@ namespace Ramen
 			scene.ComponentAddedToEntity -= OnComponentAddedToEntity;
 			scene.ComponentRemovedFromEntity -= OnComponentRemovedFromEntity;
 
-			foreach ( Entity entity in nodesByEntity.Keys )
-			{
-				RemoveIfMatch( entity );
-			}
+			nodesByEntity.Clear();
+			componentNamesByType.Clear();
+			nodes.Clear();
 		}
 
 		private void AddIfMatch( Entity entity )
@@ -94,10 +93,10 @@ namespace Ramen
 			}
 		}
 
-		private void RemoveIfMatch( Entity entity )
+		private bool RemoveIfMatch( Entity entity )
 		{
 			if ( nodesByEntity.ContainsKey( entity ) == false )
-				return;
+				return false;
 
 			foreach ( Type componentType in componentNamesByType.Keys )
 			{
@@ -112,9 +111,11 @@ namespace Ramen
 					{
 						NodeRemoved( node );
 					}
-					return;
+					return true;
 				}
 			}
+
+			return false;
 		}
 
 		private void OnEntityAdded( Entity entity )

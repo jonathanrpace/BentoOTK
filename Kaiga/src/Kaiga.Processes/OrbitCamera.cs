@@ -49,6 +49,11 @@ namespace Kaiga.Processes
 			RotationSpeed = new Vector2( 3.0f, 3.0f );
 		}
 
+		public void Dispose()
+		{
+			
+		}
+
 		public void OnAddedToScene( Scene scene )
 		{
 			this.scene = scene;

@@ -4,14 +4,12 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Kaiga.Textures
 {
-	public class RandomDirectionTexture : IGraphicsContextDependant
+	public class RandomDirectionTexture : AbstractValidatable
 	{
 		int texture;
 		int width = 256;
 		int height = 256;
 		int seed = 0;
-		bool isInvalid = false;
-		bool hasContext = false;
 
 		public int Texture
 		{
@@ -31,7 +29,7 @@ namespace Kaiga.Textures
 			set
 			{
 				width = value;
-				isInvalid = true;
+				invalidate();
 			}
 		}
 
@@ -44,7 +42,7 @@ namespace Kaiga.Textures
 			set
 			{
 				height = value;
-				isInvalid = true;
+				invalidate();
 			}
 		}
 
@@ -57,24 +55,22 @@ namespace Kaiga.Textures
 			set
 			{
 				seed = value;
-				isInvalid = true;
+				invalidate();
+			}
+		}
+			
+		override protected void onInvalidate()
+		{
+			if ( GL.IsTexture( texture ) )
+			{
+				GL.DeleteTexture( texture );
 			}
 		}
 
-		public RandomDirectionTexture()
+		override protected void onValidate()
 		{
-			
-		}
-
-		#region IGraphicsContextDependant implementation
-
-		public void CreateGraphicsContextResources()
-		{
-			hasContext = true;
-
 			texture = GL.GenTexture();
 			GL.BindTexture( TextureTarget.Texture2D, texture );
-			GL.ActiveTexture( TextureUnit.Texture0 );
 			GL.TexStorage2D( TextureTarget2d.Texture2D, 1, SizedInternalFormat.Rgba8, width, height );
 			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest );
@@ -90,32 +86,6 @@ namespace Kaiga.Textures
 			}
 
 			GL.TexSubImage2D( TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.Rgb, PixelType.Float, data );
-		}
-
-		public void DisposeGraphicsContextResources()
-		{
-			if ( GL.IsTexture( texture ) )
-			{
-				GL.DeleteTexture( texture );
-			}
-
-			hasContext = false;
-		}
-
-		#endregion
-
-		private void validate()
-		{
-			if ( !isInvalid )
-				return;
-
-			if ( hasContext )
-			{
-				DisposeGraphicsContextResources();
-				CreateGraphicsContextResources();
-			}
-
-			isInvalid = false;
 		}
 	}
 }

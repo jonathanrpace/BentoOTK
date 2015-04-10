@@ -19,22 +19,12 @@ namespace Kaiga.Shaders
 			screenQuadGeom = new ScreenQuadGeometry();
 		}
 
-		#region IGraphicsContextDependant implementation
-
-		override public void CreateGraphicsContextResources()
+		override public void Dispose()
 		{
-			base.CreateGraphicsContextResources();
-			screenQuadGeom.CreateGraphicsContextResources();
+			base.Dispose();
+			screenQuadGeom.Dispose();
 		}
-
-		override public void DisposeGraphicsContextResources()
-		{
-			base.DisposeGraphicsContextResources();
-			screenQuadGeom.DisposeGraphicsContextResources();
-		}
-
-		#endregion
-
+		
 		public void Render( RenderParams renderParams, int texture )
 		{
 			BindPerPass( renderParams );

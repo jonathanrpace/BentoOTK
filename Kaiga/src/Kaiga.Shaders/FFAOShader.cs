@@ -12,7 +12,8 @@ namespace Kaiga.Shaders
 		readonly new FFAOFragShader fragmentShader;
 		readonly ScreenQuadGeometry screenQuadGeom;
 
-		public FFAOShader() : base( new ScreenQuadVertexShader(), new FFAOFragShader() )
+		public FFAOShader() : 
+		base( new ScreenQuadVertexShader(), new FFAOFragShader() )
 		{
 			vertexShader = (ScreenQuadVertexShader)base.vertexShader;
 			fragmentShader = (FFAOFragShader)base.fragmentShader;
@@ -20,22 +21,12 @@ namespace Kaiga.Shaders
 			screenQuadGeom = new ScreenQuadGeometry();
 		}
 
-		#region IGraphicsContextDependant implementation
-
-		override public void CreateGraphicsContextResources()
+		override public void Dispose()
 		{
-			base.CreateGraphicsContextResources();
-			screenQuadGeom.CreateGraphicsContextResources();
+			base.Dispose();
+			screenQuadGeom.Dispose();
 		}
 
-		override public void DisposeGraphicsContextResources()
-		{
-			base.DisposeGraphicsContextResources();
-			screenQuadGeom.DisposeGraphicsContextResources();
-		}
-
-		#endregion
-		
 		public void Render( RenderParams renderParams )
 		{
 			BindPerPass( renderParams );
