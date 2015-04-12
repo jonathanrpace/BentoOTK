@@ -3,6 +3,9 @@ using Kaiga.ShaderStages;
 using OpenTK.Graphics.OpenGL4;
 using Kaiga.Core;
 using Kaiga.Geom;
+using Ramen;
+using OpenTK.Input;
+using System.Diagnostics;
 
 namespace Kaiga.Shaders
 {
@@ -12,6 +15,8 @@ namespace Kaiga.Shaders
 		readonly new FFAOFragShader fragmentShader;
 		readonly ScreenQuadGeometry screenQuadGeom;
 
+		readonly BoxBlurShader boxBlurShader;
+
 		public FFAOShader() : 
 		base( new ScreenQuadVertexShader(), new FFAOFragShader() )
 		{
@@ -19,12 +24,14 @@ namespace Kaiga.Shaders
 			fragmentShader = (FFAOFragShader)base.fragmentShader;
 
 			screenQuadGeom = new ScreenQuadGeometry();
+			boxBlurShader = new BoxBlurShader();
 		}
 
 		override public void Dispose()
 		{
 			base.Dispose();
 			screenQuadGeom.Dispose();
+			boxBlurShader.Dispose();
 		}
 
 		public void Render( RenderParams renderParams )
@@ -42,6 +49,19 @@ namespace Kaiga.Shaders
 			screenQuadGeom.Unbind();
 
 			UnbindPerPass();
+			
+			//float radius = Mouse.GetState().X / 200.0f;
+			//Debug.WriteLine( radius.ToString() );
+			for ( var i = 0; i < 1; i++ )
+			{
+				float radius = 2.5f;
+
+				renderParams.AORenderTarget.BindForBlurA();
+				boxBlurShader.Render( renderParams, renderParams.AORenderTarget.AOBuffer.Texture, radius, 0.0f );
+				renderParams.AORenderTarget.BindForBlurB();
+				boxBlurShader.Render( renderParams, renderParams.AORenderTarget.AOBlurBuffer.Texture, 0.0f, radius );
+			}
+			renderParams.AORenderTarget.BindForAOPhase();
 		}
 	}
 }

@@ -18,7 +18,8 @@ namespace Kaiga.Lights
 			float Radius = 1.0f,
 			float AttenuationConstant = 0.0f,
 			float AttenuationLinear = 0.0f, 
-			float AttenuationExp = 50.0f )
+			float AttenuationExp = 50.0f
+		)
 		{
 			this.Color = Color;
 			this.Intensity = Intensity;
@@ -30,21 +31,25 @@ namespace Kaiga.Lights
 
 		public PointLight
 		( 
-			float r = 1.0f, float g = 1.0f, float b = 1.0f,
+			float r = 1.0f, 
+			float g = 1.0f, 
+			float b = 1.0f,
 			float Intensity = 1.0f, 
 			float Radius = 1.0f,
 			float AttenuationConstant = 0.0f,
 			float AttenuationLinear = 0.0f, 
 			float AttenuationExp = 50.0f
-		) : 
-		this( new Vector3( r, g, b ), 
+		) 
+		: this( new Vector3( r, g, b ), 
 			Intensity,
 			Radius,
 			AttenuationConstant,
 			AttenuationLinear,
 			AttenuationExp
 		)
-		{ }
+		{
+			
+		}
 	}
 }
 

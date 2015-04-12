@@ -83,6 +83,10 @@
     <Compile Include="src\Kaiga.Core\AbstractRenderTarget.cs" />
     <Compile Include="src\Kaiga.Textures\ITexture.cs" />
     <Compile Include="src\Kaiga.Core\AORenderTarget.cs" />
+    <Compile Include="src\Kaiga.Shaders\AmbientLightShader.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\AmbientLightFragShader.cs" />
+    <Compile Include="src\Kaiga.Lights\AmbientLight.cs" />
+    <Compile Include="src\Kaiga.RenderPasses\AmbientLightRenderPass.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

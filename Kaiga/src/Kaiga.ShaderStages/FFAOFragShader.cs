@@ -15,6 +15,8 @@ namespace Kaiga.ShaderStages
 		public FFAOFragShader()
 		{
 			randomTexture = new RandomDirectionTexture();
+			randomTexture.Width = 64;
+			randomTexture.Height = 64;
 		}
 		
 		override public void Dispose()
@@ -58,9 +60,9 @@ uniform mat4 projectionMatrix;
 			var rand = new Random();
 			for ( var i = 0; i < NUM_SAMPLES; i++ )
 			{
-				double x = rand.NextDouble();
-				double y = rand.NextDouble();
-				double z = rand.NextDouble();
+				double x = (rand.NextDouble() - 0.5) * 2.0;
+				double y = (rand.NextDouble() - 0.5) * 2.0;
+				double z = (rand.NextDouble() - 0.5) * 2.0;
 
 				double length = Math.Sqrt( x * x + y * y + z * z );
 				x /= length;
@@ -89,7 +91,7 @@ uniform mat4 projectionMatrix;
 
 			str.Append( @"
 // Outputs
-layout( location = 0 ) out float out_ao;
+layout( location = 0 ) out vec2 out_fragColor;
 
 void main()
 {
@@ -105,14 +107,11 @@ void main()
 	//normal.z = -normal.z;
 
 	ivec2 randomTextureSize = textureSize( s_randomTexture, 0 );
-	vec4 randomSample = texture2D( s_randomTexture, gl_FragCoord.xy / randomTextureSize );
-	
-	vec3 randomDirection = normalize( randomSample.xyz );
+	vec3 randomDirection = texture2D( s_randomTexture, gl_FragCoord.xy / randomTextureSize ).xyz;
 	
 	float depthCutoff = 0.03f;
-	float dotCutoff = 0.001f;
-	float radius = 0.08f;
-	float depthRadius = depthCutoff + radius * 2.0f;
+	float radius = 0.2f;
+	float depthRadius = radius * 2.0f;
 	
 	float radiusOverDepth = radius / position.z * position.z;
 	
@@ -124,9 +123,7 @@ void main()
 
 		// Flip direction of rays pointing towards surface
 		ray *= sign( dot( ray, normal.xyz ) );
-
-		float dotValue = dot( ray, normal.xyz );
-
+		
 		vec4 hemiRay = vec4( position + ray, 1.0 );
 	
 		// Convert to screen-space UV coord
@@ -137,17 +134,19 @@ void main()
 		screenCoord.xy *= positionBufferSize;
 		vec4 occPositionSample = texture2DRect( s_positionBuffer, screenCoord.xy );
 		
-		//float difference = ((-position.z) - (-occPositionSample.z));
 		float difference = occPositionSample.z - position.z;
-		occlusion += step(dotCutoff, dotValue) * step(depthCutoff, difference) * (1.0 - smoothstep(depthCutoff, depthRadius, difference));
+
+		float depthCutoffScalar = step(depthCutoff, difference);							// Don't be occluded by things with very similar depth
+		float farDepthScalar = (1.0 - smoothstep(depthCutoff, depthRadius, difference)); 	// Scale occlusion down as things move further away
+		occlusion += depthCutoffScalar * farDepthScalar;
 	}
 	
 	occlusion /= NUM_SAMPLES;
-	occlusion *= 2.0f;
-	occlusion = min( occlusion, 1.0f );
+	//occlusion *= 2.0f;
+	//occlusion = min( occlusion, 1.0f );
 	occlusion = 1.0 - occlusion;
 	
-	out_ao = occlusion;
+	out_fragColor = vec2( occlusion, -positionBufferSample.z );
 }
 " );
 

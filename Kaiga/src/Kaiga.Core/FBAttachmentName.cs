@@ -11,6 +11,7 @@ namespace Kaiga.Core
 		static readonly public FramebufferAttachment Output = FramebufferAttachment.ColorAttachment4;
 		static readonly public FramebufferAttachment Post = FramebufferAttachment.ColorAttachment5;
 		static readonly public FramebufferAttachment AO = FramebufferAttachment.ColorAttachment6;
+		static readonly public FramebufferAttachment AOBlur = FramebufferAttachment.ColorAttachment7;
 	}
 
 	public static class DrawBufferName
@@ -22,6 +23,7 @@ namespace Kaiga.Core
 		static readonly public DrawBuffersEnum Output = DrawBuffersEnum.ColorAttachment4;
 		static readonly public DrawBuffersEnum Post = DrawBuffersEnum.ColorAttachment5;
 		static readonly public DrawBuffersEnum AO = DrawBuffersEnum.ColorAttachment6;
+		static readonly public DrawBuffersEnum AOBlur = DrawBuffersEnum.ColorAttachment7;
 	}
 }
 

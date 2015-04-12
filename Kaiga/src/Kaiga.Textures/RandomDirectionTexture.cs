@@ -80,9 +80,21 @@ namespace Kaiga.Textures
 			int size = width * height * 3;
 			var data = new float[size];
 			var rand = new Random( seed );
-			for ( int i = 0; i < size; i++ )
+			for ( int i = 0; i < size; i += 3 )
 			{
-				data[ i ] = ( (float)rand.NextDouble() - 0.5f ) * 2.0f;
+				double x = (rand.NextDouble() - 0.5) * 2.0;
+				double y = (rand.NextDouble() - 0.5) * 2.0;
+				double z = (rand.NextDouble() - 0.5) * 2.0;
+
+				double mag = Math.Sqrt( x * x + y * y + z * z );
+				x /= mag;
+				y /= mag;
+				z /= mag;
+
+				data[ i ] = (float)x;
+				data[ i + 1 ] = (float)x;
+				data[ i + 2 ] = (float)x;
+
 			}
 
 			GL.TexSubImage2D( TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.Rgb, PixelType.Float, data );

@@ -8,20 +8,6 @@ namespace Kaiga.ShaderStages
 {
 	abstract public class AbstractShaderStage : AbstractValidatable
 	{
-		static readonly TextureUnit[] indexToTextureUnit = 
-		{ 
-			TextureUnit.Texture0, 
-			TextureUnit.Texture1,
-			TextureUnit.Texture2,
-			TextureUnit.Texture3,
-			TextureUnit.Texture4,
-			TextureUnit.Texture5,
-			TextureUnit.Texture6,
-			TextureUnit.Texture7,
-			TextureUnit.Texture8,
-			TextureUnit.Texture9,
-		};
-
 		protected int shaderProgram;
 		public int ShaderProgram
 		{
@@ -120,7 +106,7 @@ namespace Kaiga.ShaderStages
 		protected void SetUniformTexture( int index, string name, int texture, TextureTarget textureTarget )
 		{
 			SetUniform1( name, index );
-			GL.ActiveTexture( indexToTextureUnit[index] );
+			GL.ActiveTexture( TextureUnit.Texture0 + index );
 			GL.BindTexture( textureTarget, texture );
 		}
 

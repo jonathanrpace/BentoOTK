@@ -201,6 +201,7 @@ namespace Kaiga.Core
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 			GL.DepthFunc( DepthFunction.Always );
 			textureOutputShader.Render( renderParams, renderTarget.OutputBuffer.Texture );
+			//textureOutputShader.Render( renderParams, renderParams.AORenderTarget.AOBuffer.Texture );
 			GL.DepthFunc( DepthFunction.Less );
 
 			scene.GameWindow.SwapBuffers();

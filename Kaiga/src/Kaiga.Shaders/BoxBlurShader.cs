@@ -1,54 +1,40 @@
 ﻿using System;
 using Kaiga.ShaderStages;
 using OpenTK.Graphics.OpenGL4;
+using Kaiga.Core;
+using Kaiga.Geom;
 
 namespace Kaiga.Shaders
 {
 	public class BoxBlurShader : AbstractShader
 	{
 		new readonly BoxBlurFragShader fragmentShader;
-
-		int bufferTextureWidth;
-		int bufferTextureHeight;
-
-		int bufferTexture;
+		readonly ScreenQuadGeometry screenQuadGeom;
 
 		public BoxBlurShader() : base( new ScreenQuadVertexShader(), new BoxBlurFragShader() )
 		{
 			fragmentShader = (BoxBlurFragShader)base.fragmentShader;
-			bufferTextureWidth = 0;
-			bufferTextureHeight = 0;
+
+			screenQuadGeom = new ScreenQuadGeometry();
 		}
 
-		public void Render( int texture )
+		public override void Dispose()
 		{
-			int newBufferWidth;
-			int newBufferHeight;
+			base.Dispose();
+			screenQuadGeom.Dispose();
+		}
 
-			GL.BindTexture( TextureTarget.TextureRectangle, texture );
-			GL.GetTexParameterI( TextureTarget.TextureRectangle, GetTextureParameter.TextureWidth, out newBufferWidth );
-			GL.GetTexParameterI( TextureTarget.TextureRectangle, GetTextureParameter.TextureWidth, out newBufferHeight );
+		public void Render( RenderParams renderParams, int texture, float radiusU, float radiusV )
+		{
+			BindPerPass( renderParams );
 
-			if ( newBufferWidth != bufferTextureWidth || newBufferHeight != bufferTextureHeight )
-			{
-				if ( GL.IsTexture( bufferTexture ) )
-				{
-					GL.DeleteTexture( bufferTexture );
-				}
+			fragmentShader.Bind( renderParams, texture, radiusU, radiusV );
 
-				bufferTextureWidth = newBufferWidth;
-				bufferTextureHeight = newBufferHeight;
-				
-				bufferTexture = GL.GenTexture();
-				GL.BindTexture( TextureTarget.TextureRectangle, bufferTexture );
-				GL.TexImage2D( TextureTarget.TextureRectangle, 0, PixelInternalFormat.R8, bufferTextureWidth, bufferTextureHeight, 0, PixelFormat.Rgba, PixelType.Float, new IntPtr(0) );
-				GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-				GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear );
-				GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge );
-				GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge );
-			}
+			screenQuadGeom.Bind();
 
+			GL.DrawElements( PrimitiveType.Triangles, screenQuadGeom.NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
 
+			UnbindPerPass();
 		}
 	}
 }
