@@ -17,9 +17,24 @@ namespace Kaiga.Components
 			Matrix = matrix;
 		}
 
-		public void TranslateBy( float x, float y, float z )
+		public void Translate( float x, float y, float z )
 		{
 			Matrix *= Matrix4.CreateTranslation( x, y, z );
+		}
+
+		public void RotateX( float radians )
+		{
+			Matrix *= Matrix4.CreateRotationX( radians );
+		}
+
+		public void RotateY( float radians )
+		{
+			Matrix *= Matrix4.CreateRotationY( radians );
+		}
+
+		public void RotateZ( float radians )
+		{
+			Matrix *= Matrix4.CreateRotationZ( radians );
 		}
 	}
 }
