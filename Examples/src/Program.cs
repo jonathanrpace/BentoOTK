@@ -49,6 +49,7 @@ namespace Examples
 			scene.AddProcess( renderer );
 			renderer.AddRenderPass( new TestRenderPass() );
 			renderer.AddRenderPass( new PointLightRenderPass() );
+			renderer.AddRenderPass( new AmbientLightRenderPass() );
 			renderer.AddRenderPass( new AORenderPass() );
 
 			const int numColumns = 10;
@@ -71,7 +72,7 @@ namespace Examples
 					entity.AddComponent( geom );
 
 					var material = new StandardMaterial();
-					material.Roughness = columnRatio;
+					material.Roughness = 0.1f + columnRatio * 0.9f;
 					material.Reflectivity = rowRatio;
 					entity.AddComponent( material );
 
@@ -86,19 +87,27 @@ namespace Examples
 				}
 			}
 
-			var floor = new Entity();
-			var floorGeom = new PlaneGeometry();
-			floorGeom.Width = numColumns * spacing;
-			floorGeom.Height = numRows * spacing;
-			floor.AddComponent( floorGeom );
-			floor.AddComponent( new Transform( Matrix4.Identity * Matrix4.CreateRotationX( (float)Math.PI * 0.5f )) );
-			floor.AddComponent( new StandardMaterial() );
-			scene.AddEntity( floor );
+			{
+				float border = 0.1f;
+				var floor = new Entity();
+				var floorGeom = new PlaneGeometry();
+				floorGeom.Width = numColumns * spacing + border * 2.0f;
+				floorGeom.Height = numRows * spacing + border * 2.0f;
+				floor.AddComponent( floorGeom );
+				var transform = new Transform();
+				transform.RotateX( (float)Math.PI * 0.5f );
+				transform.Translate( -radius, 0.0f, -radius );
+				floor.AddComponent( transform );
+				floor.AddComponent( new StandardMaterial() );
+				scene.AddEntity( floor );
+			}
 
-			for ( int i = 0; i < 20; i++ )
+			for ( int i = 0; i < 10; i++ )
 			{
 				CreateLight();
 			}
+
+			CreateAmbientLight();
 
 			scene.AddProcess( new OrbitCamera() );
 			scene.AddProcess( new SwarmProcess() );
@@ -133,6 +142,18 @@ namespace Examples
 									new Vector3( (float)rand.NextDouble() * 0.5f, (float)rand.NextDouble() * 0.5f, (float)rand.NextDouble() * 0.5f ) 
 			                  );
 			entity.AddComponent( swarmMember );
+
+			scene.AddEntity( entity );
+
+			return entity;
+		}
+
+		Entity CreateAmbientLight()
+		{
+			var entity = new Entity();
+
+			var ambientLight = new AmbientLight( 1.0f, 1.0f, 1.0f, 0.1f );
+			entity.AddComponent( ambientLight );
 
 			scene.AddEntity( entity );
 
