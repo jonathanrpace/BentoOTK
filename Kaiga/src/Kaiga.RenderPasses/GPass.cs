@@ -9,7 +9,7 @@ using Kaiga.Materials;
 
 namespace Kaiga.RenderPasses
 {
-	public class TestRenderPass : IRenderPass
+	public class GPass : IRenderPass
 	{
 		class Node : Ramen.Node
 		{
@@ -21,7 +21,7 @@ namespace Kaiga.RenderPasses
 		private NodeList<Node> nodeList;
 		private readonly GShader shader;
 
-		public TestRenderPass()
+		public GPass()
 		{
 			shader = new GShader();
 		}

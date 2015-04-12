@@ -39,7 +39,6 @@
     <Compile Include="src\Kaiga.Core\RenderParams.cs" />
     <Compile Include="src\Kaiga.Core\RenderPhase.cs" />
     <Compile Include="src\Kaiga.RenderPasses\IRenderPass.cs" />
-    <Compile Include="src\Kaiga.RenderPasses\TestRenderPass.cs" />
     <Compile Include="src\Kaiga.Geom\IGeometry.cs" />
     <Compile Include="src\Kaiga.Geom\Geometry.cs" />
     <Compile Include="src\Kaiga.Geom\PlaneGeometry.cs" />
@@ -87,6 +86,7 @@
     <Compile Include="src\Kaiga.ShaderStages\AmbientLightFragShader.cs" />
     <Compile Include="src\Kaiga.Lights\AmbientLight.cs" />
     <Compile Include="src\Kaiga.RenderPasses\AmbientLightRenderPass.cs" />
+    <Compile Include="src\Kaiga.RenderPasses\GPass.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

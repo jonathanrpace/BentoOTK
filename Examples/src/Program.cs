@@ -47,7 +47,7 @@ namespace Examples
 
 			var renderer = new DeferredRenderer();
 			scene.AddProcess( renderer );
-			renderer.AddRenderPass( new TestRenderPass() );
+			renderer.AddRenderPass( new GPass() );
 			renderer.AddRenderPass( new PointLightRenderPass() );
 			renderer.AddRenderPass( new AmbientLightRenderPass() );
 			renderer.AddRenderPass( new AORenderPass() );
