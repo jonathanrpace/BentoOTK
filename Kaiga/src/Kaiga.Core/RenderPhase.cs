@@ -4,7 +4,7 @@
 	{
 		G,
 		Light,
-		Material,
+		Forward,
 		AO,
 		Post
 	}

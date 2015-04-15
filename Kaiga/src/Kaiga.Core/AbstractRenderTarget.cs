@@ -22,7 +22,7 @@ namespace Kaiga.Core
 		protected readonly bool hasDepthStencil;
 		protected readonly PixelInternalFormat internalFormat;
 		protected readonly RenderbufferStorage depthStencilFormat;
-		readonly Dictionary<FramebufferAttachment, ITexture> texturesByAttachment;
+		readonly Dictionary<FramebufferAttachment, ITexture2D> texturesByAttachment;
 
 		int width = 256;
 		int height = 256;
@@ -41,7 +41,7 @@ namespace Kaiga.Core
 			this.hasDepthStencil = hasDepthStencil;
 			this.depthStencilFormat = depthStencilFormat;
 
-			texturesByAttachment = new Dictionary<FramebufferAttachment, ITexture>();
+			texturesByAttachment = new Dictionary<FramebufferAttachment, ITexture2D>();
 		}
 
 		public void SetSize( int width, int height )

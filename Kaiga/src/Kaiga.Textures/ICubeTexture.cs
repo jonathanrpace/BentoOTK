@@ -2,9 +2,9 @@
 
 namespace Kaiga.Textures
 {
-	public interface ITexture
+	public interface ICubeTexture : ITexture
 	{
-		int Texture{ get; }
+		
 	}
 }
 

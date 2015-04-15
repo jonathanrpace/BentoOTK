@@ -9,6 +9,7 @@ using Kaiga.Processes;
 using Kaiga.Components;
 using Kaiga.Materials;
 using Kaiga.Lights;
+using Kaiga.Textures;
 
 namespace Examples
 {
@@ -51,6 +52,7 @@ namespace Examples
 			renderer.AddRenderPass( new PointLightRenderPass() );
 			renderer.AddRenderPass( new AmbientLightRenderPass() );
 			renderer.AddRenderPass( new AORenderPass() );
+			renderer.AddRenderPass( new SkyboxRenderPass() );
 
 			const int numColumns = 10;
 			const int numRows = 10;
@@ -102,6 +104,14 @@ namespace Examples
 				scene.AddEntity( floor );
 			}
 
+			{
+				var skybox = new Entity();
+				var material = new SkyboxMaterial();
+				material.Texture = new ExternalCubeTexture();
+				skybox.AddComponent( material );
+				scene.AddEntity( skybox );
+			}
+
 			for ( int i = 0; i < 10; i++ )
 			{
 				CreateLight();
@@ -134,7 +144,7 @@ namespace Examples
 
 			var material = new StandardMaterial();
 			material.Diffuse = color;
-			material.Emissive = 0.1f;
+			material.Emissive = 0.2f;
 			entity.AddComponent( material );
 
 			var swarmMember = new SwarmMember( 

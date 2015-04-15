@@ -1,14 +1,14 @@
 ﻿<Properties StartupItem="Examples\Examples.csproj" GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Kaiga\src\Kaiga.Core\DeferredRenderer.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Kaiga\src\Kaiga.RenderPasses\SkyboxRenderPass.cs">
     <Files>
-      <File FileName="Kaiga\src\Kaiga.Core\IRenderTarget.cs" Line="1" Column="14" />
-      <File FileName="Kaiga\src\Kaiga.ShaderStages\GFragShader.cs" Line="57" Column="1" />
-      <File FileName="Kaiga\src\Kaiga.ShaderStages\PointLightFragShader.cs" Line="135" Column="2" />
-      <File FileName="Kaiga\src\Kaiga.ShaderStages\FFAOFragShader.cs" Line="116" Column="2" />
-      <File FileName="Kaiga\src\Kaiga.Core\DeferredRenderer.cs" Line="191" Column="17" />
-      <File FileName="Kaiga\src\Kaiga.Core\AORenderTarget.cs" Line="27" Column="68" />
-      <File FileName="Kaiga\src\Kaiga.Core\DeferredRenderTarget.cs" Line="85" Column="30" />
+      <File FileName="Kaiga\src\Kaiga.Geom\ScreenQuadGeometry.cs" Line="39" Column="38" />
+      <File FileName="Kaiga\src\Kaiga.Geom\SkyboxGeometry.cs" Line="35" Column="16" />
+      <File FileName="Kaiga\src\Kaiga.ShaderStages\SkyboxVertexShader.cs" Line="31" Column="24" />
+      <File FileName="Kaiga\src\Kaiga.ShaderStages\SkyboxFragmentShader.cs" Line="13" Column="27" />
+      <File FileName="Kaiga\src\Kaiga.Shaders\SkyboxShader.cs" Line="11" Column="4" />
+      <File FileName="Kaiga\src\Kaiga.RenderPasses\AmbientLightRenderPass.cs" Line="30" Column="27" />
+      <File FileName="Kaiga\src\Kaiga.RenderPasses\SkyboxRenderPass.cs" Line="43" Column="30" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -87,6 +87,17 @@
     <Compile Include="src\Kaiga.Lights\AmbientLight.cs" />
     <Compile Include="src\Kaiga.RenderPasses\AmbientLightRenderPass.cs" />
     <Compile Include="src\Kaiga.RenderPasses\GPass.cs" />
+    <Compile Include="src\Kaiga.Textures\ExternalCubeTexture.cs" />
+    <Compile Include="src\Kaiga.Textures\ITexture2D.cs" />
+    <Compile Include="src\Kaiga.Geom\SkyboxGeometry.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\SkyboxVertexShader.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\SkyboxFragmentShader.cs" />
+    <Compile Include="src\Kaiga.Shaders\SkyboxShader.cs" />
+    <Compile Include="src\Kaiga.RenderPasses\SkyboxRenderPass.cs" />
+    <Compile Include="src\Kaiga.Materials\SkyboxMaterial.cs" />
+    <Compile Include="src\Kaiga.Textures\ICubeTexture.cs" />
+    <Compile Include="src\OpenTK.TextureLoaders\LoaderDDS.cs" />
+    <Compile Include="src\OpenTK.TextureLoaders\LoaderStatics.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

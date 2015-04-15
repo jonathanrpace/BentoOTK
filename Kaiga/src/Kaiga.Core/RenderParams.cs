@@ -24,6 +24,7 @@ namespace Kaiga.Core
 		public Matrix3 NormalModelMatrix;
 		public Matrix3 NormalModelViewMatrix;
 		public Matrix3 InvNormalModelViewMatrix;
+		public Matrix4 NormalViewProjectionMatrix;
 
 		public RenderParams()
 		{

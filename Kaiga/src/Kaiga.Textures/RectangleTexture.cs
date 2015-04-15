@@ -4,7 +4,7 @@ using Kaiga.Core;
 
 namespace Kaiga.Textures
 {
-	public class RectangleTexture : AbstractValidatable, ITexture
+	public class RectangleTexture : AbstractValidatable, ITexture2D
 	{
 		#region Properties
 

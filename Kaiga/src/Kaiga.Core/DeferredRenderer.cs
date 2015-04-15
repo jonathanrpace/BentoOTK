@@ -53,7 +53,7 @@ namespace Kaiga.Core
 
 			AddRenderPhase( RenderPhase.G );
 			AddRenderPhase( RenderPhase.Light );
-			AddRenderPhase( RenderPhase.Material );
+			AddRenderPhase( RenderPhase.Forward );
 			AddRenderPhase( RenderPhase.AO );
 			AddRenderPhase( RenderPhase.Post );
 
@@ -165,12 +165,15 @@ namespace Kaiga.Core
 			renderParams.CameraLens.AspectRatio = (float)scene.GameWindow.Width / scene.GameWindow.Height;
 
 			renderParams.ViewMatrix = Camera.GetComponentByType<Transform>().Matrix;
+			renderParams.NormalViewMatrix = renderParams.ViewMatrix.ClearScale();
+			renderParams.NormalViewMatrix = renderParams.NormalViewMatrix.ClearTranslation();
 			renderParams.InvViewMatrix = renderParams.ViewMatrix.Inverted();
 			renderParams.ProjectionMatrix = renderParams.CameraLens.ProjectionMatrix;
 			renderParams.InvProjectionMatrix = renderParams.CameraLens.InvProjectionMatrix;
 			renderParams.ViewProjectionMatrix = renderParams.ViewMatrix * renderParams.ProjectionMatrix;
 			renderParams.InvViewProjectionMatrix = renderParams.ViewProjectionMatrix.Inverted();
-		
+			renderParams.NormalViewProjectionMatrix = renderParams.NormalViewMatrix * renderParams.ProjectionMatrix;
+
 			GL.Enable( EnableCap.CullFace );
 			GL.CullFace( CullFaceMode.Back );
 
@@ -195,6 +198,10 @@ namespace Kaiga.Core
 			GL.BlendEquation( BlendEquationMode.FuncAdd );
 			RenderPassesInPhase( passesByPhase[ RenderPhase.Light ] );
 			GL.Disable( EnableCap.Blend );
+
+			// Forward
+			RenderPassesInPhase( passesByPhase[ RenderPhase.Forward ] );
+
 
 			// Switch draw target to back buffer
 			GL.DepthMask( true );
