@@ -13,6 +13,7 @@ namespace Kaiga.Core
 		public Vector3 CameraForward;
 		public Matrix4 ViewMatrix;
 		public Matrix4 InvViewMatrix;
+		public Matrix3 NormalInvViewMatrix;
 		public Matrix4 NormalViewMatrix;
 		public Matrix4 ProjectionMatrix;
 		public Matrix4 InvProjectionMatrix;

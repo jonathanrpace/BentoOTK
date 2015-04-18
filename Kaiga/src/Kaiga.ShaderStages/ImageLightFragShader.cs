@@ -1,12 +1,11 @@
-﻿using System;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using Kaiga.Core;
 using Kaiga.Lights;
 using OpenTK;
 
 namespace Kaiga.ShaderStages
 {
-	public class PointLightFragShader : AbstractFragmentShaderStage
+	public class ImageLightFragShader : AbstractFragmentShaderStage
 	{
 		override public void BindPerPass( RenderParams renderParams )
 		{
@@ -15,21 +14,13 @@ namespace Kaiga.ShaderStages
 			SetUniformTexture( 2, "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture, TextureTarget.TextureRectangle );
 			SetUniformTexture( 3, "s_albedoBuffer", renderParams.RenderTarget.AlbedoBuffer.Texture, TextureTarget.TextureRectangle );
 			SetUniformTexture( 4, "s_aoBuffer", renderParams.AORenderTarget.AOBuffer.Texture, TextureTarget.TextureRectangle );
+
+			SetUniformMatrix3( "normalInvViewMatrix", ref renderParams.NormalInvViewMatrix, true );
 		}
 
-		public void BindPerLight( RenderParams renderParams, PointLight light )
+		public void BindPerLight( RenderParams renderParams, ImageLight light )
 		{
-			SetUniform1( "u_attenuationConstant", light.AttenuationLinear );
-			SetUniform1( "u_attenuationLinear", light.AttenuationLinear );
-			SetUniform1( "u_attenuationExp", light.AttenuationExp );
-			SetUniform1( "u_radius", light.Radius );
-			SetUniform3( "u_color", light.Color );
-
-			// Scale intensity by surface area
-			var surfaceArea = 4.0f * (float)Math.PI * light.Radius * light.Radius;
-			var intensity = surfaceArea * light.Intensity;
-			SetUniform1( "u_intensity", intensity );
-			SetUniform3( "u_lightPosition", renderParams.ModelViewMatrix.ExtractTranslation() );
+			SetUniformTexture( 5, "s_envMap", light.Texture.Texture, TextureTarget.TextureCubeMap );
 		}
 
 		override protected string GetShaderSource()
@@ -43,18 +34,12 @@ uniform sampler2DRect s_normalBuffer;
 uniform sampler2DRect s_materialBuffer;
 uniform sampler2DRect s_albedoBuffer;
 uniform sampler2DRect s_aoBuffer;
-
-// Scalars
-uniform float u_attenuationConstant;
-uniform float u_attenuationLinear;
-uniform float u_attenuationExp;
-uniform float u_radius;
-uniform vec3 u_color;
-uniform float u_intensity;
-uniform vec3 u_lightPosition;
+uniform samplerCube s_envMap;
 
 // Outputs
 layout( location = 0 ) out vec4 out_color;
+
+uniform mat3 normalInvViewMatrix;
 
 float G1V(float dotNV, float k)
 {
@@ -84,7 +69,7 @@ float LightingFuncGGX_REF( vec3 N, vec3 V, vec3 L, float roughness, float F0, fl
 	float dotNL = angularDot(N,L,angularSize);
 	float dotNV = clamp(dot(N,V), 0.0f, 1.0f);
 	float dotNH = angularDot(N,H,angularSize);
-	float dotLH = clamp(dot(L,H), 0.0f, 1.0f);
+	float dotLH = angularDot(L,H,angularSize);
 
 	// D
 	float alphaSqr = alpha*alpha;
@@ -107,6 +92,19 @@ float LightingFuncGGX_REF( vec3 N, vec3 V, vec3 L, float roughness, float F0, fl
 	return dotNL * D * F * vis;
 }
 
+vec3 getEdgeFixedCubeMapNormal( in vec3 normal, float mipBias, int baseSize )
+{
+	vec3 out_normal = normal;
+	float scale = 1.0f - (exp2(mipBias) / baseSize);
+
+	vec3 absNormal = abs( normal );
+	float M = max(max(absNormal.x, absNormal.y), absNormal.z);
+	if (absNormal.x != M) out_normal.x *= scale;
+	if (absNormal.y != M) out_normal.y *= scale;
+	if (absNormal.z != M) out_normal.z *= scale;
+	return out_normal;
+}
+
 void main()
 {
 	vec3 position = texture2DRect( s_positionBuffer, gl_FragCoord.xy ).xyz;
@@ -115,39 +113,36 @@ void main()
 	vec3 albedo = texture2DRect( s_albedoBuffer, gl_FragCoord.xy ).xyz;
 	float ao = texture2DRect( s_aoBuffer, gl_FragCoord.xy * 0.5 ).x;
 
-	vec3 lightDir = u_lightPosition - position.xyz;
-	float distance = max( length( lightDir ) - u_radius, 0.0f );
-	lightDir = normalize( lightDir );
-
-	float angularSize = clamp( atan( u_radius / distance ) * 2.0f / 3.142f , 0.0f, 1.0f );
-	angularSize = 1.0f - angularSize;
-	
-	vec3 viewDir = normalize( -position );
-
 	float roughness = material.x;
 	float reflectivity = material.y;
 	float emissive = material.z;
 
-	float attenuation = u_attenuationConstant + 
-						u_attenuationLinear * distance + 
-						u_attenuationExp * distance * distance;
-	attenuation = max( attenuation, 1.0f );
+	vec3 viewDir = normalize( position );
+	vec3 reflectVec = reflect( viewDir, normal );
+	vec3 lightDir = reflectVec * (1.0f - roughness) + roughness * normal;
+	lightDir = normalize( lightDir );
+	lightDir *= normalInvViewMatrix;
+
+	ivec2 texSize = textureSize( s_envMap, 0 );
+	int numMipMaps = textureQueryLevels( s_envMap )-3;
+
+	float mipBias = max( 0.0f, roughness * numMipMaps );
+
+	vec3 cubeNormal = getEdgeFixedCubeMapNormal( lightDir, mipBias, texSize.x );
+	vec4 light = pow( textureLod( s_envMap, cubeNormal, mipBias ), vec4( 2.2 ) );
+
+	//vec3 light = vec3( LightingFuncGGX_REF( normal, viewDir, lightDir, roughness, reflectivity, 0.999f ) );
 	
-	vec3 light = vec3( LightingFuncGGX_REF( normal, viewDir, lightDir, roughness, reflectivity, angularSize ) );
-	
-	light *= (ao + (1.0-angularSize));
+	light.xyz *= ao;//(ao + (1.0f-roughness));
+	light.xyz *= reflectivity;
+	light.xyz += emissive;
+	light.xyz *= albedo;
+	light.a = 1.0;
 
-	light *= u_color;
-	light *= u_intensity;
-	light /= attenuation;
-
-	light += emissive * albedo;
-
-	out_color = vec4( light, 1.0 );
+	out_color = light;
 }
 ";
 		}
 
 	}
 }
-

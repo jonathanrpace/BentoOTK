@@ -173,7 +173,8 @@ namespace Kaiga.Core
 			renderParams.ViewProjectionMatrix = renderParams.ViewMatrix * renderParams.ProjectionMatrix;
 			renderParams.InvViewProjectionMatrix = renderParams.ViewProjectionMatrix.Inverted();
 			renderParams.NormalViewProjectionMatrix = renderParams.NormalViewMatrix * renderParams.ProjectionMatrix;
-
+			renderParams.NormalInvViewMatrix = new Matrix3( renderParams.InvViewMatrix.ClearTranslation() );
+				
 			GL.Enable( EnableCap.CullFace );
 			GL.CullFace( CullFaceMode.Back );
 

@@ -98,6 +98,10 @@
     <Compile Include="src\Kaiga.Textures\ICubeTexture.cs" />
     <Compile Include="src\OpenTK.TextureLoaders\LoaderDDS.cs" />
     <Compile Include="src\OpenTK.TextureLoaders\LoaderStatics.cs" />
+    <Compile Include="src\Kaiga.ShaderStages\ImageLightFragShader.cs" />
+    <Compile Include="src\Kaiga.Lights\ImageLight.cs" />
+    <Compile Include="src\Kaiga.Shaders\ImageLightShader.cs" />
+    <Compile Include="src\Kaiga.RenderPasses\ImageLightRenderPass.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

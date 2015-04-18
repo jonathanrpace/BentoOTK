@@ -41,7 +41,7 @@ namespace Examples
 
 		protected override void OnLoad( System.EventArgs e )
 		{
-			VSync = VSyncMode.On;
+			VSync = VSyncMode.Off;
 			Context.ErrorChecking = true;
 
 			scene = new Scene( this );
@@ -51,6 +51,7 @@ namespace Examples
 			renderer.AddRenderPass( new GPass() );
 			renderer.AddRenderPass( new PointLightRenderPass() );
 			renderer.AddRenderPass( new AmbientLightRenderPass() );
+			renderer.AddRenderPass( new ImageLightRenderPass() );
 			renderer.AddRenderPass( new AORenderPass() );
 			renderer.AddRenderPass( new SkyboxRenderPass() );
 
@@ -90,7 +91,7 @@ namespace Examples
 			}
 
 			{
-				float border = 0.1f;
+				float border = 0.5f;
 				var floor = new Entity();
 				var floorGeom = new PlaneGeometry();
 				floorGeom.Width = numColumns * spacing + border * 2.0f;
@@ -98,9 +99,11 @@ namespace Examples
 				floor.AddComponent( floorGeom );
 				var transform = new Transform();
 				transform.RotateX( (float)Math.PI * 0.5f );
-				transform.Translate( -radius, 0.0f, -radius );
+				transform.Translate( -radius, -radius, -radius );
 				floor.AddComponent( transform );
-				floor.AddComponent( new StandardMaterial() );
+				var floorMaterial = new StandardMaterial();
+				floorMaterial.Roughness = 0.75f;
+				floor.AddComponent( floorMaterial );
 				scene.AddEntity( floor );
 			}
 
@@ -110,6 +113,12 @@ namespace Examples
 				material.Texture = new ExternalCubeTexture();
 				skybox.AddComponent( material );
 				scene.AddEntity( skybox );
+
+				var imageLight = new Entity();
+				var light = new ImageLight();
+				light.Texture = material.Texture;
+				imageLight.AddComponent( light );
+				scene.AddEntity( imageLight );
 			}
 
 			for ( int i = 0; i < 10; i++ )
@@ -117,7 +126,7 @@ namespace Examples
 				CreateLight();
 			}
 
-			CreateAmbientLight();
+			//CreateAmbientLight();
 
 			scene.AddProcess( new OrbitCamera() );
 			scene.AddProcess( new SwarmProcess() );

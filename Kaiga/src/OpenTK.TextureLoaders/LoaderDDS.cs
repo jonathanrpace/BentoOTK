@@ -366,8 +366,8 @@ namespace OpenTK.TextureLoaders
                             Trace.WriteLine( "Warning: Calculated byte-count of main image differs from what was read from file." );
                         #endregion determine Dimensions
 
-                        // skip mipmaps smaller than a 4x4 Pixels block, which is the smallest DXTn unit.
-                        if ( Width > 2 && Height > 2 )
+                        // skip compressed mipmaps smaller than a 4x4 Pixels block, which is the smallest DXTn unit.
+						if ( !_IsCompressed || ( Width > 2 && Height > 2 ) )
                         { // Note: there could be a potential problem with non-power-of-two cube maps
                             #region Prepare Array for TexImage
                             byte[] RawDataOfSurface = new byte[SurfaceSizeInBytes];

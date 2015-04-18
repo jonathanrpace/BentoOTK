@@ -22,10 +22,10 @@ namespace Kaiga.Textures
 			TextureLoaderParameters.FlipImages = false;
 			TextureLoaderParameters.MagnificationFilter = TextureMagFilter.Linear;
 			TextureLoaderParameters.MinificationFilter = TextureMinFilter.LinearMipmapLinear;
-			TextureLoaderParameters.WrapModeS = TextureWrapMode.Clamp;
-			TextureLoaderParameters.WrapModeT = TextureWrapMode.Clamp;
+			TextureLoaderParameters.WrapModeS = TextureWrapMode.MirroredRepeat;
+			TextureLoaderParameters.WrapModeT = TextureWrapMode.MirroredRepeat;
 
-			ImageDDS.LoadFromDisk( @"../resource/LightProbe.dds", out texture, out textureTarget );
+			ImageDDS.LoadFromDisk( @"../resource/Pisa.dds", out texture, out textureTarget );
 
 			Debug.Assert( textureTarget == TextureTarget.TextureCubeMap );
 		}
