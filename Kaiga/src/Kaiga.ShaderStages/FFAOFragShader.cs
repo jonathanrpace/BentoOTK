@@ -110,7 +110,7 @@ void main()
 	vec3 randomDirection = texture2D( s_randomTexture, gl_FragCoord.xy / randomTextureSize ).xyz;
 	
 	float depthCutoff = 0.03f;
-	float radius = 0.2f;
+	float radius = 0.15f;
 	float depthRadius = radius * 2.0f;
 	
 	float radiusOverDepth = radius / position.z * position.z;
