@@ -1,9 +1,8 @@
 ﻿using System;
 using OpenTK.Graphics.OpenGL4;
-using Ramen;
 using OpenTK.Input;
 
-namespace Kaiga.ShaderStages
+namespace Kaiga.Shaders.Fragment
 {
 	public class SkyboxFragmentShader : AbstractFragmentShaderStage
 	{

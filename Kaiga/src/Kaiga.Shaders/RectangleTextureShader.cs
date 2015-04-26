@@ -1,21 +1,22 @@
 ﻿using System;
-using Kaiga.ShaderStages;
 using OpenTK.Graphics.OpenGL4;
 using Kaiga.Geom;
 using Kaiga.Core;
+using Kaiga.Shaders.Vertex;
+using Kaiga.Shaders.Fragment;
 
 namespace Kaiga.Shaders
 {
-	public class TextureOutputShader : AbstractShader
+	public class RectangleTextureShader : AbstractShader
 	{
 		private new readonly ScreenQuadVertexShader vertexShader;
-		private new readonly TextureOutputFragShader fragmentShader;
+		private new readonly RectangleTextureFragShader fragmentShader;
 		private readonly ScreenQuadGeometry screenQuadGeom;
 
-		public TextureOutputShader() : base( new ScreenQuadVertexShader(), new TextureOutputFragShader() )
+		public RectangleTextureShader() : base( new ScreenQuadVertexShader(), new RectangleTextureFragShader() )
 		{
 			vertexShader = (ScreenQuadVertexShader)base.vertexShader;
-			fragmentShader = (TextureOutputFragShader)base.fragmentShader;
+			fragmentShader = (RectangleTextureFragShader)base.fragmentShader;
 			screenQuadGeom = new ScreenQuadGeometry();
 		}
 

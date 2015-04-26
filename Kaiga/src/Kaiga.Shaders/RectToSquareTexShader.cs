@@ -1,26 +1,27 @@
 ﻿using System;
-using Kaiga.ShaderStages;
 using Kaiga.Geom;
 using Kaiga.Textures;
 using Kaiga.Util;
 using OpenTK.Graphics.OpenGL4;
 using Kaiga.Core;
+using Kaiga.Shaders.Fragment;
+using Kaiga.Shaders.Vertex;
 
 namespace Kaiga.Shaders
 {
-	public class LightBufferDownsampleShader : AbstractShader
+	public class RectToSquareTexShader : AbstractShader
 	{
 		readonly ScreenQuadGeometry screenQuadGeom;
-		new readonly LightBufferDownsampleFragShader fragmentShader;
+		new readonly RectToSquareTexFragShader fragmentShader;
 
 		readonly SquareTexture2D output;
 		readonly AbstractRenderTarget renderTarget;
 
 
-		public LightBufferDownsampleShader()
-			: base( new ScreenQuadVertexShader(), new LightBufferDownsampleFragShader() )
+		public RectToSquareTexShader()
+			: base( new ScreenQuadVertexShader(), new RectToSquareTexFragShader() )
 		{
-			fragmentShader = (LightBufferDownsampleFragShader)base.fragmentShader;
+			fragmentShader = (RectToSquareTexFragShader)base.fragmentShader;
 
 			output = new SquareTexture2D( PixelInternalFormat.Rgba16f, 1024 );
 			output.MinFilter = TextureMinFilter.LinearMipmapLinear;

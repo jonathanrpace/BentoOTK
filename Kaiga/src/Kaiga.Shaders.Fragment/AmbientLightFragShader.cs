@@ -2,7 +2,7 @@
 using Kaiga.Core;
 using Kaiga.Lights;
 
-namespace Kaiga.ShaderStages
+namespace Kaiga.Shaders.Fragment
 {
 	public class AmbientLightFragShader : AbstractFragmentShaderStage
 	{

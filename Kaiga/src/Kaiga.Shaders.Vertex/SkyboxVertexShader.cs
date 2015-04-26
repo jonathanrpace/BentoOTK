@@ -1,8 +1,7 @@
-﻿using Kaiga.ShaderStages;
-using Kaiga.Core;
+﻿using Kaiga.Core;
 using OpenTK;
 
-namespace Kaiga.ShaderStages
+namespace Kaiga.Shaders.Vertex
 {
 	public class SkyboxVertexShader : AbstractVertexShaderStage
 	{

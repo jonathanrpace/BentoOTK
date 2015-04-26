@@ -1,5 +1,4 @@
 ﻿using System;
-using Kaiga.ShaderStages;
 using Kaiga.Core;
 using OpenTK.Graphics.OpenGL4;
 

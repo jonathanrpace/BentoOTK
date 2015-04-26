@@ -1,9 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK;
 
-namespace Kaiga.ShaderStages
+namespace Kaiga.Shaders.Fragment
 {
-	public class LightBufferDownsampleFragShader : AbstractFragmentShaderStage
+	public class RectToSquareTexFragShader : AbstractFragmentShaderStage
 	{
 		public void Render( int texture, int outputSize )
 		{

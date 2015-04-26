@@ -4,7 +4,7 @@ using Kaiga.Textures;
 using System.Text;
 using System;
 
-namespace Kaiga.ShaderStages
+namespace Kaiga.Shaders.Fragment
 {
 	public class FFAOFragShader : AbstractFragmentShaderStage
 	{

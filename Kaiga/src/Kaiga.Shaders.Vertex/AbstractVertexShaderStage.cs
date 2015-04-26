@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using Kaiga.Shaders;
 
-namespace Kaiga.ShaderStages
+namespace Kaiga.Shaders.Vertex
 {
 	abstract public class AbstractVertexShaderStage : AbstractShaderStage
 	{

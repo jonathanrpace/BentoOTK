@@ -28,9 +28,9 @@ namespace Kaiga.Core
 		public event RenderPassDelegate OnRenderPassAdded;
 		public event RenderPassDelegate OnRenderPassRemoved;
 
-		readonly TextureOutputShader textureOutputShader;
-		readonly LightBufferDownsampleShader directLightBufferDownsampleShader;
-		readonly LightBufferDownsampleShader indirectLightBufferDownsampleShader;
+		readonly RectangleTextureShader textureOutputShader;
+		readonly RectToSquareTexShader directLightBufferDownsampleShader;
+		readonly RectToSquareTexShader indirectLightBufferDownsampleShader;
 
 		public DeferredRenderer() : this( "Deferred Renderer" )
 		{
@@ -59,9 +59,9 @@ namespace Kaiga.Core
 			AddRenderPhase( RenderPhase.AO );
 			AddRenderPhase( RenderPhase.Resolve );
 
-			textureOutputShader = new TextureOutputShader();
-			directLightBufferDownsampleShader = new LightBufferDownsampleShader();
-			indirectLightBufferDownsampleShader = new LightBufferDownsampleShader();
+			textureOutputShader = new RectangleTextureShader();
+			directLightBufferDownsampleShader = new RectToSquareTexShader();
+			indirectLightBufferDownsampleShader = new RectToSquareTexShader();
 
 			GL.Enable( EnableCap.FramebufferSrgb );
 		}

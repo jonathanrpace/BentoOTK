@@ -1,7 +1,7 @@
 ﻿using Kaiga.Core;
 using OpenTK.Graphics.OpenGL4;
 
-namespace Kaiga.ShaderStages
+namespace Kaiga.Shaders.Fragment
 {
 	public class LightResolveFragShader : AbstractFragmentShaderStage
 	{

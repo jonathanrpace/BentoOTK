@@ -1,10 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK;
 using Kaiga.Core;
-using OpenTK.Input;
-using System.Diagnostics;
 
-namespace Kaiga.ShaderStages
+namespace Kaiga.Shaders.Fragment
 {
 	public class BoxBlurFragShader : AbstractFragmentShaderStage
 	{

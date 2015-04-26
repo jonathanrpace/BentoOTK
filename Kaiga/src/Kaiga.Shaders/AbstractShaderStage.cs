@@ -4,7 +4,7 @@ using System.Diagnostics;
 using Kaiga.Core;
 using OpenTK;
 
-namespace Kaiga.ShaderStages
+namespace Kaiga.Shaders
 {
 	abstract public class AbstractShaderStage : AbstractValidatable
 	{

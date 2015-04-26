@@ -2,7 +2,7 @@
 using OpenTK.Graphics.OpenGL4;
 using Kaiga.Core;
 
-namespace Kaiga.ShaderStages
+namespace Kaiga.Shaders.Vertex
 {
 	public class GVertexShader : AbstractVertexShaderStage
 	{

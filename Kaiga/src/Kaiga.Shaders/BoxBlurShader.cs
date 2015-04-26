@@ -1,8 +1,9 @@
 ﻿using System;
-using Kaiga.ShaderStages;
 using OpenTK.Graphics.OpenGL4;
 using Kaiga.Core;
 using Kaiga.Geom;
+using Kaiga.Shaders.Vertex;
+using Kaiga.Shaders.Fragment;
 
 namespace Kaiga.Shaders
 {

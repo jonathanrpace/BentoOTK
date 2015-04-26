@@ -4,7 +4,7 @@ using Kaiga.Core;
 using Kaiga.Lights;
 using OpenTK;
 
-namespace Kaiga.ShaderStages
+namespace Kaiga.Shaders.Fragment
 {
 	public class PointLightFragShader : AbstractFragmentShaderStage
 	{

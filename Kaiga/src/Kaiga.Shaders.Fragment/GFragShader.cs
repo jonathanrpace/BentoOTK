@@ -1,9 +1,6 @@
-﻿using System;
-using OpenTK.Graphics.OpenGL4;
-using Kaiga.Core;
-using Kaiga.Materials;
+﻿using Kaiga.Materials;
 
-namespace Kaiga.ShaderStages
+namespace Kaiga.Shaders.Fragment
 {
 	public class GFragShader : AbstractFragmentShaderStage
 	{
