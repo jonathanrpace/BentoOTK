@@ -54,6 +54,7 @@ namespace Examples
 			renderer.AddRenderPass( new ImageLightRenderPass() );
 			renderer.AddRenderPass( new AORenderPass() );
 			renderer.AddRenderPass( new SkyboxRenderPass() );
+			renderer.AddRenderPass( new LightResolvePass() );
 
 			const int numColumns = 10;
 			const int numRows = 10;

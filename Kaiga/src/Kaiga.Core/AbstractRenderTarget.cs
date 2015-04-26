@@ -23,6 +23,7 @@ namespace Kaiga.Core
 		protected readonly PixelInternalFormat internalFormat;
 		protected readonly RenderbufferStorage depthStencilFormat;
 		readonly Dictionary<FramebufferAttachment, ITexture2D> texturesByAttachment;
+		readonly Dictionary<FramebufferAttachment, int> levelByAttachment;
 
 		int width = 256;
 		int height = 256;
@@ -42,22 +43,42 @@ namespace Kaiga.Core
 			this.depthStencilFormat = depthStencilFormat;
 
 			texturesByAttachment = new Dictionary<FramebufferAttachment, ITexture2D>();
+			levelByAttachment = new Dictionary<FramebufferAttachment, int>();
 		}
 
 		public void SetSize( int width, int height )
 		{
 			if ( this.width == width && this.height == height )
 				return;
-			
+
+			Debug.Assert( isRectangular || width == height );
+				
 			this.width = width;
 			this.height = height;
 			invalidate();
 		}
 
-		protected void AttachTexture( FramebufferAttachment attachment, RectangleTexture texture )
+
+		public void Bind()
+		{
+			validate();
+
+			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
+			GL.DrawBuffer( DrawBufferMode.ColorAttachment0 );
+		}
+
+		public void AttachTexture( FramebufferAttachment attachment, RectangleTexture texture, int level = 0 )
 		{
 			Debug.Assert( isRectangular );
 			texturesByAttachment[ attachment ] = texture;
+			levelByAttachment[ attachment ] = level;
+		}
+
+		public void AttachTexture( FramebufferAttachment attachment, SquareTexture2D texture, int level = 0 )
+		{
+			Debug.Assert( !isRectangular );
+			texturesByAttachment[ attachment ] = texture;
+			levelByAttachment[ attachment ] = level;
 		}
 
 		protected override void onValidate()
@@ -65,11 +86,13 @@ namespace Kaiga.Core
 			frameBuffer = GL.GenFramebuffer();
 			GL.BindFramebuffer( FramebufferTarget.Framebuffer, frameBuffer );
 
+			TextureTarget textureTarget = isRectangular ? TextureTarget.TextureRectangle : TextureTarget.Texture2D;
 			foreach ( var attachment in texturesByAttachment.Keys )
 			{
 				var texture = texturesByAttachment[ attachment ];
+				var level = levelByAttachment[ attachment ];
 				texture.SetSize( width, height );
-				GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, attachment, TextureTarget.TextureRectangle, texture.Texture, 0 );
+				GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, attachment, textureTarget, texture.Texture, level );
 			}
 
 			if ( hasDepthStencil )

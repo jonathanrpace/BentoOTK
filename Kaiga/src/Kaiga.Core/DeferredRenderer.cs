@@ -28,8 +28,10 @@ namespace Kaiga.Core
 		public event RenderPassDelegate OnRenderPassAdded;
 		public event RenderPassDelegate OnRenderPassRemoved;
 
-		TextureOutputShader textureOutputShader;
-		
+		readonly TextureOutputShader textureOutputShader;
+		readonly LightBufferDownsampleShader directLightBufferDownsampleShader;
+		readonly LightBufferDownsampleShader indirectLightBufferDownsampleShader;
+
 		public DeferredRenderer() : this( "Deferred Renderer" )
 		{
 
@@ -52,12 +54,14 @@ namespace Kaiga.Core
 			Camera.AddComponent( cameraTransform );
 
 			AddRenderPhase( RenderPhase.G );
-			AddRenderPhase( RenderPhase.Light );
-			AddRenderPhase( RenderPhase.Forward );
+			AddRenderPhase( RenderPhase.DirectLight );
+			AddRenderPhase( RenderPhase.IndirectLight );
 			AddRenderPhase( RenderPhase.AO );
-			AddRenderPhase( RenderPhase.Post );
+			AddRenderPhase( RenderPhase.Resolve );
 
 			textureOutputShader = new TextureOutputShader();
+			directLightBufferDownsampleShader = new LightBufferDownsampleShader();
+			indirectLightBufferDownsampleShader = new LightBufferDownsampleShader();
 
 			GL.Enable( EnableCap.FramebufferSrgb );
 		}
@@ -75,6 +79,8 @@ namespace Kaiga.Core
 
 			renderTarget.Dispose();
 			textureOutputShader.Dispose();
+			directLightBufferDownsampleShader.Dispose();
+			indirectLightBufferDownsampleShader.Dispose();
 		}
 		
 		public void OnAddedToScene( Scene scene )
@@ -192,16 +198,25 @@ namespace Kaiga.Core
 			aoRenderTarget.BindForAOPhase();
 			RenderPassesInPhase( passesByPhase[ RenderPhase.AO ] );
 
-			// Light pass
-			renderTarget.BindForLightPhase();
+			// Direct Light pass
+			renderTarget.BindForDirectLightPhase();
 			GL.Enable( EnableCap.Blend );
 			GL.BlendFunc( BlendingFactorSrc.One, BlendingFactorDest.One );
 			GL.BlendEquation( BlendEquationMode.FuncAdd );
-			RenderPassesInPhase( passesByPhase[ RenderPhase.Light ] );
+			RenderPassesInPhase( passesByPhase[ RenderPhase.DirectLight ] );
+
+			// Indirect light pass
+			renderTarget.BindForIndirectLightPhase();
+			RenderPassesInPhase( passesByPhase[ RenderPhase.IndirectLight ] );
 			GL.Disable( EnableCap.Blend );
 
-			// Forward
-			RenderPassesInPhase( passesByPhase[ RenderPhase.Forward ] );
+			// Downsample direct and indirect buffers into 2D mipmapped textures
+			directLightBufferDownsampleShader.Render( renderParams, renderParams.RenderTarget.DirectLightBuffer );
+			indirectLightBufferDownsampleShader.Render( renderParams, renderParams.RenderTarget.IndirectLightBuffer );
+
+			// Resolve
+			renderTarget.BindForResolvePhase();
+			RenderPassesInPhase( passesByPhase[ RenderPhase.Resolve ] );
 
 
 			// Switch draw target to back buffer

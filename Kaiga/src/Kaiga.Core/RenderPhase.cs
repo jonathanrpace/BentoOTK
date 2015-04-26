@@ -3,10 +3,10 @@
 	public enum RenderPhase
 	{
 		G,
-		Light,
-		Forward,
+		DirectLight,
+		IndirectLight,
 		AO,
-		Post
+		Resolve
 	}
 }
 

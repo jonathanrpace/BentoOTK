@@ -69,7 +69,7 @@ namespace Kaiga.RenderPasses
 		{
 			get
 			{
-				return RenderPhase.Light;
+				return RenderPhase.IndirectLight;
 			}
 		}
 

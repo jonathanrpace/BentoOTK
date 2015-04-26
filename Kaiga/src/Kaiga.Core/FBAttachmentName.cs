@@ -8,10 +8,11 @@ namespace Kaiga.Core
 		static readonly public FramebufferAttachment Normal = FramebufferAttachment.ColorAttachment1;
 		static readonly public FramebufferAttachment Albedo = FramebufferAttachment.ColorAttachment2;
 		static readonly public FramebufferAttachment Material = FramebufferAttachment.ColorAttachment3;
-		static readonly public FramebufferAttachment Output = FramebufferAttachment.ColorAttachment4;
-		static readonly public FramebufferAttachment Post = FramebufferAttachment.ColorAttachment5;
-		static readonly public FramebufferAttachment AO = FramebufferAttachment.ColorAttachment6;
-		static readonly public FramebufferAttachment AOBlur = FramebufferAttachment.ColorAttachment7;
+		static readonly public FramebufferAttachment DirectLight = FramebufferAttachment.ColorAttachment4;
+		static readonly public FramebufferAttachment IndirectLight = FramebufferAttachment.ColorAttachment5;
+		static readonly public FramebufferAttachment Output = FramebufferAttachment.ColorAttachment6;
+		static readonly public FramebufferAttachment AO = FramebufferAttachment.ColorAttachment0;
+		static readonly public FramebufferAttachment AOBlur = FramebufferAttachment.ColorAttachment1;
 	}
 
 	public static class DrawBufferName
@@ -20,10 +21,11 @@ namespace Kaiga.Core
 		static readonly public DrawBuffersEnum Normal = DrawBuffersEnum.ColorAttachment1;
 		static readonly public DrawBuffersEnum Albedo = DrawBuffersEnum.ColorAttachment2;
 		static readonly public DrawBuffersEnum Material = DrawBuffersEnum.ColorAttachment3;
-		static readonly public DrawBuffersEnum Output = DrawBuffersEnum.ColorAttachment4;
-		static readonly public DrawBuffersEnum Post = DrawBuffersEnum.ColorAttachment5;
-		static readonly public DrawBuffersEnum AO = DrawBuffersEnum.ColorAttachment6;
-		static readonly public DrawBuffersEnum AOBlur = DrawBuffersEnum.ColorAttachment7;
+		static readonly public DrawBuffersEnum DirectLight = DrawBuffersEnum.ColorAttachment4;
+		static readonly public DrawBuffersEnum IndirectLight = DrawBuffersEnum.ColorAttachment5;
+		static readonly public DrawBuffersEnum Output = DrawBuffersEnum.ColorAttachment6;
+		static readonly public DrawBuffersEnum AO = DrawBuffersEnum.ColorAttachment0;
+		static readonly public DrawBuffersEnum AOBlur = DrawBuffersEnum.ColorAttachment1;
 	}
 }
 

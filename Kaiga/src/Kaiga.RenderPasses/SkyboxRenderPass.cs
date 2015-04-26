@@ -80,7 +80,7 @@ namespace Kaiga.RenderPasses
 		{
 			get
 			{
-				return RenderPhase.Forward;
+				return RenderPhase.Resolve;
 			}
 		}
 

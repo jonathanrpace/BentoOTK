@@ -1,7 +1,4 @@
-﻿using System;
-using OpenTK.Graphics.OpenGL4;
-using System.Diagnostics;
-using System.Collections.Generic;
+﻿using OpenTK.Graphics.OpenGL4;
 using System.Drawing;
 using Kaiga.Textures;
 
@@ -13,8 +10,9 @@ namespace Kaiga.Core
 		public RectangleTexture PositionBuffer { get; private set; }
 		public RectangleTexture AlbedoBuffer { get; private set; }
 		public RectangleTexture MaterialBuffer { get; private set; }
+		public RectangleTexture DirectLightBuffer { get; private set; }
+		public RectangleTexture IndirectLightBuffer { get; private set; }
 		public RectangleTexture OutputBuffer { get; private set; }
-		public RectangleTexture PostBuffer { get; private set; }
 		
 		DrawBuffersEnum[] gPhaseDrawBuffers = { 
 			DrawBufferName.Position, 
@@ -23,7 +21,15 @@ namespace Kaiga.Core
 			DrawBufferName.Material
 		};
 
-		DrawBuffersEnum[] lightPhaseDrawBuffers = { 
+		DrawBuffersEnum[] directLightPhaseDrawBuffers = { 
+			DrawBufferName.DirectLight
+		};
+
+		DrawBuffersEnum[] indirectLightPhaseDrawBuffers = { 
+			DrawBufferName.IndirectLight
+		};
+
+		DrawBuffersEnum[] resolvePhaseDrawBuffers = { 
 			DrawBufferName.Output
 		};
 
@@ -32,8 +38,9 @@ namespace Kaiga.Core
 			DrawBufferName.Normal, 
 			DrawBufferName.Albedo, 
 			DrawBufferName.Material,
-			DrawBufferName.Output,
-			DrawBufferName.Post
+			DrawBufferName.DirectLight,
+			DrawBufferName.IndirectLight,
+			DrawBufferName.Output
 		};
 
 		public DeferredRenderTarget() :
@@ -43,15 +50,17 @@ namespace Kaiga.Core
 			NormalBuffer = new RectangleTexture( internalFormat );
 			AlbedoBuffer = new RectangleTexture( internalFormat );
 			MaterialBuffer = new RectangleTexture( internalFormat );
+			DirectLightBuffer = new RectangleTexture( internalFormat );
+			IndirectLightBuffer = new RectangleTexture( internalFormat );
 			OutputBuffer = new RectangleTexture( internalFormat );
-			PostBuffer = new RectangleTexture( internalFormat );
 
 			AttachTexture( FBAttachmentName.Position, PositionBuffer );
 			AttachTexture( FBAttachmentName.Normal, NormalBuffer );
 			AttachTexture( FBAttachmentName.Albedo, AlbedoBuffer );
 			AttachTexture( FBAttachmentName.Material, MaterialBuffer );
+			AttachTexture( FBAttachmentName.DirectLight, DirectLightBuffer );
+			AttachTexture( FBAttachmentName.IndirectLight, IndirectLightBuffer );
 			AttachTexture( FBAttachmentName.Output, OutputBuffer );
-			AttachTexture( FBAttachmentName.Post, PostBuffer );
 		}
 
 		public void Clear()
@@ -74,12 +83,28 @@ namespace Kaiga.Core
 			GL.DrawBuffers( gPhaseDrawBuffers.Length, gPhaseDrawBuffers );
 		}
 
-		public void BindForLightPhase()
+		public void BindForDirectLightPhase()
 		{
 			validate();
 
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
-			GL.DrawBuffers( lightPhaseDrawBuffers.Length, lightPhaseDrawBuffers );
+			GL.DrawBuffers( directLightPhaseDrawBuffers.Length, directLightPhaseDrawBuffers );
+		}
+
+		public void BindForIndirectLightPhase()
+		{
+			validate();
+
+			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
+			GL.DrawBuffers( indirectLightPhaseDrawBuffers.Length, indirectLightPhaseDrawBuffers );
+		}
+
+		public void BindForResolvePhase()
+		{
+			validate();
+
+			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
+			GL.DrawBuffers( resolvePhaseDrawBuffers.Length, resolvePhaseDrawBuffers );
 		}
 
 		public void BindForNoDraw()

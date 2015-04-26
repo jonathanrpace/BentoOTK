@@ -82,7 +82,7 @@ namespace Kaiga.RenderPasses
 			stencilShader.UnbindPerPass();
 
 
-			( (DeferredRenderTarget)renderParams.RenderTarget ).BindForLightPhase();
+			( (DeferredRenderTarget)renderParams.RenderTarget ).BindForDirectLightPhase();
 			GL.Disable( EnableCap.DepthTest );
 
 			GL.Enable( EnableCap.CullFace );
@@ -113,7 +113,7 @@ namespace Kaiga.RenderPasses
 		{
 			get
 			{
-				return Kaiga.Core.RenderPhase.Light;
+				return Kaiga.Core.RenderPhase.DirectLight;
 			}
 		}
 
