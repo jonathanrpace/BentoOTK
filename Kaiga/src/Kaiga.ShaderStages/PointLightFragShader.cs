@@ -68,7 +68,7 @@ float angularDot( vec3 A, vec3 B, in float angularSize )
 
 	float angle = 1.0f - acos(dotValue) * (2.0f / pi);
 	angle = min( angle, angularSize );
-	angle *= rcp( angularSize );
+	angle *= ( 1 / angularSize );
 
 	float ret = sin( angle * pi * 0.5f );
 	
@@ -141,7 +141,7 @@ void main()
 	light *= u_intensity;
 	light /= attenuation;
 
-	light += emissive * albedo;
+	light *= albedo;
 
 	out_color = vec4( light, 1.0 );
 }
