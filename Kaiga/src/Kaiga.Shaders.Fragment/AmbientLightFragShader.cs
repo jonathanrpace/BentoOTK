@@ -8,9 +8,11 @@ namespace Kaiga.Shaders.Fragment
 	{
 		override public void BindPerPass( RenderParams renderParams )
 		{
-			SetUniformTexture( 1, "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, TextureTarget.TextureRectangle );
-			SetUniformTexture( 2, "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture, TextureTarget.TextureRectangle );
-			SetUniformTexture( 3, "s_albedoBuffer", renderParams.RenderTarget.AlbedoBuffer.Texture, TextureTarget.TextureRectangle );
+			base.BindPerPass( renderParams );
+
+			SetUniformTexture( "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, TextureTarget.TextureRectangle );
+			SetUniformTexture( "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture, TextureTarget.TextureRectangle );
+			SetUniformTexture( "s_albedoBuffer", renderParams.RenderTarget.AlbedoBuffer.Texture, TextureTarget.TextureRectangle );
 		}
 
 		public void BindPerLight( RenderParams renderParams, AmbientLight light )

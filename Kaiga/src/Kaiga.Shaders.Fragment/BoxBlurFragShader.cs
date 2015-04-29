@@ -9,7 +9,7 @@ namespace Kaiga.Shaders.Fragment
 		public void Bind( RenderParams renderParams, int texture, float radiusU, float radiusV )
 		{
 			SetUniform2( "u_radius", new Vector2( radiusU, radiusV ) );
-			SetUniformTexture( 0, "s_texture", texture, TextureTarget.TextureRectangle );
+			SetUniformTexture( "s_texture", texture, TextureTarget.TextureRectangle );
 
 			//float depthCutoff = Mouse.GetState().X / 5000.0f;
 			//Debug.WriteLine( depthCutoff.ToString() );

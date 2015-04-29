@@ -27,12 +27,14 @@ namespace Kaiga.Shaders.Fragment
 
 		override public void BindPerPass( RenderParams renderParams )
 		{
-			SetUniformTexture( 0, "s_positionBuffer", renderParams.RenderTarget.PositionBuffer.Texture, 
+			base.BindPerPass( renderParams );
+
+			SetUniformTexture( "s_positionBuffer", renderParams.RenderTarget.PositionBuffer.Texture, 
 								TextureTarget.TextureRectangle );
-			SetUniformTexture( 1, "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, 
+			SetUniformTexture( "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, 
 				TextureTarget.TextureRectangle );
 
-			SetUniformTexture( 2, "s_randomTexture", randomTexture.Texture, TextureTarget.Texture2D );
+			SetUniformTexture( "s_randomTexture", randomTexture.Texture, TextureTarget.Texture2D );
 
 			SetUniformMatrix4( "projectionMatrix", ref renderParams.ProjectionMatrix );
 		}

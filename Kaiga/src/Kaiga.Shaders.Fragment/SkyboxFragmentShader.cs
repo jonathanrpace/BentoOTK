@@ -8,7 +8,7 @@ namespace Kaiga.Shaders.Fragment
 	{
 		public void SetTexture( int texture )
 		{
-			SetUniformTexture( 0, "tex", texture, TextureTarget.TextureCubeMap );
+			SetUniformTexture( "tex", texture, TextureTarget.TextureCubeMap );
 			SetUniform1( "mipRatio", Math.Max( Math.Min( Mouse.GetState().X / 500.0f, 1.0f ), 0.0f ) );
 		}
 

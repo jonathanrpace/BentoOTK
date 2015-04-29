@@ -6,22 +6,28 @@ using OpenTK.Graphics.OpenGL4;
 using Kaiga.Core;
 using Kaiga.Shaders.Fragment;
 using Kaiga.Shaders.Vertex;
+using System.Collections.Generic;
 
 namespace Kaiga.Shaders
 {
-	public class RectToSquareTexShader : AbstractShader
+	public class RenderBufferDownsampleShader : AbstractShader
 	{
 		readonly ScreenQuadGeometry screenQuadGeom;
-		new readonly RectToSquareTexFragShader fragmentShader;
+
+		new readonly ScreenQuadVertexShader vertexShader;
+		new readonly RectangleTextureFragShader fragmentShader;
 
 		readonly SquareTexture2D output;
 		readonly AbstractRenderTarget renderTarget;
 
+		readonly List<AbstractRenderTarget> renderTargets;
 
-		public RectToSquareTexShader()
-			: base( new ScreenQuadVertexShader(), new RectToSquareTexFragShader() )
+
+		public RenderBufferDownsampleShader()
+			: base( new ScreenQuadVertexShader(), new RectangleTextureFragShader() )
 		{
-			fragmentShader = (RectToSquareTexFragShader)base.fragmentShader;
+			vertexShader = (ScreenQuadVertexShader)base.vertexShader;
+			fragmentShader = (RectangleTextureFragShader)base.fragmentShader;
 
 			output = new SquareTexture2D( PixelInternalFormat.Rgba16f, 1024 );
 			output.MinFilter = TextureMinFilter.LinearMipmapLinear;
@@ -29,6 +35,8 @@ namespace Kaiga.Shaders
 			screenQuadGeom = new ScreenQuadGeometry();
 			renderTarget = new AbstractRenderTarget( PixelInternalFormat.Rgba16f, false, false );
 			renderTarget.AttachTexture( FramebufferAttachment.ColorAttachment0, output );
+
+			renderTargets = new List<AbstractRenderTarget>();
 		}
 
 		public override void Dispose()
@@ -45,13 +53,26 @@ namespace Kaiga.Shaders
 
 			int outputSize = TextureUtil.GetBestPowerOf2( Math.Min( texture.Width, texture.Height ) );
 			renderTarget.SetSize( outputSize, outputSize );
-
 			renderTarget.Bind();
-			fragmentShader.Render( texture.Texture, output.Width );
+
+			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
+			fragmentShader.SetTexture( texture.Texture );
+
+
+			screenQuadGeom.Bind();
+			GL.DrawElements( PrimitiveType.Triangles, screenQuadGeom.NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
 
 			output.GenerateMipMaps();
 
 			UnbindPerPass();
+		}
+
+		public int OutputTexture
+		{
+			get
+			{
+				return output.Texture;
+			}
 		}
 	}
 }

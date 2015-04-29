@@ -7,13 +7,13 @@ using Kaiga.Shaders.Fragment;
 
 namespace Kaiga.Shaders
 {
-	public class RectangleTextureShader : AbstractShader
+	public class ScreenQuadTextureRectShader : AbstractShader
 	{
 		private new readonly ScreenQuadVertexShader vertexShader;
 		private new readonly RectangleTextureFragShader fragmentShader;
 		private readonly ScreenQuadGeometry screenQuadGeom;
 
-		public RectangleTextureShader() : base( new ScreenQuadVertexShader(), new RectangleTextureFragShader() )
+		public ScreenQuadTextureRectShader() : base( new ScreenQuadVertexShader(), new RectangleTextureFragShader() )
 		{
 			vertexShader = (ScreenQuadVertexShader)base.vertexShader;
 			fragmentShader = (RectangleTextureFragShader)base.fragmentShader;
@@ -26,12 +26,12 @@ namespace Kaiga.Shaders
 			screenQuadGeom.Dispose();
 		}
 		
-		public void Render( RenderParams renderParams, int texture )
+		public void Render( RenderParams renderParams, int source )
 		{
 			BindPerPass( renderParams );
 
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
-			fragmentShader.Bind( texture );
+			fragmentShader.SetTexture( source );
 			
 			screenQuadGeom.Bind();
 

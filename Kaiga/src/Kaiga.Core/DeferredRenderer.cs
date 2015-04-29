@@ -28,9 +28,11 @@ namespace Kaiga.Core
 		public event RenderPassDelegate OnRenderPassAdded;
 		public event RenderPassDelegate OnRenderPassRemoved;
 
-		readonly RectangleTextureShader textureOutputShader;
-		readonly RectToSquareTexShader directLightBufferDownsampleShader;
-		readonly RectToSquareTexShader indirectLightBufferDownsampleShader;
+		readonly ScreenQuadTextureRectShader textureOutputShader;
+		readonly ScreenQuadTextureShader squareTextureOutputShader;
+
+		readonly RenderBufferDownsampleShader directLightBufferDownsampleShader;
+		readonly RenderBufferDownsampleShader indirectLightBufferDownsampleShader;
 
 		public DeferredRenderer() : this( "Deferred Renderer" )
 		{
@@ -59,9 +61,10 @@ namespace Kaiga.Core
 			AddRenderPhase( RenderPhase.AO );
 			AddRenderPhase( RenderPhase.Resolve );
 
-			textureOutputShader = new RectangleTextureShader();
-			directLightBufferDownsampleShader = new RectToSquareTexShader();
-			indirectLightBufferDownsampleShader = new RectToSquareTexShader();
+			textureOutputShader = new ScreenQuadTextureRectShader();
+			squareTextureOutputShader = new ScreenQuadTextureShader();
+			directLightBufferDownsampleShader = new RenderBufferDownsampleShader();
+			indirectLightBufferDownsampleShader = new RenderBufferDownsampleShader();
 
 			GL.Enable( EnableCap.FramebufferSrgb );
 		}
@@ -210,6 +213,8 @@ namespace Kaiga.Core
 			RenderPassesInPhase( passesByPhase[ RenderPhase.IndirectLight ] );
 			GL.Disable( EnableCap.Blend );
 
+			GL.Disable(EnableCap.DepthTest);
+
 			// Downsample direct and indirect buffers into 2D mipmapped textures
 			directLightBufferDownsampleShader.Render( renderParams, renderParams.RenderTarget.DirectLightBuffer );
 			indirectLightBufferDownsampleShader.Render( renderParams, renderParams.RenderTarget.IndirectLightBuffer );
@@ -220,12 +225,14 @@ namespace Kaiga.Core
 
 
 			// Switch draw target to back buffer
+			GL.Viewport( 0, 0, scene.GameWindow.Width, scene.GameWindow.Height );
 			GL.DepthMask( true );
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
-			GL.DepthFunc( DepthFunction.Always );
+
+			//squareTextureOutputShader.Render( renderParams, indirectLightBufferDownsampleShader.OutputTexture );
+
 			textureOutputShader.Render( renderParams, renderTarget.OutputBuffer.Texture );
-			//textureOutputShader.Render( renderParams, renderParams.AORenderTarget.AOBuffer.Texture );
-			GL.DepthFunc( DepthFunction.Less );
+
 
 			scene.GameWindow.SwapBuffers();
 		}

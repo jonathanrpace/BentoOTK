@@ -50,32 +50,19 @@
     <Compile Include="src\Kaiga.Geom\SphereGeometry.cs" />
     <Compile Include="src\Kaiga.Geom\ScreenQuadGeometry.cs" />
     <Compile Include="src\Kaiga.Materials\StandardMaterial.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\ScreenQuadVertexShader.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\GVertexShader.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\GFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders\GShader.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\TextureOutputFragShader.cs" />
-    <Compile Include="src\Kaiga.Shaders\TextureOutputShader.cs" />
     <Compile Include="src\Kaiga.Shaders\AbstractShader.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\AbstractShaderStage.cs" />
     <Compile Include="src\Kaiga.Lights\PointLight.cs" />
     <Compile Include="src\Kaiga.RenderPasses\PointLightRenderPass.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\PointLightVertexShader.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\PointLightFragShader.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\AbstractVertexShaderStage.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\AbstractFragmentShaderStage.cs" />
     <Compile Include="src\Kaiga.Shaders\PointLightShader.cs" />
     <Compile Include="src\Kaiga.Core\DeferredRenderTarget.cs" />
     <Compile Include="src\Kaiga.Core\FBAttachmentName.cs" />
     <Compile Include="src\Kaiga.Shaders\PointLightStencilShader.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\NullFragShader.cs" />
     <Compile Include="src\Kaiga.Components\SwarmMember.cs" />
     <Compile Include="src\Kaiga.Processes\SwarmProcess.cs" />
     <Compile Include="src\Kaiga.Shaders\FFAOShader.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\FFAOFragShader.cs" />
     <Compile Include="src\Kaiga.RenderPasses\AORenderPass.cs" />
     <Compile Include="src\Kaiga.Textures\RandomDirectionTexture.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\BoxBlurFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders\BoxBlurShader.cs" />
     <Compile Include="src\Kaiga.Textures\RectangleTexture.cs" />
     <Compile Include="src\Kaiga.Core\AbstractValidatable.cs" />
@@ -83,25 +70,48 @@
     <Compile Include="src\Kaiga.Textures\ITexture.cs" />
     <Compile Include="src\Kaiga.Core\AORenderTarget.cs" />
     <Compile Include="src\Kaiga.Shaders\AmbientLightShader.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\AmbientLightFragShader.cs" />
     <Compile Include="src\Kaiga.Lights\AmbientLight.cs" />
     <Compile Include="src\Kaiga.RenderPasses\AmbientLightRenderPass.cs" />
     <Compile Include="src\Kaiga.RenderPasses\GPass.cs" />
     <Compile Include="src\Kaiga.Textures\ExternalCubeTexture.cs" />
     <Compile Include="src\Kaiga.Textures\ITexture2D.cs" />
     <Compile Include="src\Kaiga.Geom\SkyboxGeometry.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\SkyboxVertexShader.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\SkyboxFragmentShader.cs" />
     <Compile Include="src\Kaiga.Shaders\SkyboxShader.cs" />
     <Compile Include="src\Kaiga.RenderPasses\SkyboxRenderPass.cs" />
     <Compile Include="src\Kaiga.Materials\SkyboxMaterial.cs" />
     <Compile Include="src\Kaiga.Textures\ICubeTexture.cs" />
     <Compile Include="src\OpenTK.TextureLoaders\LoaderDDS.cs" />
     <Compile Include="src\OpenTK.TextureLoaders\LoaderStatics.cs" />
-    <Compile Include="src\Kaiga.ShaderStages\ImageLightFragShader.cs" />
     <Compile Include="src\Kaiga.Lights\ImageLight.cs" />
     <Compile Include="src\Kaiga.Shaders\ImageLightShader.cs" />
     <Compile Include="src\Kaiga.RenderPasses\ImageLightRenderPass.cs" />
+    <Compile Include="src\Kaiga.RenderPasses\LightResolvePass.cs" />
+    <Compile Include="src\Kaiga.Shaders\LightResolveShader.cs" />
+    <Compile Include="src\Kaiga.Textures\SquareTexture2D.cs" />
+    <Compile Include="src\Kaiga.Util\TextureUtil.cs" />
+    <Compile Include="src\Kaiga.Shaders\AbstractShaderStage.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\AbstractFragmentShaderStage.cs" />
+    <Compile Include="src\Kaiga.Shaders.Vertex\AbstractVertexShaderStage.cs" />
+    <Compile Include="src\Kaiga.Shaders.Vertex\GVertexShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Vertex\PointLightVertexShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Vertex\ScreenQuadVertexShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Vertex\SkyboxVertexShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\AmbientLightFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\BoxBlurFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\FFAOFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\GFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\ImageLightFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\LightResolveFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\NullFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\PointLightFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\SkyboxFragmentShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\RectangleTextureFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\SquareTextureFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders\RenderBufferDownsampleShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\RenderBufferDownsampleFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders\ScreenQuadTextureShader.cs" />
+    <Compile Include="src\Kaiga.Shaders\ScreenQuadTextureRectShader.cs" />
+    <Compile Include="src\Kaiga.Shaders\RenderBufferDownsampler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -125,11 +135,22 @@
     <Folder Include="src\Kaiga.RenderPasses\" />
     <Folder Include="src\Kaiga.Geom\" />
     <Folder Include="src\Kaiga.Processes\" />
-    <Folder Include="src\Kaiga.ShaderStages\" />
     <Folder Include="src\Kaiga.Shaders\" />
     <Folder Include="src\Kaiga.Util\" />
     <Folder Include="src\Kaiga.Materials\" />
     <Folder Include="src\Kaiga.Textures\" />
     <Folder Include="src\Kaiga.Lights\" />
+    <Folder Include="src\Kaiga.Shaders.Fragment\" />
+    <Folder Include="src\Kaiga.Shaders.Vertex\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\RectangleTextureShader.frag">
+      <DependentUpon>RectangleTextureFragShader.cs</DependentUpon>
+      <LogicalName>RectangleTextureShader.frag</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\SquareTextureFragShader.frag">
+      <DependentUpon>SquareTextureFragShader.cs</DependentUpon>
+      <LogicalName>SquareTextureFragShader.frag</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

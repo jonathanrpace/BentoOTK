@@ -2,19 +2,25 @@
 
 namespace Kaiga.Shaders.Fragment
 {
-	public class RectToSquareTexFragShader : AbstractFragmentShaderStage
+	public class RenderBufferDownsampleFragShader : AbstractFragmentShaderStage
 	{
-		public void Render( int texture, int outputSize )
+		public void SetTexture( int texture, int outputSize )
 		{
-			SetUniformTexture( 0, "s_tex", texture, TextureTarget.TextureRectangle );
+			SetUniformTexture( "s_tex", texture, TextureTarget.TextureRectangle );
 			SetUniform1( "u_outputSize", outputSize );
-			SetUniform1( "u_radius", 1.0f );
+			SetUniform1( "u_radius", 2.5f );
 		}
 
 		protected override string GetShaderSource()
 		{
 			return @"
 #version 450 core
+
+// Inputs
+in Varying
+{
+	vec2 in_uv;
+};
 
 uniform sampler2DRect s_tex;
 uniform int u_outputSize;
@@ -27,7 +33,9 @@ void main()
 	ivec2 texSize = textureSize( s_tex, 0 );
 	float aspectRatio = texSize.x / texSize.y;
 
-	vec2 uv = (gl_FragCoord.xy / u_outputSize) * vec2( texSize );
+	vec2 uv = (gl_FragCoord.xy / u_outputSize);
+	uv.y = 1.0-uv.y;
+ 	uv *= vec2( texSize );
 
 	vec4 sampleLeft 	= texture( s_tex, uv + vec2( -u_radius, 0.0f ) );
 	vec4 sampleRight 	= texture( s_tex, uv + vec2( u_radius, 0.0f ) );

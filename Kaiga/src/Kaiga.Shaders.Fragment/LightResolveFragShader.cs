@@ -7,13 +7,15 @@ namespace Kaiga.Shaders.Fragment
 	{
 		override public void BindPerPass( RenderParams renderParams )
 		{
-			SetUniformTexture( 0, "s_directLightBuffer", renderParams.RenderTarget.DirectLightBuffer.Texture, 
+			base.BindPerPass( renderParams );
+
+			SetUniformTexture( "s_directLightBuffer", renderParams.RenderTarget.DirectLightBuffer.Texture, 
 				TextureTarget.TextureRectangle );
-			SetUniformTexture( 1, "s_indirectLightBuffer", renderParams.RenderTarget.IndirectLightBuffer.Texture, 
+			SetUniformTexture( "s_indirectLightBuffer", renderParams.RenderTarget.IndirectLightBuffer.Texture, 
 				TextureTarget.TextureRectangle );
-			SetUniformTexture( 2, "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture, 
+			SetUniformTexture( "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture, 
 				TextureTarget.TextureRectangle );
-			SetUniformTexture( 3, "s_aoBuffer", renderParams.AORenderTarget.AOBuffer.Texture, 
+			SetUniformTexture( "s_aoBuffer", renderParams.AORenderTarget.AOBuffer.Texture, 
 				TextureTarget.TextureRectangle );
 		}
 
