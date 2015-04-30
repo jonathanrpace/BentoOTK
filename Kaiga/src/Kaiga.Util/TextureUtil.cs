@@ -15,13 +15,13 @@ namespace Kaiga.Util
 				return 0;
 
 			int numMipMaps = 1;
-			while ( size >= MIN_SIZE )
+			while ( size > MIN_SIZE )
 			{
 				size >>= 1;
 				numMipMaps++;
 			}
 
-			return numMipMaps;
+			return numMipMaps-1;
 		}
 
 		public static bool IsDimensionValid( int d )

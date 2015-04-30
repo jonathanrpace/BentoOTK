@@ -14,5 +14,5 @@ layout( location = 0 ) out vec4 out_fragColor;
 
 void main(void)
 { 
-	out_fragColor = textureLod( tex, in_uv, 5 );
+	out_fragColor = textureLod( tex, in_uv, 3 );
 }

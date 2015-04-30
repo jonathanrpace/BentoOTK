@@ -93,7 +93,7 @@ namespace Kaiga.Core
 			{
 				var texture = texturesByAttachment[ attachment ];
 				var level = levelByAttachment[ attachment ];
-				texture.SetSize( width, height );
+				texture.SetSize( width << level, height << level );
 				GL.FramebufferTexture2D( FramebufferTarget.Framebuffer, attachment, textureTarget, texture.Texture, level );
 			}
 

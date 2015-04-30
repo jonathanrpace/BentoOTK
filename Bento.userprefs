@@ -1,20 +1,17 @@
 ﻿<Properties StartupItem="Examples\Examples.csproj" GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Kaiga\src\Kaiga.Shaders.Fragment\SquareTextureFragShader.frag">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Kaiga\src\Kaiga.Shaders\RenderBufferDownsampler.cs">
     <Files>
-      <File FileName="Kaiga\src\Kaiga.Shaders\ScreenQuadTextureShader.cs" Line="14" Column="32" />
-      <File FileName="Kaiga\src\Kaiga.Shaders\RenderBufferDownsampleShader.cs" Line="62" Column="4" />
-      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\RectangleTextureFragShader.cs" Line="19" Column="1" />
-      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\SquareTextureFragShader.cs" Line="20" Column="1" />
-      <File FileName="Kaiga\src\Kaiga.Textures\SquareTexture2D.cs" Line="100" Column="1" />
-      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Core\AbstractValidatable.cs" Line="26" Column="1" />
-      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Core\AbstractRenderTarget.cs" Line="64" Column="1" />
-      <File FileName="Kaiga\src\Kaiga.Core\DeferredRenderer.cs" Line="214" Column="34" />
-      <File FileName="Kaiga\src\Kaiga.Shaders.Vertex\ScreenQuadVertexShader.cs" Line="26" Column="1" />
-      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\RenderBufferDownsampleFragShader.cs" Line="15" Column="4" />
-      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Shaders\AbstractShader.cs" Line="65" Column="1" />
-      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Shaders\AbstractShaderStage.cs" Line="75" Column="1" />
-      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\SquareTextureFragShader.frag" Line="18" Column="2" />
+      <File FileName="Kaiga\src\Kaiga.Shaders\ScreenQuadTextureShader.cs" Line="1" Column="1" />
+      <File FileName="Kaiga\src\Kaiga.Core\DeferredRenderer.cs" Line="220" Column="38" />
+      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\RenderBufferDownsampleFragShader.cs" Line="45" Column="42" />
+      <File FileName="Kaiga\src\Kaiga.Shaders\RenderBufferDownsampler.cs" Line="68" Column="128" />
+      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Textures\SquareTexture2D.cs" Line="50" Column="1" />
+      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Util\TextureUtil.cs" Line="17" Column="1" />
+      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Shaders\RenderBufferDownsampleShader.cs" Line="40" Column="1" />
+      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Core\AbstractValidatable.cs" Line="28" Column="1" />
+      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Core\AbstractRenderTarget.cs" Line="65" Column="4" />
+      <File FileName="c:\Coding\OpenTK\1.1\Source\OpenTK\Graphics\OpenGL4\ErrorHelper.cs" Line="129" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
