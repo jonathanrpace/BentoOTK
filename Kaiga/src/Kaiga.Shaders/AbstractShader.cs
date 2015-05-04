@@ -4,17 +4,20 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Kaiga.Shaders
 {
-	abstract public class AbstractShader : IDisposable
+	abstract public class AbstractShader<T,U> 
+		: IDisposable 
+		where T : AbstractShaderStage, new()
+		where U : AbstractShaderStage, new()
 	{
-		protected readonly AbstractShaderStage vertexShader;
-		protected readonly AbstractShaderStage fragmentShader;
+		protected readonly T vertexShader;
+		protected readonly U fragmentShader;
 
 		protected int pipeline;
 
-		protected AbstractShader( AbstractShaderStage vertexShader, AbstractShaderStage fragmentShader )
+		protected AbstractShader()
 		{
-			this.vertexShader = vertexShader;
-			this.fragmentShader = fragmentShader;
+			vertexShader = new T();
+			fragmentShader = new U();
 
 			pipeline = GL.GenProgramPipeline();
 

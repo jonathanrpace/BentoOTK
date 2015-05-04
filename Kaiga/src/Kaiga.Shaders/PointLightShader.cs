@@ -8,17 +8,8 @@ using Kaiga.Shaders.Fragment;
 
 namespace Kaiga.Shaders
 {
-	public class PointLightShader : AbstractShader
+	public class PointLightShader : AbstractShader<PointLightVertexShader, PointLightFragShader>
 	{
-		readonly new PointLightVertexShader vertexShader;
-		readonly new PointLightFragShader fragmentShader;
-
-		public PointLightShader() : base( new PointLightVertexShader(), new PointLightFragShader() )
-		{
-			vertexShader = (PointLightVertexShader)base.vertexShader;
-			fragmentShader = (PointLightFragShader)base.fragmentShader;
-		}
-
 		public void BindPerLight( RenderParams renderParams, PointLight pointLight )
 		{
 			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );

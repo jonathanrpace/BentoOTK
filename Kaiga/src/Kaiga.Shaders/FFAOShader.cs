@@ -10,20 +10,14 @@ using Kaiga.Shaders.Fragment;
 
 namespace Kaiga.Shaders
 {
-	public class FFAOShader : AbstractShader
+	public class FFAOShader : AbstractShader<ScreenQuadVertexShader, FFAOFragShader>
 	{
-		readonly new ScreenQuadVertexShader vertexShader;
-		readonly new FFAOFragShader fragmentShader;
 		readonly ScreenQuadGeometry screenQuadGeom;
 
 		readonly BoxBlurShader boxBlurShader;
 
-		public FFAOShader() : 
-		base( new ScreenQuadVertexShader(), new FFAOFragShader() )
+		public FFAOShader()
 		{
-			vertexShader = (ScreenQuadVertexShader)base.vertexShader;
-			fragmentShader = (FFAOFragShader)base.fragmentShader;
-
 			screenQuadGeom = new ScreenQuadGeometry();
 			boxBlurShader = new BoxBlurShader();
 		}

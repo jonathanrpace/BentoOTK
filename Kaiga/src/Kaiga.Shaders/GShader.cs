@@ -6,17 +6,8 @@ using Kaiga.Shaders.Fragment;
 
 namespace Kaiga.Shaders
 {
-	public class GShader : AbstractShader
+	public class GShader : AbstractShader<GVertexShader, GFragShader>
 	{
-		readonly new GVertexShader vertexShader;
-		readonly new GFragShader fragmentShader;
-		
-		public GShader() : base( new GVertexShader(), new GFragShader() )
-		{
-			vertexShader = (GVertexShader)base.vertexShader;
-			fragmentShader = (GFragShader)base.fragmentShader;
-		}
-		
 		public void BindPerMaterial( StandardMaterial material )
 		{
 			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );

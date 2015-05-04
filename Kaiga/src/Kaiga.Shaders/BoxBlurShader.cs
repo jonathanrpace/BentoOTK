@@ -7,15 +7,12 @@ using Kaiga.Shaders.Fragment;
 
 namespace Kaiga.Shaders
 {
-	public class BoxBlurShader : AbstractShader
+	public class BoxBlurShader : AbstractShader<ScreenQuadVertexShader, BoxBlurFragShader>
 	{
-		new readonly BoxBlurFragShader fragmentShader;
 		readonly ScreenQuadGeometry screenQuadGeom;
 
-		public BoxBlurShader() : base( new ScreenQuadVertexShader(), new BoxBlurFragShader() )
+		public BoxBlurShader()
 		{
-			fragmentShader = (BoxBlurFragShader)base.fragmentShader;
-
 			screenQuadGeom = new ScreenQuadGeometry();
 		}
 

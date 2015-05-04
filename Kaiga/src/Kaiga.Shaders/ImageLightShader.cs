@@ -8,18 +8,12 @@ using Kaiga.Shaders.Fragment;
 
 namespace Kaiga.Shaders
 {
-	public class ImageLightShader : AbstractShader
+	public class ImageLightShader : AbstractShader<ScreenQuadVertexShader, ImageLightFragShader>
 	{
-		readonly new ScreenQuadVertexShader vertexShader;
-		readonly new ImageLightFragShader fragmentShader;
-
 		readonly ScreenQuadGeometry screenQuadGeometry;
 
-		public ImageLightShader() : base( new ScreenQuadVertexShader(), new ImageLightFragShader() )
+		public ImageLightShader()
 		{
-			vertexShader = (ScreenQuadVertexShader)base.vertexShader;
-			fragmentShader = (ImageLightFragShader)base.fragmentShader;
-
 			screenQuadGeometry = new ScreenQuadGeometry();
 		}
 
