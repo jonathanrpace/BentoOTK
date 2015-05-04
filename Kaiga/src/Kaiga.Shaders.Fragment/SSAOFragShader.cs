@@ -6,13 +6,13 @@ using System;
 
 namespace Kaiga.Shaders.Fragment
 {
-	public class FFAOFragShader : AbstractFragmentShaderStage
+	public class SSAOFragShader : AbstractFragmentShaderStage
 	{
 		RandomDirectionTexture randomTexture;
 
 		const int NUM_SAMPLES = 32;
 
-		public FFAOFragShader()
+		public SSAOFragShader()
 		{
 			randomTexture = new RandomDirectionTexture();
 			randomTexture.Width = 64;

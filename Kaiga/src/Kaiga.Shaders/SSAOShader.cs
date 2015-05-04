@@ -10,13 +10,13 @@ using Kaiga.Shaders.Fragment;
 
 namespace Kaiga.Shaders
 {
-	public class FFAOShader : AbstractShader<ScreenQuadVertexShader, FFAOFragShader>
+	public class SSAOShader : AbstractShader<ScreenQuadVertexShader, SSAOFragShader>
 	{
 		readonly ScreenQuadGeometry screenQuadGeom;
 
 		readonly BoxBlurShader boxBlurShader;
 
-		public FFAOShader()
+		public SSAOShader()
 		{
 			screenQuadGeom = new ScreenQuadGeometry();
 			boxBlurShader = new BoxBlurShader();
@@ -31,7 +31,7 @@ namespace Kaiga.Shaders
 
 		public void Render( RenderParams renderParams )
 		{
-			BindPerPass( renderParams );
+			BindPipeline( renderParams );
 
 			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
 			//vertexShader.BindPerPass( renderParams );
@@ -40,10 +40,9 @@ namespace Kaiga.Shaders
 			fragmentShader.BindPerPass( renderParams );
 
 			screenQuadGeom.Bind();
-			GL.DrawElements( PrimitiveType.Triangles, screenQuadGeom.NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
+			screenQuadGeom.Draw();
 			screenQuadGeom.Unbind();
-
-			UnbindPerPass();
+			UnbindPipeline();
 			
 			//float radius = Mouse.GetState().X / 200.0f;
 			//Debug.WriteLine( radius.ToString() );

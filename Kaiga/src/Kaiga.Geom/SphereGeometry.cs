@@ -6,8 +6,13 @@ using Kaiga.Util;
 
 namespace Kaiga.Geom
 {
-	public class SphereGeometry : Geometry, IMultiTypeObject
+	public class SphereGeometry : AbstractGeometry, IMultiTypeObject, IGeometry
 	{
+		public void Draw()
+		{
+			GL.DrawElements( PrimitiveType.Triangles, NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
+		}
+
 		private float _radius = 1.0f;
 		public float Radius 
 		{ 
@@ -168,7 +173,7 @@ namespace Kaiga.Geom
 
 		#region IMultiTypeObject implementation
 
-		static readonly Type[] types = { typeof(Geometry), typeof(SphereGeometry) };
+		static readonly Type[] types = { typeof(IGeometry), typeof(SphereGeometry) };
 		public Type[] Types { get { return types; } }
 
 		#endregion

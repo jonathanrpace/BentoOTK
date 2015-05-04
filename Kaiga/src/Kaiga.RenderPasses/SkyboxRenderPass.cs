@@ -1,10 +1,8 @@
-﻿using System;
-using Kaiga.Core;
+﻿using Kaiga.Core;
 using Kaiga.Materials;
 using Ramen;
 using Kaiga.Shaders;
 using Kaiga.Geom;
-using OpenTK.Graphics.OpenGL4;
 
 namespace Kaiga.RenderPasses
 {
@@ -60,7 +58,7 @@ namespace Kaiga.RenderPasses
 		public void Render( Kaiga.Core.RenderParams renderParams )
 		{
 			geom.Bind();
-			shader.BindPerPass( renderParams );
+			shader.BindPipeline( renderParams );
 
 			//GL.Disable( EnableCap.DepthTest );
 			//GL.Disable( EnableCap.CullFace );
@@ -68,11 +66,11 @@ namespace Kaiga.RenderPasses
 			foreach ( var node in nodeList.Nodes )
 			{
 				shader.SetTexture( node.Material.Texture.Texture );
-				GL.DrawElements( PrimitiveType.Triangles, geom.NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
+				geom.Draw();
 			}
 			//GL.DepthFunc( DepthFunction.Less );
 
-			shader.UnbindPerPass();
+			shader.UnbindPipeline();
 			geom.Unbind();
 		}
 

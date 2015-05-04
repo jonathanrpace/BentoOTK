@@ -17,11 +17,6 @@ namespace Kaiga.Shaders
 
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
 		}
-
-		public void Render( RenderParams renderParams, Geometry geom )
-		{
-			GL.DrawElements( PrimitiveType.Triangles, geom.NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
-		}
 	}
 }
 

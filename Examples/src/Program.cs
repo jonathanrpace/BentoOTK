@@ -71,7 +71,7 @@ namespace Examples
 					var entity = new Entity();
 					
 					var geom = new SphereGeometry();
-					geom.Radius = radius;
+					geom.Radius = radius * 0.5f + (float)rand.NextDouble() * 0.1f;
 					geom.SubDivisions = 32;
 					entity.AddComponent( geom );
 

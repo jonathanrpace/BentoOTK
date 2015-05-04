@@ -13,7 +13,7 @@ namespace Kaiga.RenderPasses
 	{
 		class Node : Ramen.Node
 		{
-			public Geometry geom = null;
+			public IGeometry geom = null;
 			public Transform transform = null;
 			public StandardMaterial material = null;
 		}
@@ -52,7 +52,7 @@ namespace Kaiga.RenderPasses
 
 		public void Render( RenderParams renderParams )
 		{
-			shader.BindPerPass( renderParams );
+			shader.BindPipeline( renderParams );
 			foreach ( Node node in nodeList.Nodes )
 			{
 				renderParams.SetModelMatrix( node.transform.Matrix );
@@ -60,13 +60,11 @@ namespace Kaiga.RenderPasses
 				node.geom.Bind();
 				shader.BindPerMaterial( node.material );
 				shader.BindPerModel( renderParams );
-
-				GL.DrawElements( PrimitiveType.Triangles, node.geom.NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
-
+				node.geom.Draw();
 				node.geom.Unbind();
 			}
 
-			shader.UnbindPerPass();
+			shader.UnbindPipeline();
 		}
 
 		public RenderPhase RenderPhase

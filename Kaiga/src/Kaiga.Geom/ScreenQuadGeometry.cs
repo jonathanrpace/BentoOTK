@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Kaiga.Geom
 {
-	public class ScreenQuadGeometry : Geometry
+	public class ScreenQuadGeometry : AbstractGeometry, IGeometry
 	{
 		override protected void onValidate()
 		{

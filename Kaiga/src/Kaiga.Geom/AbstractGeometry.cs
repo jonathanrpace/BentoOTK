@@ -12,7 +12,7 @@ namespace Kaiga.Geom
 		public const int Color = 3;
 	}
 
-	public abstract class Geometry : AbstractValidatable, IGeometry
+	public abstract class AbstractGeometry : AbstractValidatable
 	{
 		protected int vertexArrayBuffer;
 		protected int[] vertexBuffers;
@@ -22,16 +22,6 @@ namespace Kaiga.Geom
 		public int NumTriangles { get; protected set; }
 		public int NumIndices { get; protected set; }
 
-		override protected void onInvalidate()
-		{
-			if ( GL.IsVertexArray( vertexArrayBuffer ) )
-			{
-				GL.DeleteVertexArray( vertexArrayBuffer );
-				GL.DeleteBuffers( vertexBuffers.Length, vertexBuffers );
-				GL.DeleteBuffers( indexBuffers.Length, indexBuffers );
-			}
-		}
-		
 		public void Bind()
 		{
 			validate();
@@ -44,6 +34,16 @@ namespace Kaiga.Geom
 		{ 
 			GL.BindVertexArray( 0 );
 			GL.BindBuffer( BufferTarget.ElementArrayBuffer, 0 );
+		}
+		
+		override protected void onInvalidate()
+		{
+			if ( GL.IsVertexArray( vertexArrayBuffer ) )
+			{
+				GL.DeleteVertexArray( vertexArrayBuffer );
+				GL.DeleteBuffers( vertexBuffers.Length, vertexBuffers );
+				GL.DeleteBuffers( indexBuffers.Length, indexBuffers );
+			}
 		}
 
 		protected void BufferVertexData<T>( int attributeIndex, ref T[] data, int dataSize ) where T : struct

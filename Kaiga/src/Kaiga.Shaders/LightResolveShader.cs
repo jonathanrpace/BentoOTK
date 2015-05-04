@@ -23,7 +23,7 @@ namespace Kaiga.Shaders
 
 		public void Render( RenderParams renderParams )
 		{
-			BindPerPass( renderParams );
+			BindPipeline( renderParams );
 
 			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
 			vertexShader.BindPerPass( renderParams );
@@ -35,7 +35,7 @@ namespace Kaiga.Shaders
 			screenQuadGeom.Draw();
 			screenQuadGeom.Unbind();
 
-			UnbindPerPass();
+			UnbindPipeline();
 		}
 	}
 }

@@ -1,11 +1,12 @@
 ﻿using System;
-using Kaiga.Core;
 
 namespace Kaiga.Geom
 {
 	public interface IGeometry : IDisposable
 	{
-
+		void Bind();
+		void Draw();
+		void Unbind();
 	}
 }
 

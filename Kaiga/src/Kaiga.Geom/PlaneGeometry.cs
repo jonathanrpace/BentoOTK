@@ -5,8 +5,13 @@ using Kaiga.Core;
 
 namespace Kaiga.Geom
 {
-	public class PlaneGeometry : Geometry, IMultiTypeObject
+	public class PlaneGeometry : AbstractGeometry, IMultiTypeObject, IGeometry
 	{
+		public void Draw()
+		{
+			GL.DrawElements( PrimitiveType.Triangles, NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
+		}
+
 		private float _width = 1;
 		public float Width 
 		{ 
@@ -150,7 +155,7 @@ namespace Kaiga.Geom
 		
 		#region IMultiTypeObject implementation
 
-	 	static readonly Type[] types = { typeof(Geometry), typeof(PlaneGeometry) };
+		static readonly Type[] types = { typeof(IGeometry), typeof(PlaneGeometry) };
 		public Type[] Types { get { return types; } }
 
 		#endregion

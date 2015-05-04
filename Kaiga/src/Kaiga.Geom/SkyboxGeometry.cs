@@ -3,8 +3,13 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Kaiga.Geom
 {
-	public class SkyboxGeometry : Geometry
+	public class SkyboxGeometry : AbstractGeometry, IGeometry
 	{
+		public void Draw()
+		{
+			GL.DrawElements( PrimitiveType.Triangles, NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
+		}
+
 		protected override void onValidate()
 		{
 			vertexArrayBuffer = GL.GenVertexArray();

@@ -25,15 +25,14 @@ namespace Kaiga.Shaders
 
 		public void Render( RenderParams renderParams, ITexture2D source, int level )
 		{
-			BindPerPass( renderParams );
+			BindPipeline( renderParams );
 
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
 			fragmentShader.SetTexture( source.Texture, level, (float)renderParams.RenderTarget.OutputBuffer.Width / renderParams.RenderTarget.OutputBuffer.Height );
 
 			screenQuadGeom.Bind();
-			GL.DrawElements( PrimitiveType.Triangles, screenQuadGeom.NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
-
-			UnbindPerPass();
+			screenQuadGeom.Draw();
+			UnbindPipeline();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -40,7 +40,6 @@
     <Compile Include="src\Kaiga.Core\RenderPhase.cs" />
     <Compile Include="src\Kaiga.RenderPasses\IRenderPass.cs" />
     <Compile Include="src\Kaiga.Geom\IGeometry.cs" />
-    <Compile Include="src\Kaiga.Geom\Geometry.cs" />
     <Compile Include="src\Kaiga.Geom\PlaneGeometry.cs" />
     <Compile Include="src\Kaiga.Components\ILens.cs" />
     <Compile Include="src\Kaiga.Components\PerspectiveLens.cs" />
@@ -60,7 +59,6 @@
     <Compile Include="src\Kaiga.Shaders\PointLightStencilShader.cs" />
     <Compile Include="src\Kaiga.Components\SwarmMember.cs" />
     <Compile Include="src\Kaiga.Processes\SwarmProcess.cs" />
-    <Compile Include="src\Kaiga.Shaders\FFAOShader.cs" />
     <Compile Include="src\Kaiga.RenderPasses\AORenderPass.cs" />
     <Compile Include="src\Kaiga.Textures\RandomDirectionTexture.cs" />
     <Compile Include="src\Kaiga.Shaders\BoxBlurShader.cs" />
@@ -97,8 +95,6 @@
     <Compile Include="src\Kaiga.Shaders.Vertex\ScreenQuadVertexShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Vertex\SkyboxVertexShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\AmbientLightFragShader.cs" />
-    <Compile Include="src\Kaiga.Shaders.Fragment\BoxBlurFragShader.cs" />
-    <Compile Include="src\Kaiga.Shaders.Fragment\FFAOFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\GFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\ImageLightFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\LightResolveFragShader.cs" />
@@ -112,6 +108,12 @@
     <Compile Include="src\Kaiga.Shaders\ScreenQuadTextureShader.cs" />
     <Compile Include="src\Kaiga.Shaders\ScreenQuadTextureRectShader.cs" />
     <Compile Include="src\Kaiga.Shaders\RenderBufferDownsampler.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\SSAOFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders\SSAOShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\SAOFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\DepthAwareBlurFragShader.cs" />
+    <Compile Include="src\Kaiga.Geom\AbstractGeometry.cs" />
+    <Compile Include="src\Kaiga.RenderPasses\AbstractRenderPass.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -152,5 +154,14 @@
       <DependentUpon>SquareTextureFragShader.cs</DependentUpon>
       <LogicalName>SquareTextureFragShader.frag</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\RenderBufferDownsampleShader.frag">
+      <DependentUpon>RenderBufferDownsampleFragShader.cs</DependentUpon>
+      <LogicalName>RenderBufferDownsampleShader.frag</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\SAOShader.frag">
+      <DependentUpon>SAOFragShader.cs</DependentUpon>
+      <LogicalName>SAOShader.frag</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
 </Project>

@@ -1,13 +1,11 @@
-﻿using System;
-using OpenTK.Graphics.OpenGL4;
-using Kaiga.Core;
+﻿using Kaiga.Core;
 using Kaiga.Geom;
 using Kaiga.Shaders.Vertex;
 using Kaiga.Shaders.Fragment;
 
 namespace Kaiga.Shaders
 {
-	public class BoxBlurShader : AbstractShader<ScreenQuadVertexShader, BoxBlurFragShader>
+	public class BoxBlurShader : AbstractShader<ScreenQuadVertexShader, DepthAwareBlurFragShader>
 	{
 		readonly ScreenQuadGeometry screenQuadGeom;
 
@@ -24,15 +22,11 @@ namespace Kaiga.Shaders
 
 		public void Render( RenderParams renderParams, int texture, float radiusU, float radiusV )
 		{
-			BindPerPass( renderParams );
-
+			BindPipeline( renderParams );
 			fragmentShader.Bind( renderParams, texture, radiusU, radiusV );
-
 			screenQuadGeom.Bind();
-
-			GL.DrawElements( PrimitiveType.Triangles, screenQuadGeom.NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
-
-			UnbindPerPass();
+			screenQuadGeom.Draw();
+			UnbindPipeline();
 		}
 	}
 }

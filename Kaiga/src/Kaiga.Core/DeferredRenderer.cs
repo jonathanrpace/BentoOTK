@@ -238,6 +238,7 @@ namespace Kaiga.Core
 			// Output final output texture to backbuffer
 			//squareTextureOutputShader.Render( renderParams, directLightBufferDownsampler.Output.Texture );
 			textureOutputShader.Render( renderParams, renderTarget.OutputBuffer.Texture );
+			//textureOutputShader.Render( renderParams, renderParams.AORenderTarget.AOBuffer.Texture );
 
 			scene.GameWindow.SwapBuffers();
 		}

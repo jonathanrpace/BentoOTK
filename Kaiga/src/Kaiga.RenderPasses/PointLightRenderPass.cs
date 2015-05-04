@@ -56,7 +56,7 @@ namespace Kaiga.RenderPasses
 		{
 			geom.Bind();
 
-			stencilShader.BindPerPass( renderParams );
+			stencilShader.BindPipeline( renderParams );
 
 			GL.Disable( EnableCap.Blend );
 			GL.Disable( EnableCap.CullFace );
@@ -77,9 +77,9 @@ namespace Kaiga.RenderPasses
 				Matrix4 mat = Matrix4.CreateScale( scale ) * node.transform.Matrix;
 				renderParams.SetModelMatrix( mat );
 				stencilShader.BindPerLight( renderParams, node.light );
-				stencilShader.Render( renderParams, geom );
+				geom.Draw();
 			}
-			stencilShader.UnbindPerPass();
+			stencilShader.UnbindPipeline();
 
 
 			( (DeferredRenderTarget)renderParams.RenderTarget ).BindForDirectLightPhase();
@@ -91,7 +91,7 @@ namespace Kaiga.RenderPasses
 
 			GL.StencilFunc( StencilFunction.Notequal, 0, 0xFF );
 			
-			shader.BindPerPass( renderParams );
+			shader.BindPipeline( renderParams );
 			foreach ( Node node in nodeList.Nodes )
 			{
 				var scale = CalcPointLightRadius( node.light );
@@ -100,13 +100,15 @@ namespace Kaiga.RenderPasses
 				renderParams.SetModelMatrix( mat );
 				shader.BindPerLight( renderParams, node.light );
 
-				shader.Render( renderParams, geom );
+				geom.Draw();
 			}
-			shader.UnbindPerPass();
+			shader.UnbindPipeline();
 
 			GL.Enable( EnableCap.DepthTest );
 			GL.Disable( EnableCap.StencilTest );
 			GL.CullFace( CullFaceMode.Back );
+
+			geom.Unbind();
 		}
 
 		public Kaiga.Core.RenderPhase RenderPhase

@@ -1,10 +1,14 @@
 ﻿<Properties StartupItem="Examples\Examples.csproj" GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Kaiga\src\Kaiga.Shaders\LightResolveShader.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Kaiga\src\Kaiga.Geom\PlaneGeometry.cs">
     <Files>
-      <File FileName="Kaiga\src\Kaiga.Shaders\LightResolveShader.cs" Line="39" Column="24" />
-      <File FileName="Kaiga\src\Kaiga.Core\DeferredRenderer.cs" Line="232" Column="4" />
-      <File FileName="Kaiga\src\Kaiga.Shaders\RenderBufferDownsampler.cs" Line="111" Column="4" />
+      <File FileName="Kaiga\src\Kaiga.RenderPasses\AmbientLightRenderPass.cs" Line="10" Column="53" />
+      <File FileName="Kaiga\src\Kaiga.Geom\AbstractGeometry.cs" Line="15" Column="24" />
+      <File FileName="Kaiga\src\Kaiga.Geom\PlaneGeometry.cs" Line="28" Column="5" />
+      <File FileName="Kaiga\src\Kaiga.Geom\ScreenQuadGeometry.cs" Line="6" Column="36" />
+      <File FileName="Kaiga\src\Kaiga.Geom\SkyboxGeometry.cs" Line="6" Column="32" />
+      <File FileName="Kaiga\src\Kaiga.Geom\SphereGeometry.cs" Line="176" Column="52" />
+      <File FileName="Kaiga\src\Kaiga.RenderPasses\GPass.cs" Line="27" Column="4" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

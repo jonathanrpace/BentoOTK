@@ -61,6 +61,7 @@ void main()
 
 	ao.x += (1.0f-ao.x) * (1.0f-roughness);
 	out_fragColor = directLight + (indirectLight * ao.x) + vec4(emissive);
+	//out_fragColor = vec4( ao.x, ao.x, ao.x, 1.0 );
 }
 ";
 		}

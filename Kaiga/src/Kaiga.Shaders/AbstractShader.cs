@@ -50,7 +50,7 @@ namespace Kaiga.Shaders
 			}
 		}
 
-		public virtual void BindPerPass( RenderParams renderParams )
+		public virtual void BindPipeline( RenderParams renderParams )
 		{
 			GL.BindProgramPipeline( pipeline );
 
@@ -67,7 +67,17 @@ namespace Kaiga.Shaders
 			}
 		}
 
-		public virtual void UnbindPerPass()
+		protected void BindFragmentShader()
+		{
+			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
+		}
+
+		protected void BindVertexShader()
+		{
+			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
+		}
+
+		public virtual void UnbindPipeline()
 		{
 			GL.BindProgramPipeline( 0 );
 			if ( vertexShader != null )

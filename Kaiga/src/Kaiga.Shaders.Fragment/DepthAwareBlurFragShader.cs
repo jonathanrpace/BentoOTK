@@ -4,7 +4,7 @@ using Kaiga.Core;
 
 namespace Kaiga.Shaders.Fragment
 {
-	public class BoxBlurFragShader : AbstractFragmentShaderStage
+	public class DepthAwareBlurFragShader : AbstractFragmentShaderStage
 	{
 		public void Bind( RenderParams renderParams, int texture, float radiusU, float radiusV )
 		{

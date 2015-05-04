@@ -7,11 +7,11 @@ namespace Kaiga.RenderPasses
 {
 	public class AORenderPass : IRenderPass
 	{
-		readonly FFAOShader shader;
+		readonly SSAOShader shader;
 
 		public AORenderPass()
 		{
-			shader = new FFAOShader();
+			shader = new SSAOShader();
 		}
 
 		public void Dispose()

@@ -3,6 +3,7 @@ using Ramen;
 using Kaiga.Core;
 using Kaiga.Shaders;
 using Kaiga.Lights;
+using Kaiga.Geom;
 
 namespace Kaiga.RenderPasses
 {
@@ -13,13 +14,14 @@ namespace Kaiga.RenderPasses
 			public ImageLight light = null;
 		}
 
-		private NodeList<Node> nodeList;
-
+		NodeList<Node> nodeList;
 		ImageLightShader shader;
+		ScreenQuadGeometry geom;
 
 		public ImageLightRenderPass()
 		{
 			shader = new ImageLightShader();
+			geom = new ScreenQuadGeometry();
 		}
 
 		#region IDisposable implementation
@@ -27,6 +29,7 @@ namespace Kaiga.RenderPasses
 		public void Dispose()
 		{
 			shader.Dispose();
+			geom.Dispose();
 			if ( nodeList != null )
 			{
 				nodeList.Dispose();
@@ -54,15 +57,17 @@ namespace Kaiga.RenderPasses
 
 		public void Render( RenderParams renderParams )
 		{
-			shader.BindPerPass( renderParams );
+			shader.BindPipeline( renderParams );
+			geom.Bind();
 
 			foreach ( var node in nodeList.Nodes )
 			{
 				shader.BindPerLight( renderParams, node.light );
-				shader.Render();
+				geom.Draw();
 			}
 
-			shader.UnbindPerPass();
+			geom.Unbind();
+			shader.UnbindPipeline();
 		}
 
 		public RenderPhase RenderPhase
