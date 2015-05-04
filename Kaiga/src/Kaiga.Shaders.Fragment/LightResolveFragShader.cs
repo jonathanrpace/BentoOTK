@@ -31,11 +31,6 @@ namespace Kaiga.Shaders.Fragment
 		 * 		When miss
 		 * 			out = direct + indirect
 		 * 
-		 * 
-		 * GL.FramebufferTexture2D allows setting the 'level' of the texture to write to.
-		 * Need to upgrade AbstractFrameBuffer to allow Texture2D or RectangleTexture targets.
-		 * 
-		 * "Be warned though that the implementation used there is quite slow as attaching textures of different sizes (mipmap levels) to the FBO is very slow. I have implemented it using a FBO for every mipmap level and it works cca twenty times faster!"
 		*/
 
 		override protected string GetShaderSource()

@@ -172,7 +172,6 @@ namespace Kaiga.Core
 
 			renderParams.CameraLens = Camera.GetComponentByType<ILens>();
 			renderParams.CameraLens.AspectRatio = (float)scene.GameWindow.Width / scene.GameWindow.Height;
-
 			renderParams.ViewMatrix = Camera.GetComponentByType<Transform>().Matrix;
 			renderParams.NormalViewMatrix = renderParams.ViewMatrix.ClearScale();
 			renderParams.NormalViewMatrix = renderParams.NormalViewMatrix.ClearTranslation();
@@ -194,34 +193,41 @@ namespace Kaiga.Core
 			GL.Enable(EnableCap.DepthTest);
 			GL.DepthMask( true );
 			GL.Disable( EnableCap.Blend );
-			RenderPassesInPhase( passesByPhase[ RenderPhase.G ] );
-			GL.DepthMask( false );		// Only geometry pass writes to depth buffer
+			RenderPassesInPhase( RenderPhase.G );
+
+			// No more depth writing
+			GL.DepthMask( false );		
 
 			// AO pass
 			aoRenderTarget.BindForAOPhase();
-			RenderPassesInPhase( passesByPhase[ RenderPhase.AO ] );
+			RenderPassesInPhase( RenderPhase.AO );
 
-			// Direct Light pass
-			renderTarget.BindForDirectLightPhase();
+			// Light passes are additive
 			GL.Enable( EnableCap.Blend );
 			GL.BlendFunc( BlendingFactorSrc.One, BlendingFactorDest.One );
 			GL.BlendEquation( BlendEquationMode.FuncAdd );
-			RenderPassesInPhase( passesByPhase[ RenderPhase.DirectLight ] );
+			
+			// Direct Light pass
+			renderTarget.BindForDirectLightPhase();
+			RenderPassesInPhase( RenderPhase.DirectLight );
 
 			// Indirect light pass
 			renderTarget.BindForIndirectLightPhase();
-			RenderPassesInPhase( passesByPhase[ RenderPhase.IndirectLight ] );
+			RenderPassesInPhase( RenderPhase.IndirectLight );
+
+			// No more light passes, back to no blending
 			GL.Disable( EnableCap.Blend );
 
+			// No more geometry - just full screen compositing. No need for depth test
 			GL.Disable(EnableCap.DepthTest);
 
 			// Downsample direct and indirect buffers into 2D mipmapped textures
 			//directLightBufferDownsampler.Render( renderParams, renderParams.RenderTarget.DirectLightBuffer );
-			indirectLightBufferDownsampler.Render( renderParams, renderParams.RenderTarget.IndirectLightBuffer );
+			//indirectLightBufferDownsampler.Render( renderParams, renderParams.RenderTarget.IndirectLightBuffer );
 
 			// Resolve
 			renderTarget.BindForResolvePhase();
-			RenderPassesInPhase( passesByPhase[ RenderPhase.Resolve ] );
+			RenderPassesInPhase( RenderPhase.Resolve );
 
 
 			// Switch draw target to back buffer
@@ -229,17 +235,17 @@ namespace Kaiga.Core
 			GL.DepthMask( true );
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 
-			squareTextureOutputShader.Render( renderParams, indirectLightBufferDownsampler.Output.Texture );
-
-			//textureOutputShader.Render( renderParams, renderTarget.OutputBuffer.Texture );
-
+			// Output final output texture to backbuffer
+			//squareTextureOutputShader.Render( renderParams, directLightBufferDownsampler.Output.Texture );
+			textureOutputShader.Render( renderParams, renderTarget.OutputBuffer.Texture );
 
 			scene.GameWindow.SwapBuffers();
 		}
 
 
-		void RenderPassesInPhase( List<IRenderPass> passes )
+		void RenderPassesInPhase( RenderPhase phase )
 		{
+			var passes = passesByPhase[ phase ];
 			foreach ( IRenderPass renderPass in passes )
 			{
 				if ( !renderPass.Enabled )

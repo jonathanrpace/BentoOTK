@@ -92,6 +92,30 @@ namespace Kaiga.Textures
 			}
 		}
 
+		TextureWrapMode wrapModeR = TextureWrapMode.Repeat;
+		public TextureWrapMode WrapModeR
+		{
+			get	{ return wrapModeR;	}
+			set
+			{
+				if ( value == wrapModeR ) return;
+				invalidate();
+				wrapModeR = value;
+			}
+		}
+
+		TextureWrapMode wrapModeS = TextureWrapMode.Repeat;
+		public TextureWrapMode WrapModeS
+		{
+			get	{ return wrapModeS;	}
+			set
+			{
+				if ( value == wrapModeS ) return;
+				invalidate();
+				wrapModeS = value;
+			}
+		}
+
 		int texture = -1;
 		public int Texture
 		{
@@ -114,6 +138,7 @@ namespace Kaiga.Textures
 
 		public void GenerateMipMaps()
 		{
+			validate();
 			GL.BindTexture( TextureTarget.Texture2D, Texture );
 			GL.GenerateMipmap( GenerateMipmapTarget.Texture2D );
 			GL.BindTexture( TextureTarget.Texture2D, 0 );
@@ -162,11 +187,11 @@ namespace Kaiga.Textures
 				d >>= 1;
 			}
 
-			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)MagFilter);
-			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)MinFilter );
+			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter );
 
-			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)TextureWrapMode.Repeat );
-			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat );
+			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)wrapModeR );
+			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)WrapModeS );
 
 			GL.BindTexture( TextureTarget.Texture2D, 0 );
 		}

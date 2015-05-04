@@ -1,17 +1,10 @@
 ﻿<Properties StartupItem="Examples\Examples.csproj" GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Kaiga\src\Kaiga.Shaders\RenderBufferDownsampler.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Kaiga\src\Kaiga.Shaders\LightResolveShader.cs">
     <Files>
-      <File FileName="Kaiga\src\Kaiga.Shaders\ScreenQuadTextureShader.cs" Line="1" Column="1" />
-      <File FileName="Kaiga\src\Kaiga.Core\DeferredRenderer.cs" Line="220" Column="38" />
-      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\RenderBufferDownsampleFragShader.cs" Line="45" Column="42" />
-      <File FileName="Kaiga\src\Kaiga.Shaders\RenderBufferDownsampler.cs" Line="68" Column="128" />
-      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Textures\SquareTexture2D.cs" Line="50" Column="1" />
-      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Util\TextureUtil.cs" Line="17" Column="1" />
-      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Shaders\RenderBufferDownsampleShader.cs" Line="40" Column="1" />
-      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Core\AbstractValidatable.cs" Line="28" Column="1" />
-      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Core\AbstractRenderTarget.cs" Line="65" Column="4" />
-      <File FileName="c:\Coding\OpenTK\1.1\Source\OpenTK\Graphics\OpenGL4\ErrorHelper.cs" Line="129" Column="1" />
+      <File FileName="Kaiga\src\Kaiga.Shaders\LightResolveShader.cs" Line="39" Column="24" />
+      <File FileName="Kaiga\src\Kaiga.Core\DeferredRenderer.cs" Line="232" Column="4" />
+      <File FileName="Kaiga\src\Kaiga.Shaders\RenderBufferDownsampler.cs" Line="111" Column="4" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

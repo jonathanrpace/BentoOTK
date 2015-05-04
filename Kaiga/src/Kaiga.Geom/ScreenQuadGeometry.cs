@@ -31,12 +31,17 @@ namespace Kaiga.Geom
 			NumIndices = 6;
 
 			var positions = new float[] { -1, 1,  -1, -1,  1, -1,  1, 1 };
-			var uvs = new float[] { 0, 0,  0, 1,  1, 1,  1, 0 };
+			var uvs = new float[] { 0, 1,  0, 0,  1, 0,  1, 1 };
 			var indices = new int[] { 0, 1, 3, 3, 1, 2 };
 
 			BufferVertexData( Attribute.Position, ref positions, sizeof(float) );
 			BufferVertexData( Attribute.Uv, ref uvs, sizeof(float) );
 			BufferIndexData( 0, ref indices );
+		}
+
+		public void Draw()
+		{
+			GL.DrawElements( PrimitiveType.Triangles, NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
 		}
 	}
 }

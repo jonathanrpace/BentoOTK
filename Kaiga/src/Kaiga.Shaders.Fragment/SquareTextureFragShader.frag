@@ -3,6 +3,8 @@
 // Samplers
 uniform sampler2D tex;
 
+uniform float u_mipRatio;
+
 // Inputs
 in Varying
 {
@@ -14,5 +16,5 @@ layout( location = 0 ) out vec4 out_fragColor;
 
 void main(void)
 { 
-	out_fragColor = textureLod( tex, in_uv, 3 );
+	out_fragColor = textureLod( tex, in_uv, u_mipRatio );
 }

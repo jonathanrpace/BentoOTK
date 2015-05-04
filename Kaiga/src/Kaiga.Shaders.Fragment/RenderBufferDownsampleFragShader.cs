@@ -4,10 +4,11 @@ namespace Kaiga.Shaders.Fragment
 {
 	public class RenderBufferDownsampleFragShader : AbstractFragmentShaderStage
 	{
-		public void SetTexture( int texture )
+		public void SetTexture( int texture, int level, float aspectRatio )
 		{
 			SetUniformTexture( "s_tex", texture, TextureTarget.Texture2D );
-			SetUniform1( "u_radius", 0.1f );
+			SetUniform1( "u_mipLevel", level );
+			SetUniform1( "u_aspectRatio", aspectRatio );
 		}
 
 		protected override string GetShaderSource()
@@ -22,29 +23,45 @@ in Varying
 };
 
 uniform sampler2D s_tex;
-uniform float u_radius;
+uniform int u_mipLevel;
+uniform float u_aspectRatio;
 
 layout( location = 0 ) out vec4 out_fragColor;
+
+
+
 
 void main()
 {
 	ivec2 texSize = textureSize( s_tex, 0 );
-	float aspectRatio = texSize.x / texSize.y;
+	float scalar = 1.0f / (texSize.x >> u_mipLevel);
+	scalar *= 2.0f;
+	
+	const int numSamples = 9;
+	const float weights[numSamples] = 
+	{ 
+		0.077847,	0.123317,	0.077847,
+		0.123317,	0.195346,	0.123317,
+		0.077847,	0.123317,	0.077847
+	};
+	const vec2 offsets[numSamples] = 
+	{ 
+		vec2( -1.5, -1.5 ), vec2( 0, -1.5 ), vec2( 1.5, -1.5 ), 
+		vec2( -1.5,  0.5 ), vec2( 0.5, 0.5 ), vec2( 1.5,  0.5 ), 
+		vec2( -1.5,  1.5 ), vec2( 0,  1.5 ), vec2( 1.5,  1.5 ) 
+	};
+		
+	vec4 outColor = vec4( 0.0f, 0.0f, 0.0f, 1.0f );
+	for ( int i = 0; i < numSamples; i++ )
+	{
+		vec2 offset = offsets[i];
+		offset.y *= u_aspectRatio;
+		outColor += textureLod( s_tex, in_uv + offset * scalar, u_mipLevel ) * weights[i];
+	}
 
-	//vec2 uv = (gl_FragCoord.xy / u_outputSize);
-	//uv.y = 1.0-uv.y;
- 	//uv *= vec2( texSize );
-
-	vec2 uv = in_uv;
-
-	vec4 sampleLeft 	= texture( s_tex, uv + vec2( -u_radius, 0.0f ) );
-	vec4 sampleRight 	= texture( s_tex, uv + vec2( u_radius, 0.0f ) );
-	vec4 sampleTop 		= texture( s_tex, uv + vec2( 0.0f, -u_radius ) );
-	vec4 sampleBottom 	= texture( s_tex, uv + vec2( 0.0f, u_radius ) );
-
-	out_fragColor = vec4(1.0,0.0,0.0,1.0);//( sampleLeft + sampleRight + sampleTop + sampleBottom ) / 4;
+	outColor.a = 1.0f;
+	out_fragColor = outColor;
 }
-
 ";
 		}
 	}

@@ -16,7 +16,6 @@ void main(void)
 { 
 	ivec2 texSize = textureSize( tex, 0 );
 	vec2 uv = in_uv;
-	uv.y = 1.0 - uv.y;
 	uv *= texSize;
 	out_fragColor = texture2DRect( tex, uv );
 }

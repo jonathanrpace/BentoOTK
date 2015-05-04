@@ -1,5 +1,4 @@
-﻿using System;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using Kaiga.Core;
 using Kaiga.Geom;
 using Kaiga.Shaders.Vertex;
@@ -33,13 +32,13 @@ namespace Kaiga.Shaders
 			BindPerPass( renderParams );
 
 			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
-			//vertexShader.BindPerPass( renderParams );
+			vertexShader.BindPerPass( renderParams );
 
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
 			fragmentShader.BindPerPass( renderParams );
 
 			screenQuadGeom.Bind();
-			GL.DrawElements( PrimitiveType.Triangles, screenQuadGeom.NumIndices, DrawElementsType.UnsignedInt, IntPtr.Zero ); 
+			screenQuadGeom.Draw();
 			screenQuadGeom.Unbind();
 
 			UnbindPerPass();
