@@ -222,16 +222,16 @@ namespace Kaiga.Core
 			GL.Disable(EnableCap.DepthTest);
 
 			// Downsample direct and indirect buffers into 2D mipmapped textures
-			//directLightBufferDownsampler.Render( renderParams, renderParams.RenderTarget.DirectLightBuffer );
-			//indirectLightBufferDownsampler.Render( renderParams, renderParams.RenderTarget.IndirectLightBuffer );
+			directLightBufferDownsampler.Render( renderParams, renderParams.RenderTarget.DirectLightBuffer );
+			indirectLightBufferDownsampler.Render( renderParams, renderParams.RenderTarget.IndirectLightBuffer );
+
 
 			// Resolve
+			GL.Viewport( 0, 0, scene.GameWindow.Width, scene.GameWindow.Height );
 			renderTarget.BindForResolvePhase();
 			RenderPassesInPhase( RenderPhase.Resolve );
-
-
+			
 			// Switch draw target to back buffer
-			GL.Viewport( 0, 0, scene.GameWindow.Width, scene.GameWindow.Height );
 			GL.DepthMask( true );
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 
