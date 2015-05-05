@@ -8,11 +8,11 @@ using Kaiga.Shaders.Vertex;
 
 namespace Kaiga.Shaders
 {
-	public class RenderBufferDownsampleShader : AbstractShader<ScreenQuadVertexShader, RenderBufferDownsampleFragShader>
+	public class LightBufferConvolutionShader : AbstractShader<ScreenQuadVertexShader, LightBufferConvolutionFragShader>
 	{
 		readonly ScreenQuadGeometry screenQuadGeom;
 
-		public RenderBufferDownsampleShader()
+		public LightBufferConvolutionShader()
 		{
 			screenQuadGeom = new ScreenQuadGeometry();
 		}

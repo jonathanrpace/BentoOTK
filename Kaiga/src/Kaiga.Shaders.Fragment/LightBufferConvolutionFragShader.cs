@@ -2,10 +2,10 @@
 
 namespace Kaiga.Shaders.Fragment
 {
-	public class RenderBufferDownsampleFragShader : AbstractFragmentShaderStage
+	public class LightBufferConvolutionFragShader : AbstractFragmentShaderStage
 	{
-		public RenderBufferDownsampleFragShader()
-			:base( "RenderBufferDownsampleShader.frag" )
+		public LightBufferConvolutionFragShader()
+			:base( "LightBufferConvolutionShader.frag" )
 		{
 		}
 

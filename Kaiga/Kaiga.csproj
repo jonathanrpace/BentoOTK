@@ -103,11 +103,8 @@
     <Compile Include="src\Kaiga.Shaders.Fragment\SkyboxFragmentShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\RectangleTextureFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\SquareTextureFragShader.cs" />
-    <Compile Include="src\Kaiga.Shaders\RenderBufferDownsampleShader.cs" />
-    <Compile Include="src\Kaiga.Shaders.Fragment\RenderBufferDownsampleFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders\ScreenQuadTextureShader.cs" />
     <Compile Include="src\Kaiga.Shaders\ScreenQuadTextureRectShader.cs" />
-    <Compile Include="src\Kaiga.Shaders\RenderBufferDownsampler.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\SSAOFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders\SSAOShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\SAOFragShader.cs" />
@@ -115,6 +112,9 @@
     <Compile Include="src\Kaiga.Geom\AbstractGeometry.cs" />
     <Compile Include="src\Kaiga.RenderPasses\AbstractRenderPass.cs" />
     <Compile Include="src\Kaiga.RenderPasses\AbstractNodeRenderPass.cs" />
+    <Compile Include="src\Kaiga.Shaders\LightBufferConvolver.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\LightBufferConvolutionFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders\LightBufferConvolutionShader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -155,13 +155,13 @@
       <DependentUpon>SquareTextureFragShader.cs</DependentUpon>
       <LogicalName>SquareTextureFragShader.frag</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\RenderBufferDownsampleShader.frag">
-      <DependentUpon>RenderBufferDownsampleFragShader.cs</DependentUpon>
-      <LogicalName>RenderBufferDownsampleShader.frag</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\SAOShader.frag">
       <DependentUpon>SAOFragShader.cs</DependentUpon>
       <LogicalName>SAOShader.frag</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\LightBufferConvolutionShader.frag">
+      <DependentUpon>LightBufferConvolutionFragShader.cs</DependentUpon>
+      <LogicalName>RenderBufferDownsampleShader.frag</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

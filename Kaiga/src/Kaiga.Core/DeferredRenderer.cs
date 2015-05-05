@@ -31,8 +31,8 @@ namespace Kaiga.Core
 		readonly ScreenQuadTextureRectShader textureOutputShader;
 		readonly ScreenQuadTextureShader squareTextureOutputShader;
 
-		readonly RenderBufferDownsampler directLightBufferDownsampler;
-		readonly RenderBufferDownsampler indirectLightBufferDownsampler;
+		readonly LightBufferConvolver directLightBufferDownsampler;
+		readonly LightBufferConvolver indirectLightBufferDownsampler;
 
 		public DeferredRenderer() : this( "Deferred Renderer" )
 		{
@@ -63,8 +63,8 @@ namespace Kaiga.Core
 
 			textureOutputShader = new ScreenQuadTextureRectShader();
 			squareTextureOutputShader = new ScreenQuadTextureShader();
-			directLightBufferDownsampler = new RenderBufferDownsampler();
-			indirectLightBufferDownsampler = new RenderBufferDownsampler();
+			directLightBufferDownsampler = new LightBufferConvolver();
+			indirectLightBufferDownsampler = new LightBufferConvolver();
 
 			GL.Enable( EnableCap.FramebufferSrgb );
 		}
