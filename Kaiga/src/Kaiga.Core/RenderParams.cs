@@ -1,6 +1,7 @@
 ﻿using System;
 using Kaiga.Components;
 using OpenTK;
+using Kaiga.Textures;
 
 namespace Kaiga.Core
 {
@@ -27,10 +28,10 @@ namespace Kaiga.Core
 		public Matrix3 InvNormalModelViewMatrix;
 		public Matrix4 NormalViewProjectionMatrix;
 
-		public RenderParams()
-		{
-
-		}
+		public SquareTexture2D DirectLightBufferMippedTexture;
+		public SquareTexture2D IndirectLightBufferMippedTexture;
+		public SquareTexture2D PositionBufferMippedTexture;
+		public SquareTexture2D NormalBufferMippedTexture;
 
 		public void SetModelMatrix( Matrix4 modelMatrix )
 		{

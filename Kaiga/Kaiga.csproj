@@ -115,6 +115,7 @@
     <Compile Include="src\Kaiga.Shaders\LightBufferConvolver.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\LightBufferConvolutionFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders\LightBufferConvolutionShader.cs" />
+    <Compile Include="src\Kaiga.Shaders\RenderBufferToMippedTexture2DHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -161,7 +162,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\LightBufferConvolutionShader.frag">
       <DependentUpon>LightBufferConvolutionFragShader.cs</DependentUpon>
-      <LogicalName>RenderBufferDownsampleShader.frag</LogicalName>
+      <LogicalName>LightBufferConvolutionShader.frag</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

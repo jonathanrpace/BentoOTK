@@ -13,30 +13,32 @@ namespace Kaiga.Core
 {
 	public class DeferredRenderer : NamedObject, IRenderer, IDisposable, IMultiTypeObject
 	{
-		private Scene										scene;
-		private RenderParams 								renderParams;
-		private List<IRenderPass>							renderPasses;
-		private Dictionary<RenderPhase, List<IRenderPass>> 	passesByPhase;
-		private Dictionary<Type, IRenderPass>				passesByType;
-		private DeferredRenderTarget						renderTarget;
-		private AORenderTarget								aoRenderTarget;
+		// Private
+		Scene												scene;
+		readonly RenderParams 								renderParams;
+		readonly List<IRenderPass>							renderPasses;
+		readonly Dictionary<RenderPhase, List<IRenderPass>> passesByPhase;
+		readonly Dictionary<Type, IRenderPass>				passesByType;
+		readonly DeferredRenderTarget						renderTarget;
+		readonly AORenderTarget								aoRenderTarget;
+		readonly ScreenQuadTextureRectShader 				textureOutputShader;
+		readonly ScreenQuadTextureShader 					squareTextureOutputShader;
+		readonly LightBufferConvolver 						directLightBufferDownsampler;
+		readonly LightBufferConvolver 						indirectLightBufferDownsampler;
+		readonly RenderBufferToMippedTexture2DHelper 		positionBufferMipper;	
+		readonly RenderBufferToMippedTexture2DHelper 		normalBufferMipper;	
 
-		public Entity									Camera { get; private set; }
-		public IEnumerable<IRenderPass>					RenderPasses { get { return renderPasses.Skip( 0 ); } }
-		public BackBufferOutputMode 					BackBufferOutputMode { get; set; }
+		// Properties
+		public Entity							Camera { get; private set; }
+		public IEnumerable<IRenderPass>			RenderPasses { get { return renderPasses.Skip( 0 ); } }
+		public BackBufferOutputMode 			BackBufferOutputMode { get; set; }
 
-		public event RenderPassDelegate OnRenderPassAdded;
-		public event RenderPassDelegate OnRenderPassRemoved;
-
-		readonly ScreenQuadTextureRectShader textureOutputShader;
-		readonly ScreenQuadTextureShader squareTextureOutputShader;
-
-		readonly LightBufferConvolver directLightBufferDownsampler;
-		readonly LightBufferConvolver indirectLightBufferDownsampler;
+		// Events
+		public event RenderPassDelegate 		OnRenderPassAdded;
+		public event RenderPassDelegate 		OnRenderPassRemoved;
 
 		public DeferredRenderer() : this( "Deferred Renderer" )
 		{
-
 		}
 
 		public DeferredRenderer( string name ) : base( name )
@@ -65,6 +67,8 @@ namespace Kaiga.Core
 			squareTextureOutputShader = new ScreenQuadTextureShader();
 			directLightBufferDownsampler = new LightBufferConvolver();
 			indirectLightBufferDownsampler = new LightBufferConvolver();
+			positionBufferMipper = new RenderBufferToMippedTexture2DHelper();
+			normalBufferMipper = new RenderBufferToMippedTexture2DHelper();
 
 			GL.Enable( EnableCap.FramebufferSrgb );
 		}
@@ -197,11 +201,7 @@ namespace Kaiga.Core
 
 			// No more depth writing
 			GL.DepthMask( false );		
-
-			// AO pass
-			aoRenderTarget.BindForAOPhase();
-			RenderPassesInPhase( RenderPhase.AO );
-
+			
 			// Light passes are additive
 			GL.Enable( EnableCap.Blend );
 			GL.BlendFunc( BlendingFactorSrc.One, BlendingFactorDest.One );
@@ -223,8 +223,20 @@ namespace Kaiga.Core
 
 			// Downsample direct and indirect buffers into 2D mipmapped textures
 			directLightBufferDownsampler.Render( renderParams, renderParams.RenderTarget.DirectLightBuffer );
+			renderParams.DirectLightBufferMippedTexture = directLightBufferDownsampler.Output;
 			indirectLightBufferDownsampler.Render( renderParams, renderParams.RenderTarget.IndirectLightBuffer );
+			renderParams.IndirectLightBufferMippedTexture = indirectLightBufferDownsampler.Output;
 
+			// Convert position and normal buffers to 2D mipped textures
+			// These are used during resolve pass to provide cache performant scalable AO and radiosity.
+			positionBufferMipper.Render( renderParams, renderParams.RenderTarget.NormalBuffer );
+			renderParams.PositionBufferMippedTexture = positionBufferMipper.Output;
+			normalBufferMipper.Render( renderParams, renderParams.RenderTarget.NormalBuffer );
+			renderParams.NormalBufferMippedTexture = normalBufferMipper.Output;
+
+			// AO pass
+			aoRenderTarget.BindForAOPhase();
+			RenderPassesInPhase( RenderPhase.AO );
 
 			// Resolve
 			GL.Viewport( 0, 0, scene.GameWindow.Width, scene.GameWindow.Height );
@@ -236,7 +248,7 @@ namespace Kaiga.Core
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 
 			// Output final output texture to backbuffer
-			//squareTextureOutputShader.Render( renderParams, directLightBufferDownsampler.Output.Texture );
+			//squareTextureOutputShader.Render( renderParams, positionBufferMipper.Output.Texture );
 			textureOutputShader.Render( renderParams, renderTarget.OutputBuffer.Texture );
 			//textureOutputShader.Render( renderParams, renderParams.AORenderTarget.AOBuffer.Texture );
 
