@@ -21,7 +21,7 @@ namespace Kaiga.Processes
 
 		public void Dispose()
 		{
-			nodeList.Dispose();
+			nodeList.Clear();
 		}
 
 		#region IProcess implementation
@@ -44,7 +44,7 @@ namespace Kaiga.Processes
 		
 		public void OnRemovedFromScene( Scene scene )
 		{
-			nodeList.Dispose();
+			nodeList.Clear();
 			offsetTable.Clear();
 		}
 

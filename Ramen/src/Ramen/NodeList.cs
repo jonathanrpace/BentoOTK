@@ -8,7 +8,7 @@ namespace Ramen
 	{
 		public List<NodeType> Nodes { get { return nodes; } }
 
-		private readonly Scene 							scene;
+		private Scene 									scene;
 		private readonly Dictionary<Entity, NodeType> 	nodesByEntity;
 		private readonly Dictionary<Type, string> 		componentNamesByType;
 		private readonly List<NodeType> 				nodes;
@@ -18,16 +18,16 @@ namespace Ramen
 
 		public event NodeListChangeDelegate NodeAdded;
 		public event NodeListChangeDelegate NodeRemoved;
-		
-		public NodeList( Scene scene )
-		{
-			this.scene = scene;
 
+
+		public NodeList()
+		{
 			nodesByEntity = new Dictionary<Entity, NodeType>();
 			componentNamesByType = new Dictionary<Type, string>();
 			nodes = new List<NodeType>();
 
 			nodeType = typeof(NodeType);
+
 			FieldInfo[] fields = nodeType.GetFields();
 			foreach ( FieldInfo fieldInfo in fields )
 			{
@@ -35,6 +35,16 @@ namespace Ramen
 					continue;
 				componentNamesByType[ fieldInfo.FieldType ] = fieldInfo.Name;
 			}
+		}
+
+		public NodeList( Scene scene ) : this()
+		{
+			BindToScene( scene );
+		}
+
+		public void BindToScene( Scene scene )
+		{
+			this.scene = scene;
 
 			foreach ( Entity entity in scene.Entities )
 			{
@@ -46,13 +56,13 @@ namespace Ramen
 			scene.ComponentAddedToEntity += OnComponentAddedToEntity;
 			scene.ComponentRemovedFromEntity += OnComponentRemovedFromEntity;
 		}
-
+		
 		~NodeList()
 		{
-			Dispose();
+			Clear();
 		}
 
-		public void Dispose()
+		public void Clear()
 		{
 			scene.EntityAdded -= OnEntityAdded;
 			scene.EntityRemoved -= OnEntityRemoved;

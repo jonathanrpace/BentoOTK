@@ -114,6 +114,7 @@
     <Compile Include="src\Kaiga.Shaders.Fragment\DepthAwareBlurFragShader.cs" />
     <Compile Include="src\Kaiga.Geom\AbstractGeometry.cs" />
     <Compile Include="src\Kaiga.RenderPasses\AbstractRenderPass.cs" />
+    <Compile Include="src\Kaiga.RenderPasses\AbstractNodeRenderPass.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

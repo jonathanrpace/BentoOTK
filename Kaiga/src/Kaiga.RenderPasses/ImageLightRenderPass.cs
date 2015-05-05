@@ -1,58 +1,31 @@
-﻿using System;
-using Ramen;
-using Kaiga.Core;
+﻿using Kaiga.Core;
 using Kaiga.Shaders;
 using Kaiga.Lights;
 using Kaiga.Geom;
 
 namespace Kaiga.RenderPasses
 {
-	public class ImageLightRenderPass : IRenderPass
+	public class ImageLightNode : Ramen.Node
 	{
-		class Node : Ramen.Node
-		{
-			public ImageLight light = null;
-		}
+		public ImageLight light;
+	}
 
-		NodeList<Node> nodeList;
-		ImageLightShader shader;
-		ScreenQuadGeometry geom;
+	public class ImageLightRenderPass : AbstractNodeRenderPass<ImageLightNode>, IRenderPass
+	{
+		readonly ImageLightShader shader;
+		readonly ScreenQuadGeometry geom;
 
-		public ImageLightRenderPass()
+		public ImageLightRenderPass() : base( RenderPhase.IndirectLight )
 		{
 			shader = new ImageLightShader();
 			geom = new ScreenQuadGeometry();
 		}
 
-		#region IDisposable implementation
-
-		public void Dispose()
+		override public void Dispose()
 		{
+			base.Dispose();
 			shader.Dispose();
 			geom.Dispose();
-			if ( nodeList != null )
-			{
-				nodeList.Dispose();
-				nodeList = null;
-			}
-		}
-
-		#endregion
-
-		#region IRenderPass implementation
-
-		public void OnAddedToScene( Scene scene )
-		{
-			nodeList = new NodeList<Node>( scene );
-		}
-
-		public void OnRemovedFromScene( Scene scene )
-		{
-			if ( nodeList != null )
-			{
-				nodeList.Dispose();
-				nodeList = null;
-			}
 		}
 
 		public void Render( RenderParams renderParams )
@@ -69,24 +42,5 @@ namespace Kaiga.RenderPasses
 			geom.Unbind();
 			shader.UnbindPipeline();
 		}
-
-		public RenderPhase RenderPhase
-		{
-			get
-			{
-				return RenderPhase.IndirectLight;
-			}
-		}
-
-		public bool Enabled
-		{
-			get
-			{
-				return true;
-			}
-		}
-
-		#endregion
 	}
 }
-

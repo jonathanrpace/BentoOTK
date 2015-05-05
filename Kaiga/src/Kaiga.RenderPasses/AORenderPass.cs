@@ -1,15 +1,14 @@
-﻿using System;
-using Kaiga.Core;
+﻿using Kaiga.Core;
 using Ramen;
 using Kaiga.Shaders;
 
 namespace Kaiga.RenderPasses
 {
-	public class AORenderPass : IRenderPass
+	public class AORenderPass : AbstractRenderPass, IRenderPass
 	{
 		readonly SSAOShader shader;
 
-		public AORenderPass()
+		public AORenderPass() : base( RenderPhase.AO )
 		{
 			shader = new SSAOShader();
 		}
@@ -18,9 +17,7 @@ namespace Kaiga.RenderPasses
 		{
 			shader.Dispose();
 		}
-
-		#region IRenderPass implementation
-
+		
 		public void OnAddedToScene( Scene scene )
 		{
 			
@@ -35,24 +32,6 @@ namespace Kaiga.RenderPasses
 		{
 			shader.Render( renderParams );
 		}
-
-		public RenderPhase RenderPhase
-		{
-			get
-			{
-				return RenderPhase.AO;
-			}
-		}
-
-		public bool Enabled
-		{
-			get
-			{
-				return true;
-			}
-		}
-
-		#endregion
 	}
 }
 

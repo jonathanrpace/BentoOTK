@@ -1,7 +1,6 @@
 ﻿using System;
 using Kaiga.Components;
 using Kaiga.Lights;
-using Ramen;
 using Kaiga.Shaders;
 using Kaiga.Geom;
 using OpenTK;
@@ -10,21 +9,19 @@ using Kaiga.Core;
 
 namespace Kaiga.RenderPasses
 {
-	public class PointLightRenderPass : IRenderPass
+	public class PointLightNode : Ramen.Node
 	{
-		class Node : Ramen.Node
-		{
-			public Transform transform = null;
-			public PointLight light = null;
-		}
+		public Transform transform;
+		public PointLight light;
+	}
 
-		NodeList<Node> nodeList;
-
+	public class PointLightRenderPass : AbstractNodeRenderPass<PointLightNode>, IRenderPass
+	{
 		readonly PointLightShader shader;
 		readonly PointLightStencilShader stencilShader;
 		readonly SphereGeometry geom;
 
-		public PointLightRenderPass()
+		public PointLightRenderPass() : base( RenderPhase.DirectLight )
 		{
 			shader = new PointLightShader();
 			stencilShader = new PointLightStencilShader();
@@ -32,27 +29,15 @@ namespace Kaiga.RenderPasses
 			geom.Radius = 1.0f;
 		}
 
-		public void Dispose()
+		override public void Dispose()
 		{
-			nodeList.Dispose();
+			base.Dispose();
 			shader.Dispose();
 			stencilShader.Dispose();
 			geom.Dispose();
 		}
 
-		#region IRenderPass implementation
-
-		public void OnAddedToScene( Ramen.Scene scene )
-		{
-			nodeList = new NodeList<Node>( scene );
-		}
-
-		public void OnRemovedFromScene( Ramen.Scene scene )
-		{
-			nodeList.Dispose();
-		}
-
-		public void Render( Kaiga.Core.RenderParams renderParams )
+		public void Render( RenderParams renderParams )
 		{
 			geom.Bind();
 
@@ -69,8 +54,8 @@ namespace Kaiga.RenderPasses
 			GL.StencilOpSeparate( StencilFace.Back, StencilOp.Keep, StencilOp.IncrWrap, StencilOp.Keep );
 			GL.StencilOpSeparate( StencilFace.Front, StencilOp.Keep, StencilOp.DecrWrap, StencilOp.Keep );
 
-			( (DeferredRenderTarget)renderParams.RenderTarget ).BindForNoDraw();
-			foreach ( Node node in nodeList.Nodes )
+			renderParams.RenderTarget.BindForNoDraw();
+			foreach ( var node in nodeList.Nodes )
 			{
 				var scale = CalcPointLightRadius( node.light );
 				//var scale = node.light.Radius;
@@ -82,7 +67,7 @@ namespace Kaiga.RenderPasses
 			stencilShader.UnbindPipeline();
 
 
-			( (DeferredRenderTarget)renderParams.RenderTarget ).BindForDirectLightPhase();
+			renderParams.RenderTarget.BindForDirectLightPhase();
 			GL.Disable( EnableCap.DepthTest );
 
 			GL.Enable( EnableCap.CullFace );
@@ -92,7 +77,7 @@ namespace Kaiga.RenderPasses
 			GL.StencilFunc( StencilFunction.Notequal, 0, 0xFF );
 			
 			shader.BindPipeline( renderParams );
-			foreach ( Node node in nodeList.Nodes )
+			foreach ( var node in nodeList.Nodes )
 			{
 				var scale = CalcPointLightRadius( node.light );
 				//var scale = node.light.Radius;
@@ -111,24 +96,6 @@ namespace Kaiga.RenderPasses
 			geom.Unbind();
 		}
 
-		public Kaiga.Core.RenderPhase RenderPhase
-		{
-			get
-			{
-				return Kaiga.Core.RenderPhase.DirectLight;
-			}
-		}
-
-		public bool Enabled
-		{
-			get
-			{
-				return true;
-			}
-		}
-
-		#endregion
-		
 		static float CalcPointLightRadius(PointLight light)
 		{
 			float maxChannel = Math.Max( Math.Max( light.Color.X, light.Color.Y ), light.Color.Z ) * light.Intensity;
