@@ -112,6 +112,12 @@ namespace Kaiga.Shaders
 			GL.Uniform1( location, value );
 		}
 
+		protected void SetUniform1( string name, bool value )
+		{
+			int location = GL.GetUniformLocation( shaderProgram, name );
+			GL.Uniform1( location, value ? 1 : 0 );
+		}
+
 		protected void SetUniform2( string name, Vector2 value )
 		{
 			int location = GL.GetUniformLocation( shaderProgram, name );
@@ -130,7 +136,7 @@ namespace Kaiga.Shaders
 			GL.Uniform4( location, value );
 		}
 
-		protected void SetUniformTexture( string name, int texture, TextureTarget textureTarget )
+		protected void SetTexture( string name, int texture, TextureTarget textureTarget )
 		{
 			SetUniform1( name, textureUnit );
 			GL.ActiveTexture( TextureUnit.Texture0 + textureUnit );
@@ -138,6 +144,21 @@ namespace Kaiga.Shaders
 			textureUnit++;
 		}
 
+		protected void SetTexture2D( string name, int texture )
+		{
+			SetUniform1( name, textureUnit );
+			GL.ActiveTexture( TextureUnit.Texture0 + textureUnit );
+			GL.BindTexture( TextureTarget.Texture2D, texture );
+			textureUnit++;
+		}
+
+		protected void SetRectangleTexture( string name, int texture )
+		{
+			SetUniform1( name, textureUnit );
+			GL.ActiveTexture( TextureUnit.Texture0 + textureUnit );
+			GL.BindTexture( TextureTarget.TextureRectangle, texture );
+			textureUnit++;
+		}
 		#endregion
 	}
 }

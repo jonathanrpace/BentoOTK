@@ -52,7 +52,7 @@ namespace Examples
 			renderer.AddRenderPass( new PointLightRenderPass() );
 			renderer.AddRenderPass( new AmbientLightRenderPass() );
 			renderer.AddRenderPass( new ImageLightRenderPass() );
-			renderer.AddRenderPass( new AORenderPass() );
+			//renderer.AddRenderPass( new AORenderPass() );
 			renderer.AddRenderPass( new SkyboxRenderPass() );
 			renderer.AddRenderPass( new LightResolvePass() );
 
@@ -76,14 +76,30 @@ namespace Examples
 					entity.AddComponent( geom );
 
 					var material = new StandardMaterial();
-					material.Roughness = 0.1f + columnRatio * 0.9f;
-					material.Reflectivity = rowRatio;
+					material.Roughness = 0.1f + (1.0f-columnRatio) * 0.9f;
+					//material.Reflectivity = rowRatio;
+					material.Diffuse = new Vector3( 0.5f, 0.5f, 0.5f );
+
+					double dice = rand.NextDouble();
+					if ( dice < 1.0 / 3.0 )
+					{
+						//material.Diffuse = new Vector3( 1.0f, 0.0f, 0.0f );
+					}
+					else if ( dice < 2.0 / 3.0 )
+					{
+						//material.Diffuse = new Vector3( 0.0f, 1.0f, 0.0f );
+					}
+					else
+					{
+						//material.Diffuse = new Vector3( 0.0f, 0.0f, 1.0f );
+					}
+
 					entity.AddComponent( material );
 
 					var transform = new Transform();
 					transform.Matrix = Matrix4.Identity * Matrix4.CreateTranslation( 
 						(i-numColumns*0.5f) * spacing, 
-						0.0f, 
+						radius, 
 						(j-numRows*0.5f) * spacing );
 					entity.AddComponent( transform );
 
@@ -92,7 +108,7 @@ namespace Examples
 			}
 
 			{
-				float border = 0.5f;
+				const float border = 0.5f;
 				var floor = new Entity();
 				var floorGeom = new PlaneGeometry();
 				floorGeom.Width = numColumns * spacing + border * 2.0f;
@@ -100,12 +116,36 @@ namespace Examples
 				floor.AddComponent( floorGeom );
 				var transform = new Transform();
 				transform.RotateX( (float)Math.PI * 0.5f );
-				transform.Translate( -radius, -radius, -radius );
 				floor.AddComponent( transform );
 				var floorMaterial = new StandardMaterial();
-				floorMaterial.Roughness = 0.75f;
+				floorMaterial.Roughness = 0.3f;
+				floorMaterial.Diffuse = new Vector3( 0.0f, 0.0f, 1.0f );
 				floor.AddComponent( floorMaterial );
 				scene.AddEntity( floor );
+
+				var wall = new Entity();
+				wall.AddComponent( floorGeom );
+				var wallTransform = new Transform();
+				wallTransform.RotateY( (float)Math.PI );
+				wallTransform.Translate( 0.0f, floorGeom.Width * 0.5f, -floorGeom.Width * 0.5f );
+				wall.AddComponent( wallTransform );
+				var wallMaterial = new StandardMaterial();
+				wallMaterial.Roughness = 0.3f;
+				wallMaterial.Diffuse = new Vector3( 0.0f, 1.0f, 0.0f );
+				wall.AddComponent( wallMaterial );
+				scene.AddEntity( wall );
+
+				var wall2 = new Entity();
+				wall2.AddComponent( floorGeom );
+				var wallTransform2 = new Transform();
+				wallTransform2.RotateY( -(float)Math.PI * 0.5f );
+				wallTransform2.Translate( -floorGeom.Width * 0.5f, floorGeom.Width * 0.5f, 0.0f );
+				wall2.AddComponent( wallTransform2 );
+				var wallMaterial2 = new StandardMaterial();
+				wallMaterial2.Roughness = 0.3f;
+				wallMaterial2.Diffuse = new Vector3( 1.0f, 0.0f, 0.0f );
+				wall2.AddComponent( wallMaterial2 );
+				scene.AddEntity( wall2 );
 			}
 
 			{
@@ -122,7 +162,7 @@ namespace Examples
 				scene.AddEntity( imageLight );
 			}
 
-			for ( int i = 0; i < 10; i++ )
+			for ( int i = 0; i < 2; i++ )
 			{
 				CreateLight();
 			}
@@ -139,13 +179,14 @@ namespace Examples
 			var transform = new Transform();
 			entity.AddComponent( transform );
 
-			var radius = 0.01f + (float)rand.NextDouble() * 0.1f;
+			var radius = 0.05f + (float)rand.NextDouble() * 0.05f;
 			var color = new Vector3( (float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble() );
 
 			var pointLight = new PointLight();
 			pointLight.Radius = radius;
-			pointLight.Intensity = 10.0f;
-			pointLight.Color = color;
+			pointLight.Intensity = 50.0f;
+			pointLight.AttenuationRadius = radius * 15.0f;
+			//pointLight.Color = color;
 			entity.AddComponent( pointLight );
 
 			var sphereGeom = new SphereGeometry();
@@ -153,8 +194,8 @@ namespace Examples
 			entity.AddComponent( sphereGeom );
 
 			var material = new StandardMaterial();
-			material.Diffuse = color;
-			material.Emissive = 0.2f;
+			//material.Diffuse = color;
+			material.Emissive = 1.0f;
 			entity.AddComponent( material );
 
 			var swarmMember = new SwarmMember( 
@@ -172,7 +213,7 @@ namespace Examples
 		{
 			var entity = new Entity();
 
-			var ambientLight = new AmbientLight( 1.0f, 1.0f, 1.0f, 0.1f );
+			var ambientLight = new AmbientLight( 1.0f, 1.0f, 1.0f, 0.2f );
 			entity.AddComponent( ambientLight );
 
 			scene.AddEntity( entity );

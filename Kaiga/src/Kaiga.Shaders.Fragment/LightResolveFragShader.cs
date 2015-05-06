@@ -1,22 +1,78 @@
 ﻿using Kaiga.Core;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Input;
+using System.Diagnostics;
+using Kaiga.Textures;
 
 namespace Kaiga.Shaders.Fragment
 {
 	public class LightResolveFragShader : AbstractFragmentShaderStage
 	{
+		RandomAngleTexture randomTexture;
+
+		public LightResolveFragShader() : base( "LightResolveShader.frag" )
+		{
+			randomTexture = new RandomAngleTexture();
+			randomTexture.Width = 64;
+			randomTexture.Height = 64;
+		}
+
 		override public void BindPerPass( RenderParams renderParams )
 		{
 			base.BindPerPass( renderParams );
 
-			SetUniformTexture( "s_directLightBuffer", renderParams.RenderTarget.DirectLightBuffer.Texture, 
-				TextureTarget.TextureRectangle );
-			SetUniformTexture( "s_indirectLightBuffer", renderParams.RenderTarget.IndirectLightBuffer.Texture, 
-				TextureTarget.TextureRectangle );
-			SetUniformTexture( "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture, 
-				TextureTarget.TextureRectangle );
-			SetUniformTexture( "s_aoBuffer", renderParams.AORenderTarget.AOBuffer.Texture, 
-				TextureTarget.TextureRectangle );
+			SetRectangleTexture( "s_directLightBuffer", renderParams.RenderTarget.DirectLightBuffer.Texture );
+			SetRectangleTexture( "s_indirectLightBuffer", renderParams.RenderTarget.IndirectLightBuffer.Texture );
+			SetRectangleTexture( "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture );
+			//SetRectangleTexture( "s_aoBuffer", renderParams.AORenderTarget.AOBuffer.Texture );
+
+			SetTexture2D( "s_positionBuffer", renderParams.PositionBufferMippedTexture.Texture );
+			SetTexture2D( "s_normalBuffer", renderParams.NormalBufferMippedTexture.Texture );
+			SetTexture2D( "s_directLightBuffer2D", renderParams.DirectLightBufferMippedTexture.Texture );
+			SetTexture2D( "s_indirectLightBuffer2D", renderParams.IndirectLightBufferMippedTexture.Texture );
+			SetTexture2D( "s_randomTexture", randomTexture.Texture );
+
+			SetUniform1( "u_maxMip", renderParams.PositionBufferMippedTexture.NumMipMaps-3 );
+
+			//float radius = (float)Mouse.GetState().X / 1000.0f;
+			//Debug.WriteLine( radius );
+			const float radius = 0.5f;
+			SetUniform1( "radius", radius );
+
+			//float bias = (float)Mouse.GetState().Y / 1000.0f;
+			//Debug.WriteLine( bias );
+			const float bias = 0.1f;
+			SetUniform1( "bias", bias );
+
+			//float falloffScalar = (float)Mouse.GetState().X / 100.0f;
+			//Debug.WriteLine( falloffScalar );
+			const float falloffScalar = 5.0f;
+			SetUniform1( "falloffScalar", falloffScalar );
+
+			//float q = (float)Mouse.GetState().X / 50.0f;
+			//Debug.WriteLine( q );
+			const float q = 60.0f;
+			SetUniform1( "q", q );
+
+			//float radiosityScalar = (float)Mouse.GetState().X / 10.0f;
+			//Debug.WriteLine( radiosityScalar );
+			const float radiosityScalar = 10.0f;
+			SetUniform1( "u_radiosityScalar", radiosityScalar );
+
+			//float colorBleedingBoost = (float)Mouse.GetState().X / 1000.0f;
+			//Debug.WriteLine( colorBleedingBoost );
+			const float colorBleedingBoost = 0.9f;
+			SetUniform1( "u_colorBleedingBoost", colorBleedingBoost );
+
+			SetUniform1( "u_aspectRatio", renderParams.CameraLens.AspectRatio );
+
+
+			bool aoEnabled = Mouse.GetState().X > 200.0f;
+			bool radiosityEnabled = Mouse.GetState().Y > 100.0f;
+			SetUniform1( "u_aoEnabled", aoEnabled );
+			SetUniform1( "u_radiosityEnabled", radiosityEnabled );
+
+			Debug.WriteLine( "" );
 		}
 
 		/*
@@ -32,38 +88,5 @@ namespace Kaiga.Shaders.Fragment
 		 * 			out = direct + indirect
 		 * 
 		*/
-
-		override protected string GetShaderSource()
-		{
-			return @"
-#version 450 core
-
-// Samplers
-uniform sampler2DRect s_directLightBuffer;
-uniform sampler2DRect s_indirectLightBuffer;
-uniform sampler2DRect s_materialBuffer;
-uniform sampler2DRect s_aoBuffer;
-
-// Consts
-layout( location = 0 ) out vec4 out_fragColor;
-
-void main()
-{
-	vec4 directLight = texture( s_directLightBuffer, gl_FragCoord.xy );
-	vec4 indirectLight = texture( s_indirectLightBuffer, gl_FragCoord.xy );
-	vec4 material = texture( s_materialBuffer, gl_FragCoord.xy );
-	
-	float roughness = material.x;
-	float reflectivity = material.y;
-	float emissive = material.z;
-
-	vec4 ao = texture2DRect( s_aoBuffer, vec2( gl_FragCoord.xy * 0.5f ) );
-
-	ao.x += (1.0f-ao.x) * (1.0f-roughness);
-	out_fragColor = directLight + (indirectLight * ao.x) + vec4(emissive);
-	//out_fragColor = vec4( ao.x, ao.x, ao.x, 1.0 );
-}
-";
-		}
 	}
 }

@@ -29,12 +29,12 @@ namespace Kaiga.Shaders.Fragment
 		{
 			base.BindPerPass( renderParams );
 
-			SetUniformTexture( "s_positionBuffer", renderParams.RenderTarget.PositionBuffer.Texture, 
+			SetTexture( "s_positionBuffer", renderParams.RenderTarget.PositionBuffer.Texture, 
 								TextureTarget.TextureRectangle );
-			SetUniformTexture( "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, 
+			SetTexture( "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, 
 				TextureTarget.TextureRectangle );
 
-			SetUniformTexture( "s_randomTexture", randomTexture.Texture, TextureTarget.Texture2D );
+			SetTexture( "s_randomTexture", randomTexture.Texture, TextureTarget.Texture2D );
 
 			SetUniformMatrix4( "projectionMatrix", ref renderParams.ProjectionMatrix );
 		}

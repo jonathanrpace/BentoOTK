@@ -10,17 +10,17 @@ namespace Kaiga.Shaders.Fragment
 		{
 			base.BindPerPass( renderParams );
 
-			SetUniformTexture( "s_positionBuffer", renderParams.RenderTarget.PositionBuffer.Texture, TextureTarget.TextureRectangle );
-			SetUniformTexture( "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, TextureTarget.TextureRectangle );
-			SetUniformTexture( "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture, TextureTarget.TextureRectangle );
-			SetUniformTexture( "s_albedoBuffer", renderParams.RenderTarget.AlbedoBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_positionBuffer", renderParams.RenderTarget.PositionBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_albedoBuffer", renderParams.RenderTarget.AlbedoBuffer.Texture, TextureTarget.TextureRectangle );
 
 			SetUniformMatrix3( "normalInvViewMatrix", ref renderParams.NormalInvViewMatrix, true );
 		}
 
 		public void BindPerLight( RenderParams renderParams, ImageLight light )
 		{
-			SetUniformTexture( "s_envMap", light.Texture.Texture, TextureTarget.TextureCubeMap );
+			SetTexture( "s_envMap", light.Texture.Texture, TextureTarget.TextureCubeMap );
 		}
 
 		override protected string GetShaderSource()

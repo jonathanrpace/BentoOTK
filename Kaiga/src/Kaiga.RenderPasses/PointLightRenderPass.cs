@@ -57,8 +57,8 @@ namespace Kaiga.RenderPasses
 			renderParams.RenderTarget.BindForNoDraw();
 			foreach ( var node in nodeList.Nodes )
 			{
-				var scale = CalcPointLightRadius( node.light );
-				//var scale = node.light.Radius;
+				//var scale = CalcPointLightRadius( node.light );
+				var scale = node.light.AttenuationRadius * 2.0f;
 				Matrix4 mat = Matrix4.CreateScale( scale ) * node.transform.Matrix;
 				renderParams.SetModelMatrix( mat );
 				stencilShader.BindPerLight( renderParams, node.light );
@@ -79,8 +79,8 @@ namespace Kaiga.RenderPasses
 			shader.BindPipeline( renderParams );
 			foreach ( var node in nodeList.Nodes )
 			{
-				var scale = CalcPointLightRadius( node.light );
-				//var scale = node.light.Radius;
+				//var scale = CalcPointLightRadius( node.light );
+				var scale = node.light.AttenuationRadius * 2.0f;
 				Matrix4 mat = Matrix4.CreateScale( scale ) * node.transform.Matrix;
 				renderParams.SetModelMatrix( mat );
 				shader.BindPerLight( renderParams, node.light );
@@ -95,7 +95,7 @@ namespace Kaiga.RenderPasses
 
 			geom.Unbind();
 		}
-
+		/*
 		static float CalcPointLightRadius(PointLight light)
 		{
 			float maxChannel = Math.Max( Math.Max( light.Color.X, light.Color.Y ), light.Color.Z ) * light.Intensity;
@@ -107,5 +107,6 @@ namespace Kaiga.RenderPasses
 			//return 5.0f;
 			return ret * 2.0f;
 		}
+		*/
 	}
 }

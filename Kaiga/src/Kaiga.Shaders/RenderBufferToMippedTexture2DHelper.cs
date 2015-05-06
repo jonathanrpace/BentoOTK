@@ -25,7 +25,7 @@ namespace Kaiga.Shaders
 		{
 			rectTo2DShader = new ScreenQuadTextureRectShader();
 			output = new SquareTexture2D();
-			output.MinFilter = TextureMinFilter.LinearMipmapNearest;
+			output.MinFilter = TextureMinFilter.NearestMipmapNearest;
 			output.MagFilter = TextureMagFilter.Linear;
 
 			frameBuffer = GL.GenFramebuffer();

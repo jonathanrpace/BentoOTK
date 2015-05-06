@@ -12,18 +12,16 @@ namespace Kaiga.Shaders.Fragment
 		{
 			base.BindPerPass( renderParams );
 
-			SetUniformTexture( "s_positionBuffer", renderParams.RenderTarget.PositionBuffer.Texture, TextureTarget.TextureRectangle );
-			SetUniformTexture( "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture, TextureTarget.TextureRectangle );
-			SetUniformTexture( "s_albedoBuffer", renderParams.RenderTarget.AlbedoBuffer.Texture, TextureTarget.TextureRectangle );
-			SetUniformTexture( "s_aoBuffer", renderParams.AORenderTarget.AOBuffer.Texture, TextureTarget.TextureRectangle );
-			SetUniformTexture( "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_positionBuffer", renderParams.RenderTarget.PositionBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_albedoBuffer", renderParams.RenderTarget.AlbedoBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, TextureTarget.TextureRectangle );
 		}
 
 		public void BindPerLight( RenderParams renderParams, PointLight light )
 		{
-			SetUniform1( "u_attenuationConstant", light.AttenuationLinear );
-			SetUniform1( "u_attenuationLinear", light.AttenuationLinear );
-			SetUniform1( "u_attenuationExp", light.AttenuationExp );
+			SetUniform1( "u_attenuationRadius", light.AttenuationRadius );
+			SetUniform1( "u_attenuationPower", light.AttenuationPower );
 			SetUniform1( "u_radius", light.Radius );
 			SetUniform3( "u_color", light.Color );
 
@@ -44,12 +42,10 @@ uniform sampler2DRect s_positionBuffer;
 uniform sampler2DRect s_normalBuffer;
 uniform sampler2DRect s_materialBuffer;
 uniform sampler2DRect s_albedoBuffer;
-uniform sampler2DRect s_aoBuffer;
 
 // Scalars
-uniform float u_attenuationConstant;
-uniform float u_attenuationLinear;
-uniform float u_attenuationExp;
+uniform float u_attenuationRadius;
+uniform float u_attenuationPower;
 uniform float u_radius;
 uniform vec3 u_color;
 uniform float u_intensity;
@@ -115,7 +111,6 @@ void main()
 	vec3 normal = texture2DRect( s_normalBuffer, gl_FragCoord.xy ).xyz;
 	vec4 material = texture2DRect( s_materialBuffer, gl_FragCoord.xy );
 	vec3 albedo = texture2DRect( s_albedoBuffer, gl_FragCoord.xy ).xyz;
-	float ao = texture2DRect( s_aoBuffer, gl_FragCoord.xy * 0.5 ).x;
 
 	vec3 lightDir = u_lightPosition - position.xyz;
 	float distance = max( length( lightDir ) - u_radius, 0.0f );
@@ -130,19 +125,15 @@ void main()
 	float reflectivity = material.y;
 	float emissive = material.z;
 
-	float attenuation = u_attenuationConstant + 
-						u_attenuationLinear * distance + 
-						u_attenuationExp * distance * distance;
-	attenuation = max( attenuation, 1.0f );
+	float attenuation = 1.0f - min( distance / u_attenuationRadius, 1.0f );
+	attenuation = pow( attenuation, u_attenuationPower );
 	
-	vec3 light = vec3( LightingFuncGGX_REF( normal, viewDir, lightDir, roughness, reflectivity, angularSize ) );
+	float lightAmount = min( 1000.0f, LightingFuncGGX_REF( normal, viewDir, lightDir, roughness, reflectivity, angularSize ) );
+	vec3 light = vec3( lightAmount );
 	
-	light *= (ao + (1.0-angularSize));
-
 	light *= u_color;
 	light *= u_intensity;
-	light /= attenuation;
-
+	light *= attenuation;
 	light *= albedo;
 
 	out_color = vec4( light, 1.0 );

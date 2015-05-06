@@ -229,7 +229,7 @@ namespace Kaiga.Core
 
 			// Convert position and normal buffers to 2D mipped textures
 			// These are used during resolve pass to provide cache performant scalable AO and radiosity.
-			positionBufferMipper.Render( renderParams, renderParams.RenderTarget.NormalBuffer );
+			positionBufferMipper.Render( renderParams, renderParams.RenderTarget.PositionBuffer );
 			renderParams.PositionBufferMippedTexture = positionBufferMipper.Output;
 			normalBufferMipper.Render( renderParams, renderParams.RenderTarget.NormalBuffer );
 			renderParams.NormalBufferMippedTexture = normalBufferMipper.Output;
