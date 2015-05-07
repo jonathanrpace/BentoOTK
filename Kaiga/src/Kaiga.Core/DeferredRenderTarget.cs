@@ -18,7 +18,8 @@ namespace Kaiga.Core
 			DrawBufferName.Position, 
 			DrawBufferName.Normal, 
 			DrawBufferName.Albedo, 
-			DrawBufferName.Material
+			DrawBufferName.Material,
+			DrawBufferName.DirectLight
 		};
 
 		DrawBuffersEnum[] directLightPhaseDrawBuffers = { 

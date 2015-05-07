@@ -8,6 +8,7 @@ using OpenTK.Graphics.OpenGL4;
 using Kaiga.Components;
 using OpenTK;
 using Kaiga.Shaders;
+using OpenTK.Input;
 
 namespace Kaiga.Core
 {
@@ -19,14 +20,20 @@ namespace Kaiga.Core
 		readonly List<IRenderPass>							renderPasses;
 		readonly Dictionary<RenderPhase, List<IRenderPass>> passesByPhase;
 		readonly Dictionary<Type, IRenderPass>				passesByType;
+
+		// Render targets
 		readonly DeferredRenderTarget						renderTarget;
 		readonly AORenderTarget								aoRenderTarget;
+
+		// Shaders
 		readonly ScreenQuadTextureRectShader 				textureOutputShader;
 		readonly ScreenQuadTextureShader 					squareTextureOutputShader;
-		readonly LightBufferConvolver 						directLightBufferDownsampler;
-		readonly LightBufferConvolver 						indirectLightBufferDownsampler;
+		readonly RenderBufferToMippedTexture2DHelper 		directLightBufferDownsampler;
+		readonly RenderBufferToMippedTexture2DHelper 		indirectLightBufferDownsampler;
 		readonly RenderBufferToMippedTexture2DHelper 		positionBufferMipper;	
-		readonly RenderBufferToMippedTexture2DHelper 		normalBufferMipper;	
+		readonly RenderBufferToMippedTexture2DHelper 		normalBufferMipper;
+		readonly LightTransportShader				 		lightTransportShader;
+		readonly ResolveShader						 		resolveShader;
 
 		// Properties
 		public Entity							Camera { get; private set; }
@@ -60,15 +67,16 @@ namespace Kaiga.Core
 			AddRenderPhase( RenderPhase.G );
 			AddRenderPhase( RenderPhase.DirectLight );
 			AddRenderPhase( RenderPhase.IndirectLight );
-			AddRenderPhase( RenderPhase.AO );
-			AddRenderPhase( RenderPhase.Resolve );
+			AddRenderPhase( RenderPhase.PostLight );
 
 			textureOutputShader = new ScreenQuadTextureRectShader();
 			squareTextureOutputShader = new ScreenQuadTextureShader();
-			directLightBufferDownsampler = new LightBufferConvolver();
-			indirectLightBufferDownsampler = new LightBufferConvolver();
+			directLightBufferDownsampler = new RenderBufferToMippedTexture2DHelper();
+			indirectLightBufferDownsampler = new RenderBufferToMippedTexture2DHelper();
 			positionBufferMipper = new RenderBufferToMippedTexture2DHelper();
 			normalBufferMipper = new RenderBufferToMippedTexture2DHelper();
+			lightTransportShader = new LightTransportShader();
+			resolveShader = new ResolveShader();
 
 			GL.Enable( EnableCap.FramebufferSrgb );
 		}
@@ -88,6 +96,8 @@ namespace Kaiga.Core
 			textureOutputShader.Dispose();
 			directLightBufferDownsampler.Dispose();
 			indirectLightBufferDownsampler.Dispose();
+			lightTransportShader.Dispose();
+			resolveShader.Dispose();
 		}
 		
 		public void OnAddedToScene( Scene scene )
@@ -169,10 +179,20 @@ namespace Kaiga.Core
 
 		public void RenderToBackBuffer( DeferredRenderTarget renderTarget )
 		{
-			renderTarget.SetSize( scene.GameWindow.Width, scene.GameWindow.Height );
-			aoRenderTarget.SetSize( scene.GameWindow.Width >> 1, scene.GameWindow.Height >> 1 );
+			//float scalar = Math.Max( 0.2f, (float)Mouse.GetState().X / 1000.0f );
+			//Debug.WriteLine( scalar );
+			const float scalar = 0.8f;
+			renderParams.LightTransportResolutionScalar = scalar;
 
-			GL.Viewport( 0, 0, scene.GameWindow.Width, scene.GameWindow.Height );
+			int renderWidth = scene.GameWindow.Width;
+			int renderHeight = scene.GameWindow.Height;
+			int lightTransportRenderWidth = (int)( renderWidth * renderParams.LightTransportResolutionScalar );
+			int lightTransportRenderHeight = (int)(renderHeight * renderParams.LightTransportResolutionScalar);
+
+			renderTarget.SetSize( renderWidth, renderHeight );
+			aoRenderTarget.SetSize( lightTransportRenderWidth, lightTransportRenderHeight );
+
+			GL.Viewport( 0, 0, renderWidth, renderHeight );
 
 			renderParams.CameraLens = Camera.GetComponentByType<ILens>();
 			renderParams.CameraLens.AspectRatio = (float)scene.GameWindow.Width / scene.GameWindow.Height;
@@ -234,21 +254,21 @@ namespace Kaiga.Core
 			normalBufferMipper.Render( renderParams, renderParams.RenderTarget.NormalBuffer );
 			renderParams.NormalBufferMippedTexture = normalBufferMipper.Output;
 
-			// AO pass
-			aoRenderTarget.BindForAOPhase();
-			RenderPassesInPhase( RenderPhase.AO );
-
+			// Perform light transport.
+			GL.Viewport( 0, 0, lightTransportRenderWidth, lightTransportRenderHeight );
+			lightTransportShader.Render( renderParams );
+			
 			// Resolve
-			GL.Viewport( 0, 0, scene.GameWindow.Width, scene.GameWindow.Height );
+			GL.Viewport( 0, 0, renderWidth, renderHeight );
 			renderTarget.BindForResolvePhase();
-			RenderPassesInPhase( RenderPhase.Resolve );
+			resolveShader.Render( renderParams );
 			
 			// Switch draw target to back buffer
 			GL.DepthMask( true );
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 
 			// Output final output texture to backbuffer
-			//squareTextureOutputShader.Render( renderParams, positionBufferMipper.Output.Texture );
+			//textureOutputShader.Render( renderParams, aoRenderTarget.AOBuffer.Texture );
 			textureOutputShader.Render( renderParams, renderTarget.OutputBuffer.Texture );
 			//textureOutputShader.Render( renderParams, renderParams.AORenderTarget.AOBuffer.Texture );
 

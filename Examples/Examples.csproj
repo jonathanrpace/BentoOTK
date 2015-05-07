@@ -32,7 +32,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="src\" />
-    <Folder Include="Shaders\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\Program.cs" />
@@ -54,14 +53,6 @@
       <Project>{A37A7E14-0000-0000-0000-000000000000}</Project>
       <Name>OpenTK</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="bin\Resource\Shaders\Test.frag">
-      <Link>Shaders\Test.frag</Link>
-    </None>
-    <None Include="bin\Resource\Shaders\Test.vert">
-      <Link>Shaders\Test.vert</Link>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Drawing" />

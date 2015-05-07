@@ -15,7 +15,7 @@ namespace Kaiga.RenderPasses
 		readonly SkyboxShader shader;
 		readonly SkyboxGeometry geom;
 
-		public SkyboxRenderPass() : base( RenderPhase.Resolve )
+		public SkyboxRenderPass() : base( RenderPhase.PostLight )
 		{
 			shader = new SkyboxShader();
 			geom = new SkyboxGeometry();

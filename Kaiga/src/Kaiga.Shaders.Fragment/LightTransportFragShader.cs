@@ -1,16 +1,15 @@
 ﻿using Kaiga.Core;
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
 using System.Diagnostics;
 using Kaiga.Textures;
 
 namespace Kaiga.Shaders.Fragment
 {
-	public class LightResolveFragShader : AbstractFragmentShaderStage
+	public class LightTransportFragShader : AbstractFragmentShaderStage
 	{
-		RandomAngleTexture randomTexture;
+		readonly RandomAngleTexture randomTexture;
 
-		public LightResolveFragShader() : base( "LightResolveShader.frag" )
+		public LightTransportFragShader() : base( "LightTransportShader.frag" )
 		{
 			randomTexture = new RandomAngleTexture();
 			randomTexture.Width = 64;
@@ -21,10 +20,9 @@ namespace Kaiga.Shaders.Fragment
 		{
 			base.BindPerPass( renderParams );
 
-			SetRectangleTexture( "s_directLightBuffer", renderParams.RenderTarget.DirectLightBuffer.Texture );
-			SetRectangleTexture( "s_indirectLightBuffer", renderParams.RenderTarget.IndirectLightBuffer.Texture );
-			SetRectangleTexture( "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture );
-			//SetRectangleTexture( "s_aoBuffer", renderParams.AORenderTarget.AOBuffer.Texture );
+			//SetRectangleTexture( "s_directLightBuffer", renderParams.RenderTarget.DirectLightBuffer.Texture );
+			//SetRectangleTexture( "s_indirectLightBuffer", renderParams.RenderTarget.IndirectLightBuffer.Texture );
+			//SetRectangleTexture( "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture );
 
 			SetTexture2D( "s_positionBuffer", renderParams.PositionBufferMippedTexture.Texture );
 			SetTexture2D( "s_normalBuffer", renderParams.NormalBufferMippedTexture.Texture );
@@ -32,16 +30,16 @@ namespace Kaiga.Shaders.Fragment
 			SetTexture2D( "s_indirectLightBuffer2D", renderParams.IndirectLightBufferMippedTexture.Texture );
 			SetTexture2D( "s_randomTexture", randomTexture.Texture );
 
-			SetUniform1( "u_maxMip", renderParams.PositionBufferMippedTexture.NumMipMaps-3 );
+			SetUniform1( "u_maxMip", renderParams.PositionBufferMippedTexture.NumMipMaps-4 );
 
 			//float radius = (float)Mouse.GetState().X / 1000.0f;
 			//Debug.WriteLine( radius );
-			const float radius = 0.5f;
+			const float radius = 0.2f;
 			SetUniform1( "radius", radius );
 
-			//float bias = (float)Mouse.GetState().Y / 1000.0f;
+			//float bias = (float)Mouse.GetState().Y / 100.0f;
 			//Debug.WriteLine( bias );
-			const float bias = 0.1f;
+			const float bias = 0.4f;
 			SetUniform1( "bias", bias );
 
 			//float falloffScalar = (float)Mouse.GetState().X / 100.0f;
@@ -49,19 +47,24 @@ namespace Kaiga.Shaders.Fragment
 			const float falloffScalar = 5.0f;
 			SetUniform1( "falloffScalar", falloffScalar );
 
-			//float q = (float)Mouse.GetState().X / 50.0f;
+			//float q = (float)Mouse.GetState().X / 50000.0f;
 			//Debug.WriteLine( q );
-			const float q = 60.0f;
+			const float q = 0.006f;
 			SetUniform1( "q", q );
+
+			//float epsilon = (float)Mouse.GetState().X / 500.0f;
+			//Debug.WriteLine( epsilon );
+			const float epsilon= 0.03f;
+			SetUniform1( "epsilon", epsilon );
 
 			//float radiosityScalar = (float)Mouse.GetState().X / 10.0f;
 			//Debug.WriteLine( radiosityScalar );
-			const float radiosityScalar = 10.0f;
+			const float radiosityScalar = 3.0f;
 			SetUniform1( "u_radiosityScalar", radiosityScalar );
 
 			//float colorBleedingBoost = (float)Mouse.GetState().X / 1000.0f;
 			//Debug.WriteLine( colorBleedingBoost );
-			const float colorBleedingBoost = 0.9f;
+			const float colorBleedingBoost = 0.25f;
 			SetUniform1( "u_colorBleedingBoost", colorBleedingBoost );
 
 			SetUniform1( "u_aspectRatio", renderParams.CameraLens.AspectRatio );

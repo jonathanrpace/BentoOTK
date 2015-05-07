@@ -17,6 +17,11 @@ namespace Kaiga.Components
 			Matrix = matrix;
 		}
 
+		public void Scale( float value )
+		{
+			Matrix *= Matrix4.CreateScale( value );
+		}
+
 		public void Translate( float x, float y, float z )
 		{
 			Matrix *= Matrix4.CreateTranslation( x, y, z );

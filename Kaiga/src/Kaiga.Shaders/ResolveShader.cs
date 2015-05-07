@@ -1,21 +1,21 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using Kaiga.Core;
-using Kaiga.Geom;
+﻿using System;
 using Kaiga.Shaders.Vertex;
 using Kaiga.Shaders.Fragment;
+using Kaiga.Core;
+using Kaiga.Geom;
 
 namespace Kaiga.Shaders
 {
-	public class LightResolveShader : AbstractShader<ScreenQuadVertexShader, LightResolveFragShader>
+	public class ResolveShader : AbstractShader<ScreenQuadVertexShader, ResolveFragShader>
 	{
 		readonly ScreenQuadGeometry screenQuadGeom;
 
-		public LightResolveShader()
+		public ResolveShader()
 		{
 			screenQuadGeom = new ScreenQuadGeometry();
 		}
 
-		override public void Dispose()
+		public override void Dispose()
 		{
 			base.Dispose();
 			screenQuadGeom.Dispose();
@@ -25,11 +25,9 @@ namespace Kaiga.Shaders
 		{
 			BindPipeline( renderParams );
 
-			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
-			vertexShader.BindPerPass( renderParams );
-
-			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
+			BindFragmentShader();
 			fragmentShader.BindPerPass( renderParams );
+			BindVertexShader();
 
 			screenQuadGeom.Bind();
 			screenQuadGeom.Draw();

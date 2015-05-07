@@ -33,6 +33,8 @@ namespace Kaiga.Core
 		public SquareTexture2D PositionBufferMippedTexture;
 		public SquareTexture2D NormalBufferMippedTexture;
 
+		public float LightTransportResolutionScalar = 0.5f;
+
 		public void SetModelMatrix( Matrix4 modelMatrix )
 		{
 			ModelMatrix = modelMatrix;

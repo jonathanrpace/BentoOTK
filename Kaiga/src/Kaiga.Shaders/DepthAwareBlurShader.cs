@@ -5,11 +5,11 @@ using Kaiga.Shaders.Fragment;
 
 namespace Kaiga.Shaders
 {
-	public class BoxBlurShader : AbstractShader<ScreenQuadVertexShader, DepthAwareBlurFragShader>
+	public class DepthAwareBlurShader : AbstractShader<ScreenQuadVertexShader, DepthAwareBlurFragShader>
 	{
 		readonly ScreenQuadGeometry screenQuadGeom;
 
-		public BoxBlurShader()
+		public DepthAwareBlurShader()
 		{
 			screenQuadGeom = new ScreenQuadGeometry();
 		}
@@ -20,10 +20,10 @@ namespace Kaiga.Shaders
 			screenQuadGeom.Dispose();
 		}
 
-		public void Render( RenderParams renderParams, int texture, float radiusU, float radiusV )
+		public void Render( RenderParams renderParams, int texture, int positionTexture, float radiusU, float radiusV )
 		{
 			BindPipeline( renderParams );
-			fragmentShader.Bind( renderParams, texture, radiusU, radiusV );
+			fragmentShader.Bind( renderParams, texture, positionTexture, radiusU, radiusV );
 			screenQuadGeom.Bind();
 			screenQuadGeom.Draw();
 			UnbindPipeline();

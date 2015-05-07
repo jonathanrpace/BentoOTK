@@ -25,7 +25,7 @@ namespace Kaiga.Textures
 			TextureLoaderParameters.WrapModeS = TextureWrapMode.MirroredRepeat;
 			TextureLoaderParameters.WrapModeT = TextureWrapMode.MirroredRepeat;
 
-			ImageDDS.LoadFromDisk( @"../resource/Pisa.dds", out texture, out textureTarget );
+			ImageDDS.LoadFromDisk( @"../resource/GlacierGrey.dds", out texture, out textureTarget );
 
 			Debug.Assert( textureTarget == TextureTarget.TextureCubeMap );
 		}

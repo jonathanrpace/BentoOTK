@@ -5,8 +5,7 @@
 		G,
 		DirectLight,
 		IndirectLight,
-		AO,
-		Resolve
+		PostLight
 	}
 }
 

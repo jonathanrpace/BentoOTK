@@ -24,7 +24,7 @@ namespace Kaiga.Core
 		};
 
 		public AORenderTarget() :
-		base( PixelInternalFormat.Rg16f, true, false )
+		base( PixelInternalFormat.Rgba16f, true, false )
 		{
 			AOBuffer = new RectangleTexture( internalFormat );
 			AOBlurBuffer = new RectangleTexture( internalFormat );

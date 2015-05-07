@@ -21,6 +21,7 @@ namespace Kaiga.Shaders.Fragment
 		public void BindPerLight( RenderParams renderParams, ImageLight light )
 		{
 			SetTexture( "s_envMap", light.Texture.Texture, TextureTarget.TextureCubeMap );
+			SetUniform1( "u_intensity", light.Intensity );
 		}
 
 		override protected string GetShaderSource()
@@ -39,6 +40,7 @@ uniform samplerCube s_envMap;
 layout( location = 0 ) out vec4 out_color;
 
 uniform mat3 normalInvViewMatrix;
+uniform float u_intensity;
 
 vec3 getEdgeFixedCubeMapNormal( in vec3 normal, float mipBias, int baseSize )
 {
@@ -80,6 +82,7 @@ void main()
 	
 	light.xyz *= reflectivity;
 	light.xyz *= albedo;
+	light.xyz *= u_intensity;
 	light.a = 1.0;
 
 	out_color = light;

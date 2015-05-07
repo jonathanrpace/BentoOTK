@@ -1,14 +1,17 @@
 ﻿<Properties StartupItem="Examples\Examples.csproj" GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Kaiga\src\Kaiga.Geom\PlaneGeometry.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Examples\src\Program.cs">
     <Files>
-      <File FileName="Kaiga\src\Kaiga.RenderPasses\AmbientLightRenderPass.cs" Line="10" Column="53" />
-      <File FileName="Kaiga\src\Kaiga.Geom\AbstractGeometry.cs" Line="15" Column="24" />
-      <File FileName="Kaiga\src\Kaiga.Geom\PlaneGeometry.cs" Line="28" Column="5" />
-      <File FileName="Kaiga\src\Kaiga.Geom\ScreenQuadGeometry.cs" Line="6" Column="36" />
-      <File FileName="Kaiga\src\Kaiga.Geom\SkyboxGeometry.cs" Line="6" Column="32" />
-      <File FileName="Kaiga\src\Kaiga.Geom\SphereGeometry.cs" Line="176" Column="52" />
-      <File FileName="Kaiga\src\Kaiga.RenderPasses\GPass.cs" Line="27" Column="4" />
+      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\LightBufferConvolutionFragShader.cs" Line="19" Column="2" />
+      <File FileName="Kaiga\src\Kaiga.Shaders\LightBufferConvolver.cs" Line="1" Column="1" />
+      <File FileName="Kaiga\src\Kaiga.Core\RenderParams.cs" Line="1" Column="1" />
+      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\LightTransportFragShader.cs" Line="34" Column="4" />
+      <File FileName="Examples\src\Program.cs" Line="167" Column="26" />
+      <File FileName="Kaiga\src\Kaiga.Lights\PointLight.cs" Line="21" Column="4" />
+      <File FileName="Kaiga\src\Kaiga.Core\DeferredRenderer.cs" Line="73" Column="4" />
+      <File FileName="Kaiga\src\Kaiga.Textures\ExternalCubeTexture.cs" Line="28" Column="70" />
+      <File FileName="Kaiga\src\Kaiga.Shaders\RenderBufferToMippedTexture2DHelper.cs" Line="31" Column="4" />
+      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\LightTransportShader.frag" Line="148" Column="2" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

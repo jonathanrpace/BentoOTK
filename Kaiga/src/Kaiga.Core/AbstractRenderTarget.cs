@@ -62,9 +62,7 @@ namespace Kaiga.Core
 		public void Bind()
 		{
 			validate();
-
-			GL.Viewport( 0, 0, width, height );
-
+			
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
 			GL.DrawBuffers( 1, new [] { DrawBuffersEnum.ColorAttachment0 } );
 		}
