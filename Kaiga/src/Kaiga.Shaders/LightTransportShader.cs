@@ -46,7 +46,7 @@ namespace Kaiga.Shaders
 			//Debug.WriteLine( radius );
 			//radius *= renderParams.LightTransportResolutionScalar;
 			float radius = 1.25f * renderParams.LightTransportResolutionScalar;
-			for ( var i = 0; i < 4; i++ )
+			for ( var i = 0; i < 6; i++ )
 			{
 				renderParams.AORenderTarget.BindForBlurA();
 				blurShader.Render( renderParams, renderParams.AORenderTarget.AOBuffer.Texture, renderParams.RenderTarget.PositionBuffer.Texture, radius, 0.0f );

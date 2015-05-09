@@ -118,6 +118,8 @@
     <Compile Include="src\Kaiga.Shaders\ResolveShader.cs" />
     <Compile Include="src\Kaiga.Processes\EmissivePulseProcess.cs" />
     <Compile Include="src\Kaiga.Components\EmissivePulser.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\ScreenSpaceReflectionFragShader.cs" />
+    <Compile Include="src\Kaiga.Shaders\ScreenSpaceReflectionShader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -173,6 +175,10 @@
     <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\ResolveShader.frag">
       <DependentUpon>ResolveFragShader.cs</DependentUpon>
       <LogicalName>ResolveShader.frag</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\ScreenSpaceReflectionShader.frag">
+      <DependentUpon>ScreenSpaceReflectionFragShader.cs</DependentUpon>
+      <LogicalName>ScreenSpaceReflectionShader.frag</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

@@ -71,7 +71,7 @@ namespace Kaiga.Textures
 		{
 			texture = GL.GenTexture();
 			GL.BindTexture( TextureTarget.Texture2D, texture );
-			GL.TexStorage2D( TextureTarget2d.Texture2D, 1, SizedInternalFormat.Rgba8, width, height );
+			GL.TexStorage2D( TextureTarget2d.Texture2D, 1, SizedInternalFormat.Rgba16f, width, height );
 			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest );
 			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)TextureWrapMode.Repeat );
@@ -92,8 +92,8 @@ namespace Kaiga.Textures
 				z /= mag;
 
 				data[ i ] = (float)x;
-				data[ i + 1 ] = (float)x;
-				data[ i + 2 ] = (float)x;
+				data[ i + 1 ] = (float)y;
+				data[ i + 2 ] = (float)z;
 
 			}
 

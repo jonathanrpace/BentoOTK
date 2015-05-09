@@ -1,1 +1,5 @@
-ShaderStages and Shaders should statically create and dish-out their GL resources
+Rename 'output' to resolve
+
+Make screen quad frag shaders a util base class that uses a static geom
+
+put all buffers as direct accessors on renderParams rather than accessing through renderTarget

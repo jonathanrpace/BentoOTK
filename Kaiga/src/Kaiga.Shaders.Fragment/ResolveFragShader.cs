@@ -1,5 +1,4 @@
-﻿using System;
-using Kaiga.Core;
+﻿using Kaiga.Core;
 
 namespace Kaiga.Shaders.Fragment
 {
@@ -7,7 +6,6 @@ namespace Kaiga.Shaders.Fragment
 	{
 		public ResolveFragShader() : base( "ResolveShader.frag" )
 		{
-			
 		}
 
 		public override void BindPerPass(RenderParams renderParams)
@@ -21,7 +19,6 @@ namespace Kaiga.Shaders.Fragment
 
 			SetUniform1( "u_lightTransportResScalar", renderParams.LightTransportResolutionScalar );
 		}
-
 	}
 }
 

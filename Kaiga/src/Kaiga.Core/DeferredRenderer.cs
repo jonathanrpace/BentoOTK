@@ -34,6 +34,7 @@ namespace Kaiga.Core
 		readonly RenderBufferToMippedTexture2DHelper 		normalBufferMipper;
 		readonly LightTransportShader				 		lightTransportShader;
 		readonly ResolveShader						 		resolveShader;
+		readonly ScreenSpaceReflectionShader				screenSpaceReflectionShader;
 
 		// Properties
 		public Entity							Camera { get; private set; }
@@ -77,6 +78,7 @@ namespace Kaiga.Core
 			normalBufferMipper = new RenderBufferToMippedTexture2DHelper();
 			lightTransportShader = new LightTransportShader();
 			resolveShader = new ResolveShader();
+			screenSpaceReflectionShader = new ScreenSpaceReflectionShader();
 
 			GL.Enable( EnableCap.FramebufferSrgb );
 		}
@@ -98,6 +100,7 @@ namespace Kaiga.Core
 			indirectLightBufferDownsampler.Dispose();
 			lightTransportShader.Dispose();
 			resolveShader.Dispose();
+			screenSpaceReflectionShader.Dispose();
 		}
 		
 		public void OnAddedToScene( Scene scene )
@@ -181,7 +184,7 @@ namespace Kaiga.Core
 		{
 			//float scalar = Math.Max( 0.2f, (float)Mouse.GetState().X / 1000.0f );
 			//Debug.WriteLine( scalar );
-			const float scalar = 0.8f;
+			const float scalar = 1.0f;
 			renderParams.LightTransportResolutionScalar = scalar;
 
 			int renderWidth = scene.GameWindow.Width;
@@ -242,16 +245,16 @@ namespace Kaiga.Core
 			GL.Disable(EnableCap.DepthTest);
 
 			// Downsample direct and indirect buffers into 2D mipmapped textures
-			directLightBufferDownsampler.Render( renderParams, renderParams.RenderTarget.DirectLightBuffer );
+			directLightBufferDownsampler.Render( renderParams, renderTarget.DirectLightBuffer );
 			renderParams.DirectLightBufferMippedTexture = directLightBufferDownsampler.Output;
-			indirectLightBufferDownsampler.Render( renderParams, renderParams.RenderTarget.IndirectLightBuffer );
+			indirectLightBufferDownsampler.Render( renderParams, renderTarget.IndirectLightBuffer );
 			renderParams.IndirectLightBufferMippedTexture = indirectLightBufferDownsampler.Output;
 
 			// Convert position and normal buffers to 2D mipped textures
 			// These are used during resolve pass to provide cache performant scalable AO and radiosity.
-			positionBufferMipper.Render( renderParams, renderParams.RenderTarget.PositionBuffer );
+			positionBufferMipper.Render( renderParams, renderTarget.PositionBuffer );
 			renderParams.PositionBufferMippedTexture = positionBufferMipper.Output;
-			normalBufferMipper.Render( renderParams, renderParams.RenderTarget.NormalBuffer );
+			normalBufferMipper.Render( renderParams, renderTarget.NormalBuffer );
 			renderParams.NormalBufferMippedTexture = normalBufferMipper.Output;
 
 			// Perform light transport.
@@ -264,12 +267,16 @@ namespace Kaiga.Core
 			resolveShader.Render( renderParams );
 			
 			// Switch draw target to back buffer
+			GL.Viewport( 0, 0, renderWidth, renderHeight );
 			GL.DepthMask( true );
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
 
+			screenSpaceReflectionShader.Render( renderParams );
+
 			// Output final output texture to backbuffer
+			//squareTextureOutputShader.Render( renderParams, resolveBufferConvolver.Output.Texture );
 			//textureOutputShader.Render( renderParams, aoRenderTarget.AOBuffer.Texture );
-			textureOutputShader.Render( renderParams, renderTarget.OutputBuffer.Texture );
+			//textureOutputShader.Render( renderParams, renderTarget.OutputBuffer.Texture );
 			//textureOutputShader.Render( renderParams, renderParams.AORenderTarget.AOBuffer.Texture );
 
 			scene.GameWindow.SwapBuffers();

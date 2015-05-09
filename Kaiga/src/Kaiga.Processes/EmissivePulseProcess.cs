@@ -43,8 +43,11 @@ namespace Kaiga.Processes
 
 			foreach ( var node in nodeList.Nodes )
 			{
-				float ratio = (float)Math.Sin( node.pulser.Offset + elapsed * node.pulser.Frequency );
-				ratio = ( ratio + 1.0f ) * 0.5f;
+				float ratio = (float)Math.Sin( node.pulser.Offset + elapsed * node.pulser.Frequency * 0.5f );
+				ratio = ratio < 0.0f ? 0.0f : ratio;
+				//ratio *= ratio;
+				//ratio *= 0.5f;
+				//ratio = ( ratio + 1.0f ) * 0.5f;
 				float range = node.pulser.Max - node.pulser.Min;
 
 				node.material.Emissive = node.pulser.Min + Math.Max( 0.0f, ratio ) * range;

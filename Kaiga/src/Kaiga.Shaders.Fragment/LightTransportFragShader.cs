@@ -34,7 +34,7 @@ namespace Kaiga.Shaders.Fragment
 
 			//float radius = (float)Mouse.GetState().X / 1000.0f;
 			//Debug.WriteLine( radius );
-			const float radius = 0.2f;
+			const float radius = 0.5f;
 			SetUniform1( "radius", radius );
 
 			//float bias = (float)Mouse.GetState().Y / 100.0f;
@@ -44,7 +44,7 @@ namespace Kaiga.Shaders.Fragment
 
 			//float falloffScalar = (float)Mouse.GetState().X / 100.0f;
 			//Debug.WriteLine( falloffScalar );
-			const float falloffScalar = 5.0f;
+			const float falloffScalar = 10000.0f;
 			SetUniform1( "falloffScalar", falloffScalar );
 
 			//float q = (float)Mouse.GetState().X / 50000.0f;
@@ -59,7 +59,7 @@ namespace Kaiga.Shaders.Fragment
 
 			//float radiosityScalar = (float)Mouse.GetState().X / 10.0f;
 			//Debug.WriteLine( radiosityScalar );
-			const float radiosityScalar = 3.0f;
+			const float radiosityScalar = 2.0f;
 			SetUniform1( "u_radiosityScalar", radiosityScalar );
 
 			//float colorBleedingBoost = (float)Mouse.GetState().X / 1000.0f;

@@ -20,7 +20,7 @@ namespace Kaiga.Shaders.Fragment
 
 			//float depthMax = Mouse.GetState().X / 2000.0f;
 			//Debug.WriteLine( depthMax.ToString() );
-			SetUniform1( "u_depthMax", 0.10f );
+			SetUniform1( "u_depthMax", 0.06f );
 
 			SetUniform1( "u_lightTransportResScalar", renderParams.LightTransportResolutionScalar );
 		}
