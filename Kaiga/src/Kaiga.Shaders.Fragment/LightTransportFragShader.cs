@@ -24,13 +24,13 @@ namespace Kaiga.Shaders.Fragment
 			//SetRectangleTexture( "s_indirectLightBuffer", renderParams.RenderTarget.IndirectLightBuffer.Texture );
 			//SetRectangleTexture( "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture );
 
-			SetTexture2D( "s_positionBuffer", renderParams.PositionBufferMippedTexture.Texture );
-			SetTexture2D( "s_normalBuffer", renderParams.NormalBufferMippedTexture.Texture );
-			SetTexture2D( "s_directLightBuffer2D", renderParams.DirectLightBufferMippedTexture.Texture );
-			SetTexture2D( "s_indirectLightBuffer2D", renderParams.IndirectLightBufferMippedTexture.Texture );
+			SetTexture2D( "s_positionBuffer", renderParams.PositionTexture2D.Texture );
+			SetTexture2D( "s_normalBuffer", renderParams.NormalTexture2D.Texture );
+			SetTexture2D( "s_directLightBuffer2D", renderParams.DirectLightTexture2D.Texture );
+			SetTexture2D( "s_indirectLightBuffer2D", renderParams.IndirectLightTexture2D.Texture );
 			SetTexture2D( "s_randomTexture", randomTexture.Texture );
 
-			SetUniform1( "u_maxMip", renderParams.PositionBufferMippedTexture.NumMipMaps-4 );
+			SetUniform1( "u_maxMip", renderParams.PositionTexture2D.NumMipMaps-4 );
 
 			//float radius = (float)Mouse.GetState().X / 1000.0f;
 			//Debug.WriteLine( radius );

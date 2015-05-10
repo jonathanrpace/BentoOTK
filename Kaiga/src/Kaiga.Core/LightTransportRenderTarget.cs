@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Kaiga.Core
 {
-	public class AORenderTarget : AbstractRenderTarget
+	public class LightTransportRenderTarget : AbstractRenderTarget
 	{
 		public RectangleTexture AOBuffer { get; private set; }
 		public RectangleTexture AOBlurBuffer { get; private set; }
@@ -23,7 +23,7 @@ namespace Kaiga.Core
 			DrawBufferName.AO
 		};
 
-		public AORenderTarget() :
+		public LightTransportRenderTarget() :
 		base( PixelInternalFormat.Rgba16f, true, false )
 		{
 			AOBuffer = new RectangleTexture( internalFormat );

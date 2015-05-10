@@ -28,8 +28,8 @@ namespace Kaiga.Shaders.Fragment
 			base.BindPerPass(renderParams);
 
 			SetRectangleTexture( "s_material", renderParams.RenderTarget.MaterialBuffer.Texture );
-			SetTexture2D( "s_positionBuffer", renderParams.PositionBufferMippedTexture.Texture );
-			SetTexture2D( "s_normalBuffer", renderParams.NormalBufferMippedTexture.Texture );
+			SetTexture2D( "s_positionBuffer", renderParams.PositionTexture2D.Texture );
+			SetTexture2D( "s_normalBuffer", renderParams.NormalTexture2D.Texture );
 			SetRectangleTexture( "s_resolveBuffer", renderParams.RenderTarget.OutputBuffer.Texture );
 			SetTexture2D( "s_randomDirectionTexture", randomDirectionTexture.Texture );
 

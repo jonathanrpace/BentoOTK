@@ -19,22 +19,20 @@ namespace Kaiga.Core
 		readonly RenderParams 								renderParams;
 		readonly List<IRenderPass>							renderPasses;
 		readonly Dictionary<RenderPhase, List<IRenderPass>> passesByPhase;
-		readonly Dictionary<Type, IRenderPass>				passesByType;
-
-		// Render targets
-		readonly DeferredRenderTarget						renderTarget;
-		readonly AORenderTarget								aoRenderTarget;
+		readonly Dictionary<Type, IRenderPass>				passesByType; 
 
 		// Shaders
-		readonly ScreenQuadTextureRectShader 				textureOutputShader;
-		readonly ScreenQuadTextureShader 					squareTextureOutputShader;
-		readonly RenderBufferToMippedTexture2DHelper 		directLightBufferDownsampler;
-		readonly RenderBufferToMippedTexture2DHelper 		indirectLightBufferDownsampler;
-		readonly RenderBufferToMippedTexture2DHelper 		positionBufferMipper;	
-		readonly RenderBufferToMippedTexture2DHelper 		normalBufferMipper;
+		readonly TextureRectToScreenShader 					textureRectOutputShader;
+		readonly Texture2DToScreenShader 					texture2DOutputShader;
 		readonly LightTransportShader				 		lightTransportShader;
 		readonly ResolveShader						 		resolveShader;
 		readonly ScreenSpaceReflectionShader				screenSpaceReflectionShader;
+
+		// Helpers
+		readonly TextureRectToMippedTexture2DHelper 		directLightTextureMipper;
+		readonly TextureRectToMippedTexture2DHelper 		indirectLightTextureMipper;
+		readonly TextureRectToMippedTexture2DHelper 		positionTextureMipper;	
+		readonly TextureRectToMippedTexture2DHelper 		normalTextureMipper;
 
 		// Properties
 		public Entity							Camera { get; private set; }
@@ -56,9 +54,6 @@ namespace Kaiga.Core
 			passesByPhase = new Dictionary<RenderPhase, List<IRenderPass>>();
 			passesByType = new Dictionary<Type, IRenderPass>();
 
-			renderTarget = renderParams.RenderTarget = new DeferredRenderTarget();
-			aoRenderTarget = renderParams.AORenderTarget = new AORenderTarget();
-
 			Camera = new Entity();
 			var lens = new PerspectiveLens();
 			Camera.AddComponent( lens );
@@ -70,17 +65,15 @@ namespace Kaiga.Core
 			AddRenderPhase( RenderPhase.IndirectLight );
 			AddRenderPhase( RenderPhase.PostLight );
 
-			textureOutputShader = new ScreenQuadTextureRectShader();
-			squareTextureOutputShader = new ScreenQuadTextureShader();
-			directLightBufferDownsampler = new RenderBufferToMippedTexture2DHelper();
-			indirectLightBufferDownsampler = new RenderBufferToMippedTexture2DHelper();
-			positionBufferMipper = new RenderBufferToMippedTexture2DHelper();
-			normalBufferMipper = new RenderBufferToMippedTexture2DHelper();
+			textureRectOutputShader = new TextureRectToScreenShader();
+			texture2DOutputShader = new Texture2DToScreenShader();
+			directLightTextureMipper = new TextureRectToMippedTexture2DHelper();
+			indirectLightTextureMipper = new TextureRectToMippedTexture2DHelper();
+			positionTextureMipper = new TextureRectToMippedTexture2DHelper();
+			normalTextureMipper = new TextureRectToMippedTexture2DHelper();
 			lightTransportShader = new LightTransportShader();
 			resolveShader = new ResolveShader();
 			screenSpaceReflectionShader = new ScreenSpaceReflectionShader();
-
-			GL.Enable( EnableCap.FramebufferSrgb );
 		}
 
 		public void Dispose()
@@ -94,10 +87,11 @@ namespace Kaiga.Core
 			passesByPhase.Clear();
 			passesByType.Clear();
 
-			renderTarget.Dispose();
-			textureOutputShader.Dispose();
-			directLightBufferDownsampler.Dispose();
-			indirectLightBufferDownsampler.Dispose();
+			renderParams.Dispose();
+
+			textureRectOutputShader.Dispose();
+			directLightTextureMipper.Dispose();
+			indirectLightTextureMipper.Dispose();
 			lightTransportShader.Dispose();
 			resolveShader.Dispose();
 			screenSpaceReflectionShader.Dispose();
@@ -121,6 +115,122 @@ namespace Kaiga.Core
 			{
 				renderPass.OnRemovedFromScene( scene );
 			}
+		}
+
+		public void Update( double dt )
+		{
+			RenderToBackBuffer();
+		}
+
+		public void Render()
+		{
+
+		}
+
+		public void RenderToBackBuffer()
+		{
+			//float scalar = Math.Max( 0.2f, (float)Mouse.GetState().X / 1000.0f );
+			//Debug.WriteLine( scalar );
+			//const float scalar = 1.0f;
+			//renderParams.LightTransportResolutionScalar = scalar;
+
+			DeferredRenderTarget renderTarget = renderParams.RenderTarget;
+			LightTransportRenderTarget lightTransportRenderTarget = renderParams.LightTransportRenderTarget;
+
+			int renderWidth = scene.GameWindow.Width;
+			int renderHeight = scene.GameWindow.Height;
+			renderTarget.SetSize( renderWidth, renderHeight );
+
+			int lightTransportRenderWidth = (int)( renderWidth * renderParams.LightTransportResolutionScalar );
+			int lightTransportRenderHeight = (int)( renderHeight * renderParams.LightTransportResolutionScalar );
+			lightTransportRenderTarget.SetSize( lightTransportRenderWidth, lightTransportRenderHeight );
+			
+			renderParams.CameraLens = Camera.GetComponentByType<ILens>();
+			renderParams.CameraLens.AspectRatio = (float)scene.GameWindow.Width / scene.GameWindow.Height;
+			renderParams.ViewMatrix = Camera.GetComponentByType<Transform>().Matrix;
+			renderParams.NormalViewMatrix = renderParams.ViewMatrix.ClearScale();
+			renderParams.NormalViewMatrix = renderParams.NormalViewMatrix.ClearTranslation();
+			renderParams.InvViewMatrix = renderParams.ViewMatrix.Inverted();
+			renderParams.ProjectionMatrix = renderParams.CameraLens.ProjectionMatrix;
+			renderParams.InvProjectionMatrix = renderParams.CameraLens.InvProjectionMatrix;
+			renderParams.ViewProjectionMatrix = renderParams.ViewMatrix * renderParams.ProjectionMatrix;
+			renderParams.InvViewProjectionMatrix = renderParams.ViewProjectionMatrix.Inverted();
+			renderParams.NormalViewProjectionMatrix = renderParams.NormalViewMatrix * renderParams.ProjectionMatrix;
+			renderParams.NormalInvViewMatrix = new Matrix3( renderParams.InvViewMatrix.ClearTranslation() );
+
+			// Setup some default render states
+			GL.Viewport( 0, 0, renderWidth, renderHeight );
+			renderTarget.Clear();
+			GL.Enable( EnableCap.CullFace );
+			GL.CullFace( CullFaceMode.Back );
+			GL.Disable( EnableCap.Blend );
+
+			// Geometry pass
+
+			renderTarget.BindForGPhase();
+			GL.Enable(EnableCap.DepthTest);
+			GL.DepthMask( true );
+			RenderPassesInPhase( RenderPhase.G );
+
+			// No more depth writing
+			GL.DepthMask( false );		
+
+			// Light passes are additive
+			GL.Enable( EnableCap.Blend );
+			GL.BlendFunc( BlendingFactorSrc.One, BlendingFactorDest.One );
+			GL.BlendEquation( BlendEquationMode.FuncAdd );
+			
+			// Direct Light pass
+			renderTarget.BindForDirectLightPhase();
+			RenderPassesInPhase( RenderPhase.DirectLight );
+
+			// Indirect light pass
+			renderTarget.BindForIndirectLightPhase();
+			RenderPassesInPhase( RenderPhase.IndirectLight );
+
+			// No more light passes, back to no blending
+			GL.Disable( EnableCap.Blend );
+
+			// No more geometry - just full screen compositing. No need for depth test
+			GL.Disable( EnableCap.DepthTest );
+
+			// Downsample direct and indirect buffers into 2D mipmapped textures
+			directLightTextureMipper.Render( renderParams, renderTarget.DirectLightBuffer );
+			renderParams.DirectLightTexture2D = directLightTextureMipper.Output;
+			indirectLightTextureMipper.Render( renderParams, renderTarget.IndirectLightBuffer );
+			renderParams.IndirectLightTexture2D = indirectLightTextureMipper.Output;
+
+			// Convert position and normal buffers to 2D mipped textures
+			// These are used during resolve pass to provide cache performant scalable AO and radiosity.
+			positionTextureMipper.Render( renderParams, renderTarget.PositionBuffer );
+			renderParams.PositionTexture2D = positionTextureMipper.Output;
+			normalTextureMipper.Render( renderParams, renderTarget.NormalBuffer );
+			renderParams.NormalTexture2D = normalTextureMipper.Output;
+
+			// Perform light transport.
+			GL.Viewport( 0, 0, lightTransportRenderWidth, lightTransportRenderHeight );
+			lightTransportShader.Render( renderParams );
+			
+			// Resolve
+			GL.Viewport( 0, 0, renderWidth, renderHeight );
+			renderTarget.BindForResolvePhase();
+			resolveShader.Render( renderParams );
+
+			// Switch draw target to back buffer
+			GL.Viewport( 0, 0, renderWidth, renderHeight );
+			GL.DepthMask( true );
+			GL.Disable( EnableCap.DepthTest );
+			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
+			GL.Enable( EnableCap.FramebufferSrgb );
+
+			// Output final output texture to backbuffer
+			screenSpaceReflectionShader.Render( renderParams );
+			//textureRectOutputShader.Render( renderParams, renderParams.DirectLightTextureRect.Texture );
+			//textureOutputShader.Render( renderParams, aoRenderTarget.AOBuffer.Texture );
+			//textureOutputShader.Render( renderParams, renderTarget.OutputBuffer.Texture );
+			//textureOutputShader.Render( renderParams, renderParams.AORenderTarget.AOBuffer.Texture );
+
+			scene.GameWindow.SwapBuffers();
 		}
 
 		public void AddRenderPass( IRenderPass renderPass )
@@ -169,120 +279,7 @@ namespace Kaiga.Core
 		{
 			return (T)passesByType[ typeof(T) ];
 		}
-
-		public void Update( double dt )
-		{
-			RenderToBackBuffer( renderTarget );
-		}
-
-		public void Render( IRenderTarget renderTarget )
-		{
-
-		}
-
-		public void RenderToBackBuffer( DeferredRenderTarget renderTarget )
-		{
-			//float scalar = Math.Max( 0.2f, (float)Mouse.GetState().X / 1000.0f );
-			//Debug.WriteLine( scalar );
-			const float scalar = 1.0f;
-			renderParams.LightTransportResolutionScalar = scalar;
-
-			int renderWidth = scene.GameWindow.Width;
-			int renderHeight = scene.GameWindow.Height;
-			int lightTransportRenderWidth = (int)( renderWidth * renderParams.LightTransportResolutionScalar );
-			int lightTransportRenderHeight = (int)(renderHeight * renderParams.LightTransportResolutionScalar);
-
-			renderTarget.SetSize( renderWidth, renderHeight );
-			aoRenderTarget.SetSize( lightTransportRenderWidth, lightTransportRenderHeight );
-
-			GL.Viewport( 0, 0, renderWidth, renderHeight );
-
-			renderParams.CameraLens = Camera.GetComponentByType<ILens>();
-			renderParams.CameraLens.AspectRatio = (float)scene.GameWindow.Width / scene.GameWindow.Height;
-			renderParams.ViewMatrix = Camera.GetComponentByType<Transform>().Matrix;
-			renderParams.NormalViewMatrix = renderParams.ViewMatrix.ClearScale();
-			renderParams.NormalViewMatrix = renderParams.NormalViewMatrix.ClearTranslation();
-			renderParams.InvViewMatrix = renderParams.ViewMatrix.Inverted();
-			renderParams.ProjectionMatrix = renderParams.CameraLens.ProjectionMatrix;
-			renderParams.InvProjectionMatrix = renderParams.CameraLens.InvProjectionMatrix;
-			renderParams.ViewProjectionMatrix = renderParams.ViewMatrix * renderParams.ProjectionMatrix;
-			renderParams.InvViewProjectionMatrix = renderParams.ViewProjectionMatrix.Inverted();
-			renderParams.NormalViewProjectionMatrix = renderParams.NormalViewMatrix * renderParams.ProjectionMatrix;
-			renderParams.NormalInvViewMatrix = new Matrix3( renderParams.InvViewMatrix.ClearTranslation() );
-				
-			GL.Enable( EnableCap.CullFace );
-			GL.CullFace( CullFaceMode.Back );
-
-			renderTarget.Clear();
-
-			// Geometry pass
-			renderTarget.BindForGPhase();
-			GL.Enable(EnableCap.DepthTest);
-			GL.DepthMask( true );
-			GL.Disable( EnableCap.Blend );
-			RenderPassesInPhase( RenderPhase.G );
-
-			// No more depth writing
-			GL.DepthMask( false );		
-			
-			// Light passes are additive
-			GL.Enable( EnableCap.Blend );
-			GL.BlendFunc( BlendingFactorSrc.One, BlendingFactorDest.One );
-			GL.BlendEquation( BlendEquationMode.FuncAdd );
-			
-			// Direct Light pass
-			renderTarget.BindForDirectLightPhase();
-			RenderPassesInPhase( RenderPhase.DirectLight );
-
-			// Indirect light pass
-			renderTarget.BindForIndirectLightPhase();
-			RenderPassesInPhase( RenderPhase.IndirectLight );
-
-			// No more light passes, back to no blending
-			GL.Disable( EnableCap.Blend );
-
-			// No more geometry - just full screen compositing. No need for depth test
-			GL.Disable(EnableCap.DepthTest);
-
-			// Downsample direct and indirect buffers into 2D mipmapped textures
-			directLightBufferDownsampler.Render( renderParams, renderTarget.DirectLightBuffer );
-			renderParams.DirectLightBufferMippedTexture = directLightBufferDownsampler.Output;
-			indirectLightBufferDownsampler.Render( renderParams, renderTarget.IndirectLightBuffer );
-			renderParams.IndirectLightBufferMippedTexture = indirectLightBufferDownsampler.Output;
-
-			// Convert position and normal buffers to 2D mipped textures
-			// These are used during resolve pass to provide cache performant scalable AO and radiosity.
-			positionBufferMipper.Render( renderParams, renderTarget.PositionBuffer );
-			renderParams.PositionBufferMippedTexture = positionBufferMipper.Output;
-			normalBufferMipper.Render( renderParams, renderTarget.NormalBuffer );
-			renderParams.NormalBufferMippedTexture = normalBufferMipper.Output;
-
-			// Perform light transport.
-			GL.Viewport( 0, 0, lightTransportRenderWidth, lightTransportRenderHeight );
-			lightTransportShader.Render( renderParams );
-			
-			// Resolve
-			GL.Viewport( 0, 0, renderWidth, renderHeight );
-			renderTarget.BindForResolvePhase();
-			resolveShader.Render( renderParams );
-			
-			// Switch draw target to back buffer
-			GL.Viewport( 0, 0, renderWidth, renderHeight );
-			GL.DepthMask( true );
-			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
-
-			screenSpaceReflectionShader.Render( renderParams );
-
-			// Output final output texture to backbuffer
-			//squareTextureOutputShader.Render( renderParams, resolveBufferConvolver.Output.Texture );
-			//textureOutputShader.Render( renderParams, aoRenderTarget.AOBuffer.Texture );
-			//textureOutputShader.Render( renderParams, renderTarget.OutputBuffer.Texture );
-			//textureOutputShader.Render( renderParams, renderParams.AORenderTarget.AOBuffer.Texture );
-
-			scene.GameWindow.SwapBuffers();
-		}
-
-
+		
 		void RenderPassesInPhase( RenderPhase phase )
 		{
 			var passes = passesByPhase[ phase ];
@@ -302,12 +299,8 @@ namespace Kaiga.Core
 			passesByPhase.Add( renderPhase, new List<IRenderPass>() );
 		}
 
-		#region IMultiTypeObject implementation
-
 		static readonly Type[] types = { typeof(DeferredRenderer), typeof(IRenderer) };
 		public Type[] Types { get { return types; } }
-
-		#endregion
 	}
 }
 

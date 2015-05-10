@@ -199,8 +199,8 @@ namespace Examples
 			pointLight.Radius = radius;
 			pointLight.Intensity = 200.0f;
 			pointLight.AttenuationRadius = radius * 3.0f;
-			//pointLight.Color = color;
-			//entity.AddComponent( pointLight );
+			pointLight.Color = color;
+			entity.AddComponent( pointLight );
 
 			var sphereGeom = new SphereGeometry();
 			sphereGeom.Radius = pointLight.Radius * 2.0f;

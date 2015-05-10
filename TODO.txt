@@ -3,3 +3,7 @@ Rename 'output' to resolve
 Make screen quad frag shaders a util base class that uses a static geom
 
 put all buffers as direct accessors on renderParams rather than accessing through renderTarget
+
+Consider putting depth into normal A channel - to reduce texture lookups
+
+Experiment with different pixel formats on same framebuffer

@@ -8,8 +8,8 @@ namespace Kaiga.Core
 
 	public interface IRenderer : IProcess
 	{
-		void Render( IRenderTarget renderTarget );
-		void RenderToBackBuffer( DeferredRenderTarget renderTarget );
+		void Render();
+		void RenderToBackBuffer();
 		void AddRenderPass( IRenderPass renderPass );
 		void RemoveRenderPass( IRenderPass renderPass );
 		T GetRenderPass<T>() where T : IRenderPass;

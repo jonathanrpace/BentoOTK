@@ -28,7 +28,7 @@ namespace Kaiga.Shaders
 
 		public void Render( RenderParams renderParams )
 		{
-			renderParams.AORenderTarget.BindForAOPhase();
+			renderParams.LightTransportRenderTarget.BindForAOPhase();
 
 			// Perform light transport shader
 			BindPipeline( renderParams );
@@ -48,10 +48,10 @@ namespace Kaiga.Shaders
 			float radius = 1.25f * renderParams.LightTransportResolutionScalar;
 			for ( var i = 0; i < 6; i++ )
 			{
-				renderParams.AORenderTarget.BindForBlurA();
-				blurShader.Render( renderParams, renderParams.AORenderTarget.AOBuffer.Texture, renderParams.RenderTarget.PositionBuffer.Texture, radius, 0.0f );
-				renderParams.AORenderTarget.BindForBlurB();
-				blurShader.Render( renderParams, renderParams.AORenderTarget.AOBlurBuffer.Texture, renderParams.RenderTarget.PositionBuffer.Texture, 0.0f, radius );
+				renderParams.LightTransportRenderTarget.BindForBlurA();
+				blurShader.Render( renderParams, renderParams.LightTransportRenderTarget.AOBuffer.Texture, renderParams.RenderTarget.PositionBuffer.Texture, radius, 0.0f );
+				renderParams.LightTransportRenderTarget.BindForBlurB();
+				blurShader.Render( renderParams, renderParams.LightTransportRenderTarget.AOBlurBuffer.Texture, renderParams.RenderTarget.PositionBuffer.Texture, 0.0f, radius );
 				radius += 2.25f * renderParams.LightTransportResolutionScalar;
 			}
 		}

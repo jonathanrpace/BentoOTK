@@ -6,9 +6,9 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Kaiga.Shaders
 {
-	public class RenderBufferToMippedTexture2DHelper : IDisposable
+	public class TextureRectToMippedTexture2DHelper : IDisposable
 	{
-		readonly ScreenQuadTextureRectShader rectTo2DShader;
+		readonly TextureRectToScreenShader rectTo2DShader;
 		readonly SquareTexture2D output;
 		readonly int frameBuffer;
 
@@ -21,9 +21,9 @@ namespace Kaiga.Shaders
 			}
 		}
 
-		public RenderBufferToMippedTexture2DHelper()
+		public TextureRectToMippedTexture2DHelper()
 		{
-			rectTo2DShader = new ScreenQuadTextureRectShader();
+			rectTo2DShader = new TextureRectToScreenShader();
 			output = new SquareTexture2D();
 			output.MinFilter = TextureMinFilter.NearestMipmapNearest;
 			output.MagFilter = TextureMagFilter.Linear;

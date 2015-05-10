@@ -64,7 +64,6 @@
     <Compile Include="src\Kaiga.Core\AbstractValidatable.cs" />
     <Compile Include="src\Kaiga.Core\AbstractRenderTarget.cs" />
     <Compile Include="src\Kaiga.Textures\ITexture.cs" />
-    <Compile Include="src\Kaiga.Core\AORenderTarget.cs" />
     <Compile Include="src\Kaiga.Shaders\AmbientLightShader.cs" />
     <Compile Include="src\Kaiga.Lights\AmbientLight.cs" />
     <Compile Include="src\Kaiga.RenderPasses\AmbientLightRenderPass.cs" />
@@ -98,8 +97,6 @@
     <Compile Include="src\Kaiga.Shaders.Fragment\SkyboxFragmentShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\RectangleTextureFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\SquareTextureFragShader.cs" />
-    <Compile Include="src\Kaiga.Shaders\ScreenQuadTextureShader.cs" />
-    <Compile Include="src\Kaiga.Shaders\ScreenQuadTextureRectShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\SSAOFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\SAOFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\DepthAwareBlurFragShader.cs" />
@@ -109,7 +106,6 @@
     <Compile Include="src\Kaiga.Shaders\LightBufferConvolver.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\LightBufferConvolutionFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders\LightBufferConvolutionShader.cs" />
-    <Compile Include="src\Kaiga.Shaders\RenderBufferToMippedTexture2DHelper.cs" />
     <Compile Include="src\Kaiga.Textures\RandomAngleTexture.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\LightTransportFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders\LightTransportShader.cs" />
@@ -120,6 +116,10 @@
     <Compile Include="src\Kaiga.Components\EmissivePulser.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\ScreenSpaceReflectionFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders\ScreenSpaceReflectionShader.cs" />
+    <Compile Include="src\Kaiga.Core\LightTransportRenderTarget.cs" />
+    <Compile Include="src\Kaiga.Shaders\TextureRectToMippedTexture2DHelper.cs" />
+    <Compile Include="src\Kaiga.Shaders\TextureRectToScreenShader.cs" />
+    <Compile Include="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Shaders\Texture2DToScreenShader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

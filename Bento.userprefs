@@ -2,18 +2,10 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Kaiga\src\Kaiga.Shaders.Fragment\ScreenSpaceReflectionShader.frag">
     <Files>
-      <File FileName="Kaiga\src\Kaiga.Shaders\LightTransportShader.cs" Line="26" Column="25" />
-      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\ResolveFragShader.cs" Line="19" Column="4" />
-      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Shaders\AbstractShader.cs" Line="34" Column="4" />
-      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\ScreenSpaceReflectionFragShader.cs" Line="55" Column="4" />
-      <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Shaders\AbstractShaderStage.cs" Line="159" Column="1" />
-      <File FileName="Kaiga\src\Kaiga.Textures\RandomDirectionTexture.cs" Line="77" Column="68" />
-      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\LightTransportFragShader.cs" Line="39" Column="4" />
-      <File FileName="Kaiga\src\Kaiga.Processes\EmissivePulseProcess.cs" Line="50" Column="39" />
-      <File FileName="Examples\src\Program.cs" Line="227" Column="30" />
-      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\ResolveShader.frag" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\ScreenSpaceReflectionShader.frag" Line="24" Column="25" NotebookId="1" />
-      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\LightTransportShader.frag" Line="134" Column="30" NotebookId="1" />
+      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\ResolveFragShader.cs" Line="18" Column="101" />
+      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\ScreenSpaceReflectionFragShader.cs" Line="16" Column="38" />
+      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\ResolveShader.frag" Line="36" Column="2" NotebookId="1" />
+      <File FileName="Kaiga\src\Kaiga.Shaders.Fragment\ScreenSpaceReflectionShader.frag" Line="88" Column="7" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

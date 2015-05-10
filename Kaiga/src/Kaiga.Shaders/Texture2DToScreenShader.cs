@@ -7,11 +7,11 @@ using Kaiga.Shaders.Fragment;
 
 namespace Kaiga.Shaders
 {
-	public class ScreenQuadTextureShader : AbstractShader<ScreenQuadVertexShader, SquareTextureFragShader>
+	public class Texture2DToScreenShader : AbstractShader<ScreenQuadVertexShader, SquareTextureFragShader>
 	{
 		private readonly ScreenQuadGeometry screenQuadGeom;
 
-		public ScreenQuadTextureShader()
+		public Texture2DToScreenShader()
 		{
 			screenQuadGeom = new ScreenQuadGeometry();
 		}
