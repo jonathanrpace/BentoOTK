@@ -77,10 +77,10 @@ namespace Kaiga.Textures
 			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)TextureWrapMode.Repeat );
 			GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat );
 
-			int size = width * height * 3;
+			int size = width * height * 4;
 			var data = new float[size];
 			var rand = new Random( seed );
-			for ( int i = 0; i < size; i += 3 )
+			for ( int i = 0; i < size; i += 4 )
 			{
 				double x = (rand.NextDouble() - 0.5) * 2.0;
 				double y = (rand.NextDouble() - 0.5) * 2.0;
@@ -94,10 +94,10 @@ namespace Kaiga.Textures
 				data[ i ] = (float)x;
 				data[ i + 1 ] = (float)y;
 				data[ i + 2 ] = (float)z;
-
+				data[ i + 3 ] = (float)rand.NextDouble();	// A bonus random number at the end
 			}
 
-			GL.TexSubImage2D( TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.Rgb, PixelType.Float, data );
+			GL.TexSubImage2D( TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.Rgba, PixelType.Float, data );
 		}
 	}
 }

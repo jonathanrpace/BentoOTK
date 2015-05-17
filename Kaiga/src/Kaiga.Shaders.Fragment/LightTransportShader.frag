@@ -1,11 +1,24 @@
 ﻿#version 450 core
 
-// Samplers
+//-----------------------------------------------------------
+// Inputs
+//-----------------------------------------------------------
+const float rayStep = 0.02f;
+const float minRayStep = 0.01f;
+const int maxSteps = 32;
+const int numBinarySearchSteps = 6;
+const float distanceFalloff = rayStep * maxSteps + minRayStep;
+
 uniform sampler2D s_positionBuffer;
 uniform sampler2D s_normalBuffer;
 uniform sampler2D s_directLightBuffer2D;
 uniform sampler2D s_indirectLightBuffer2D;
 uniform sampler2D s_randomTexture;
+uniform sampler2DRect s_material;
+
+uniform mat4 u_projectionMatrix;
+uniform float u_roughnessJitter;
+uniform float u_zDistanceMin;
 
 uniform float radius;
 uniform float bias;
@@ -18,6 +31,7 @@ uniform float epsilon;
 uniform int u_maxMip;
 uniform bool u_aoEnabled;
 uniform bool u_radiosityEnabled;
+uniform float u_lightTransportResolutionScalar;
 
 // TAU_LOOKUP[N-1] = optimal number of spiral turns for N samples
 const int TAU_LOOKUP[ ] = 
@@ -39,9 +53,15 @@ in Varying
 	in vec2 in_uv;
 };
 
+//-----------------------------------------------------------
 // Outputs
+//-----------------------------------------------------------
 layout( location = 0 ) out vec4 out_fragColor;
 
+
+//-----------------------------------------------------------
+// Functions
+//-----------------------------------------------------------
 void AOAndBounce
 ( 
 	vec3 fragPos, 
@@ -65,13 +85,79 @@ void AOAndBounce
 	bounceTotal += sampleColor * falloff * min( 1.0f, ( vDotFragNormal  ) / denominator );
 }
 
+vec3 BinarySearch(vec3 dir, float mipLevel, inout vec3 hitCoord, out float dDepth)
+{
+    float depth;
+ 	
+    for(int i = 0; i < numBinarySearchSteps; i++)
+    {
+        vec4 projectedCoord = u_projectionMatrix * vec4(hitCoord, 1.0f);
+        projectedCoord.xy /= projectedCoord.w;
+        projectedCoord.xy = projectedCoord.xy * 0.5f + 0.5f;
+ 
+        depth = textureLod(s_positionBuffer, projectedCoord.xy, mipLevel).z;
+        dDepth = hitCoord.z - depth;
+ 
+        if( dDepth > 0.0f )
+            hitCoord += dir;
+ 
+        dir *= 0.5f;
+        hitCoord -= dir;  
+    }
+
+    vec4 projectedCoord = u_projectionMatrix * vec4(hitCoord, 1.0f);
+    projectedCoord.xy /= projectedCoord.w;
+    projectedCoord.xy = projectedCoord.xy * 0.5f + 0.5f;
+ 
+    return vec3(projectedCoord.xy, depth);
+}
+
+vec3 RayCast(vec3 dir, inout vec3 hitCoord, out float dDepth, vec3 reflectVec )
+{
+    dir *= rayStep;
+    float depth;
+    for(int i = 0; i < maxSteps; i++)
+    {
+    	float mipLevel = 1.0f;//(i / (maxSteps-1)) * 0.0f;
+
+		hitCoord += dir;
+
+		vec4 projectedCoord = u_projectionMatrix * vec4(hitCoord, 1.0);
+		projectedCoord.xy /= projectedCoord.w;
+		projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
+
+		depth = textureLod(s_positionBuffer, projectedCoord.xy, mipLevel).z;
+        dDepth = hitCoord.z - depth;
+		
+		if( dDepth < 0.0f && -dDepth < 0.3f )
+		{
+
+			//vec3 normal = texture(s_normalBuffer, projectedCoord.xy, mipLevel ).xyz;
+			//float dotProduct = dot( -normal, reflectVec );
+
+			//if ( dotProduct > 0.1f )
+			//{
+				return BinarySearch(dir, mipLevel, hitCoord, dDepth);
+			//}
+		}
+	}
+ 
+	return vec3(0.0f, 0.0f, 0.0f);
+}
+
 void main()
 {
+	vec4 material = texture( s_material, gl_FragCoord.xy / u_lightTransportResolutionScalar );
+	float roughness = material.x;
+
 	vec3 fragPos = texture( s_positionBuffer, in_uv ).xyz;
 	vec3 fragNormal = texture( s_normalBuffer, in_uv ).xyz;
 	
 	ivec2 randomTextureSize = textureSize( s_randomTexture, 0 );
-	float randomNumber = texture2D( s_randomTexture, (gl_FragCoord.xy / randomTextureSize) ).x;
+	vec4 randomSample = texture2D( s_randomTexture, (gl_FragCoord.xy / randomTextureSize) );
+	//vec4 randomSample2 = texture2D( s_randomTexture, (gl_FragCoord.xy / randomTextureSize) * 0.5f );
+
+	float randomNumber = randomSample.w;
 
 	float angle = randomNumber * PI * 2.0f;
 	float aoTotal = 0.0f;
@@ -91,14 +177,7 @@ void main()
 		offset.y *= u_aspectRatio;
 		vec2 sampleUV = in_uv + offset * h;
 
-		// Discard samples that lie outside the viewport.
-		if ( sampleUV.x < 0.0f || sampleUV.y < 0.0f || sampleUV.x > 1.0f || sampleUV.y > 1.0f )
-		{
-			continue;
-		}
-
 		float mipLevel = min( log2( h / q ), u_maxMip );
-
 		vec3 samplePosition = textureLod( s_positionBuffer, sampleUV, mipLevel ).xyz;
 
 		if ( abs(samplePosition.x) < 0.0001f )
@@ -109,6 +188,12 @@ void main()
 		vec3 sampleDirectColor = textureLod( s_directLightBuffer2D, sampleUV, mipLevel ).xyz;
 		vec3 sampleIndirectColor = textureLod( s_indirectLightBuffer2D, sampleUV, mipLevel ).xyz;
 		vec3 sampleColor = sampleDirectColor + sampleIndirectColor;
+
+		// Fade off samples as they near the edge of the screen
+		vec2 edge = vec2( 0.05f, 0.05f * u_aspectRatio );
+		vec2 edgeTopLeft = smoothstep( vec2(0.0f), edge, sampleUV.xy );
+		vec2 edgeBottomRight = vec2(1.0f) - smoothstep( vec2(1.0f-edge), vec2(1.0f), sampleUV.xy );
+		sampleColor *= (edgeTopLeft.x * edgeTopLeft.y * edgeBottomRight.x * edgeBottomRight.y);
 
 		AOAndBounce( fragPos, fragNormal, samplePosition, sampleColor, aoTotal, bounceTotal );
 
@@ -128,10 +213,59 @@ void main()
 	aoTotal *= 6.0f;
 	aoTotal = max( 0.0f, 1.0f - sqrt(aoTotal) );
 
+	bounceTotal *= roughness;
+
 	//aoTotal = u_aoEnabled ? aoTotal : 1.0f;
 	//bounceTotal *= u_radiosityEnabled ? 1.0f : 0.0f;
 
-	vec3 outColor = bounceTotal * aoTotal;
 
-	out_fragColor = vec4( bounceTotal, aoTotal );
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Reflections
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	vec3 randomDirection = randomSample.xyz;
+	fragNormal += randomDirection * roughness * u_roughnessJitter;
+	fragNormal = normalize(fragNormal);
+
+	vec3 reflectVec = reflect( normalize( fragPos ), fragNormal ); 
+
+	// Screen-space reflections
+	vec3 hitPos = fragPos;
+	float dDepth;
+	vec3 coords = RayCast(reflectVec * max(minRayStep, -fragPos.z), hitPos, dDepth, reflectVec);
+	vec3 reflectionColor = texture(s_directLightBuffer2D, coords.xy ).rgb + texture(s_indirectLightBuffer2D, coords.xy ).rgb;
+	vec3 reflectionNormal = texture(s_normalBuffer, coords.xy ).xyz;
+
+
+	// Now we have a ray intersection, and we've got our color/normal sample.
+	// Time to find all the things wrong with this sample, and modulate it to make its
+	// shortcomings less obvious.
+	float reflectionAlpha = 1.0f;
+
+	// The ray will eventually just stop, and we'd like to fade a bit before it does so
+	// there's no hard edge past a certain ray distance.
+	float distanceStrength = 1.0f - min( length(hitPos - fragPos) / distanceFalloff, 1.0f );
+	reflectionAlpha *= distanceStrength;
+
+	// Rays that are pointing towards the camera are suspect, because we have no 'back face'
+	// information in the framebuffer. 
+	float backFaceFalloff = smoothstep( 0.0f, 1.0f, 1.0f - fragNormal.z );
+	reflectionAlpha *= backFaceFalloff;
+
+	// Rays that intersected at a surface pointing away from them also don't
+	// make sense to reflect back
+	reflectionAlpha *= max( 0.0f, dot( reflectionNormal, -reflectVec ) );
+
+	// Non-shiny things shouldn't reflect
+	reflectionAlpha *= (1.0f-roughness);
+
+
+	// Alpha blend frame buffer with reflections
+	//outputColor *= 1.0f - reflectionAlpha;
+
+	reflectionColor *= reflectionAlpha;
+
+	vec3 outColor = bounceTotal + reflectionColor;
+
+	out_fragColor = vec4( outColor, aoTotal );
 }

@@ -16,7 +16,7 @@ namespace Kaiga.Lights
 			float Intensity = 1.0f, 
 			float Radius = 1.0f,
 			float AttenuationRadius = 1.0f,
-			float AttenuationPower = 2.0f
+			float AttenuationPower = 1.0f
 		)
 		{
 			this.Color = Color;

@@ -90,10 +90,10 @@ namespace Examples
 					);
 					entity.AddComponent( transform );
 
-					if ( random() < 0.5f )
+					if ( random() < 0.25f )
 					{
 						material.Diffuse = new Vector3( random(), random(), random() );
-						entity.AddComponent( new EmissivePulser( 1.0f, 0.0f, 10.0f, random() * (float)Math.PI ) );
+						entity.AddComponent( new EmissivePulser( 1.0f, 0.0f, 3.0f, random() * (float)Math.PI ) );
 					}
 					scene.AddEntity( entity );
 				}
@@ -116,7 +116,7 @@ namespace Examples
 				entity.AddComponent( transform );
 
 				var material = new StandardMaterial();
-				material.Roughness = 0.9f;
+				material.Roughness = 0.0f;
 				material.Diffuse = new Vector3( 1.0f, 1.0f, 1.0f );
 				entity.AddComponent( material );
 
@@ -197,10 +197,10 @@ namespace Examples
 
 			var pointLight = new PointLight();
 			pointLight.Radius = radius;
-			pointLight.Intensity = 200.0f;
-			pointLight.AttenuationRadius = radius * 3.0f;
+			pointLight.Intensity = 5.0f;
+			pointLight.AttenuationRadius = radius * 10.0f;
 			pointLight.Color = color;
-			entity.AddComponent( pointLight );
+			//entity.AddComponent( pointLight );
 
 			var sphereGeom = new SphereGeometry();
 			sphereGeom.Radius = pointLight.Radius * 2.0f;
@@ -208,11 +208,14 @@ namespace Examples
 
 			var material = new StandardMaterial();
 
-			if ( random() < 0.8f )
-			{
-				material.Diffuse = color;
-				entity.AddComponent( new EmissivePulser( 1.0f, 0.0f, 10.0f, random() * (float)Math.PI ) );
-			}
+			//if ( random() < 0.8f )
+			//{
+			//	material.Diffuse = color;
+			//	entity.AddComponent( new EmissivePulser( 1.0f, 0.0f, 10.0f, random() * (float)Math.PI ) );
+			//}
+
+			material.Diffuse = color;
+			material.Emissive = 1.0f;
 
 			material.Roughness = 0.5f + random() * 0.5f;
 			entity.AddComponent( material );

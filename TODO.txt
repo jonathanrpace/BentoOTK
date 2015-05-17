@@ -1,8 +1,11 @@
 Rename 'output' to resolve
 
-Make screen quad frag shaders a util base class that uses a static geom
+Store 'least depth different' sample for reflections, and use that, rather than the first/
 
-put all buffers as direct accessors on renderParams rather than accessing through renderTarget
+Investigate a 'noise removal' blur shader. Using results of edge detection as a mask between original / blurred image.
+	Also - make it seperable?
+
+Make screen quad frag shaders a util base class that uses a static geom
 
 Consider putting depth into normal A channel - to reduce texture lookups
 

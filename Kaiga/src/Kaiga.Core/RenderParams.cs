@@ -12,6 +12,11 @@ namespace Kaiga.Core
 		readonly public DeferredRenderTarget RenderTarget;
 		readonly public LightTransportRenderTarget LightTransportRenderTarget;
 
+		public int BackBufferWidth;
+		public int BackBufferHeight;
+		public int LightTransportBufferWidth;
+		public int LightTransportBuffferHeight;
+
 		// Rectangular buffers
 		readonly public RectangleTexture NormalTextureRect;
 		readonly public RectangleTexture PositionTextureRect;
@@ -48,7 +53,7 @@ namespace Kaiga.Core
 		public Matrix4 NormalViewProjectionMatrix;
 
 		// Other
-		public float LightTransportResolutionScalar = 0.8f;
+		public float LightTransportResolutionScalar = 0.5f;
 
 		public RenderParams()
 		{

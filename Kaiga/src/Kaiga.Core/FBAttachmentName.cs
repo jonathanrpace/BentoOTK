@@ -11,8 +11,6 @@ namespace Kaiga.Core
 		static readonly public FramebufferAttachment DirectLight = FramebufferAttachment.ColorAttachment4;
 		static readonly public FramebufferAttachment IndirectLight = FramebufferAttachment.ColorAttachment5;
 		static readonly public FramebufferAttachment Output = FramebufferAttachment.ColorAttachment6;
-		static readonly public FramebufferAttachment AO = FramebufferAttachment.ColorAttachment0;
-		static readonly public FramebufferAttachment AOBlur = FramebufferAttachment.ColorAttachment1;
 	}
 
 	public static class DrawBufferName
@@ -24,8 +22,6 @@ namespace Kaiga.Core
 		static readonly public DrawBuffersEnum DirectLight = DrawBuffersEnum.ColorAttachment4;
 		static readonly public DrawBuffersEnum IndirectLight = DrawBuffersEnum.ColorAttachment5;
 		static readonly public DrawBuffersEnum Output = DrawBuffersEnum.ColorAttachment6;
-		static readonly public DrawBuffersEnum AO = DrawBuffersEnum.ColorAttachment0;
-		static readonly public DrawBuffersEnum AOBlur = DrawBuffersEnum.ColorAttachment1;
 	}
 }
 

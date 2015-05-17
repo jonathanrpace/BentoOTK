@@ -5,40 +5,46 @@ namespace Kaiga.Core
 {
 	public class LightTransportRenderTarget : AbstractRenderTarget
 	{
-		public RectangleTexture AOBuffer { get; private set; }
-		public RectangleTexture AOBlurBuffer { get; private set; }
+		public RectangleTexture RadiosityAndAOTextureRect { get; private set; }
+		public RectangleTexture ReflectionsTextureRect { get; private set; }
+		public RectangleTexture BlurBufferTextureRect { get; private set; }
 
-		readonly DrawBuffersEnum[] aoPhaseDrawBuffers = 
+		readonly DrawBuffersEnum[] lightTransportDrawBuffers = 
 		{ 
-			DrawBufferName.AO
+			DrawBuffersEnum.ColorAttachment0,
+			DrawBuffersEnum.ColorAttachment1
 		};
 
-		readonly DrawBuffersEnum[] aoBlurAPhaseDrawBuffers = 
+		readonly DrawBuffersEnum[] blurADrawBuffers = 
 		{ 
-			DrawBufferName.AOBlur
+			DrawBuffersEnum.ColorAttachment2
 		};
 
-		readonly DrawBuffersEnum[] aoBlurBPhaseDrawBuffers = 
+		readonly DrawBuffersEnum[] blurBDrawBuffers = 
 		{ 
-			DrawBufferName.AO
+			DrawBuffersEnum.ColorAttachment0
 		};
 
 		public LightTransportRenderTarget() :
 		base( PixelInternalFormat.Rgba16f, true, false )
 		{
-			AOBuffer = new RectangleTexture( internalFormat );
-			AOBlurBuffer = new RectangleTexture( internalFormat );
+			RadiosityAndAOTextureRect = new RectangleTexture( internalFormat );
+			ReflectionsTextureRect = new RectangleTexture( internalFormat );
+			BlurBufferTextureRect = new RectangleTexture( internalFormat );
+			RadiosityAndAOTextureRect.MagFilter = TextureMagFilter.Nearest;
+			BlurBufferTextureRect.MagFilter = TextureMagFilter.Nearest;
+			AttachTexture( FramebufferAttachment.ColorAttachment0, RadiosityAndAOTextureRect );
+			AttachTexture( FramebufferAttachment.ColorAttachment1, ReflectionsTextureRect );
 
-			AttachTexture( FBAttachmentName.AO, AOBuffer );
-			AttachTexture( FBAttachmentName.AOBlur, AOBlurBuffer );
+			AttachTexture( FramebufferAttachment.ColorAttachment2, BlurBufferTextureRect );
 		}
 
-		public void BindForAOPhase()
+		public void BindForLightTransport()
 		{
 			validate();
 
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
-			GL.DrawBuffers( aoPhaseDrawBuffers.Length, aoPhaseDrawBuffers );
+			GL.DrawBuffers( lightTransportDrawBuffers.Length, lightTransportDrawBuffers );
 		}
 
 		public void BindForBlurA()
@@ -46,7 +52,7 @@ namespace Kaiga.Core
 			validate();
 
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
-			GL.DrawBuffers( aoBlurAPhaseDrawBuffers.Length, aoBlurAPhaseDrawBuffers );
+			GL.DrawBuffers( blurADrawBuffers.Length, blurADrawBuffers );
 		}
 
 		public void BindForBlurB()
@@ -54,7 +60,7 @@ namespace Kaiga.Core
 			validate();
 
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
-			GL.DrawBuffers( aoBlurBPhaseDrawBuffers.Length, aoBlurBPhaseDrawBuffers );
+			GL.DrawBuffers( blurBDrawBuffers.Length, blurBDrawBuffers );
 		}
 	}
 }

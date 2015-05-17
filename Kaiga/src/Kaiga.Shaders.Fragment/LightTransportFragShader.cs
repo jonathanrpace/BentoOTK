@@ -7,34 +7,35 @@ namespace Kaiga.Shaders.Fragment
 {
 	public class LightTransportFragShader : AbstractFragmentShaderStage
 	{
-		readonly RandomAngleTexture randomTexture;
+		readonly RandomDirectionTexture randomTexture;
 
 		public LightTransportFragShader() : base( "LightTransportShader.frag" )
 		{
-			randomTexture = new RandomAngleTexture();
-			randomTexture.Width = 64;
-			randomTexture.Height = 64;
+			randomTexture = new RandomDirectionTexture();
+			randomTexture.Width = 8;
+			randomTexture.Height = 8;
 		}
 
 		override public void BindPerPass( RenderParams renderParams )
 		{
 			base.BindPerPass( renderParams );
-
-			//SetRectangleTexture( "s_directLightBuffer", renderParams.RenderTarget.DirectLightBuffer.Texture );
-			//SetRectangleTexture( "s_indirectLightBuffer", renderParams.RenderTarget.IndirectLightBuffer.Texture );
-			//SetRectangleTexture( "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture );
-
+			
 			SetTexture2D( "s_positionBuffer", renderParams.PositionTexture2D.Texture );
 			SetTexture2D( "s_normalBuffer", renderParams.NormalTexture2D.Texture );
 			SetTexture2D( "s_directLightBuffer2D", renderParams.DirectLightTexture2D.Texture );
 			SetTexture2D( "s_indirectLightBuffer2D", renderParams.IndirectLightTexture2D.Texture );
 			SetTexture2D( "s_randomTexture", randomTexture.Texture );
+			SetRectangleTexture( "s_material", renderParams.MaterialTextureRect.Texture );
+
+			SetUniformMatrix4( "u_projectionMatrix", ref renderParams.ProjectionMatrix );
 
 			SetUniform1( "u_maxMip", renderParams.PositionTexture2D.NumMipMaps-4 );
 
+			SetUniform1( "u_lightTransportResolutionScalar", renderParams.LightTransportResolutionScalar );
+
 			//float radius = (float)Mouse.GetState().X / 1000.0f;
 			//Debug.WriteLine( radius );
-			const float radius = 0.5f;
+			const float radius = 0.2f;
 			SetUniform1( "radius", radius );
 
 			//float bias = (float)Mouse.GetState().Y / 100.0f;
@@ -74,6 +75,30 @@ namespace Kaiga.Shaders.Fragment
 			bool radiosityEnabled = Mouse.GetState().Y > 100.0f;
 			SetUniform1( "u_aoEnabled", aoEnabled );
 			SetUniform1( "u_radiosityEnabled", radiosityEnabled );
+
+
+			//const int numSteps = 32;
+			//SetUniform1( "u_numSteps", numSteps );
+
+			//int maxSteps = Mouse.GetState().X / 50;
+			//Debug.WriteLine( maxSteps );
+			//const int maxSteps =8;
+			//SetUniform1( "maxSteps", maxSteps );
+
+			//int numBinarySearchSteps = Mouse.GetState().Y / 50;
+			//Debug.WriteLine( numBinarySearchSteps );
+			//const int numBinarySearchSteps = 16;
+			//SetUniform1( "numBinarySearchSteps", numBinarySearchSteps );
+
+			//float roughnessJitter = (float)Mouse.GetState().Y / 1000.0f;
+			//Debug.WriteLine( roughnessJitter );
+			const float roughnessJitter = 0.1f;
+			SetUniform1( "u_roughnessJitter", roughnessJitter );
+
+			//float zDistanceMin = (float)Mouse.GetState().Y / 2000.0f;
+			//Debug.WriteLine( zDistanceMin );
+			//const float zDistanceMin = 1.0f;
+			//SetUniform1( "u_zDistanceMin", zDistanceMin );
 
 			Debug.WriteLine( "" );
 		}

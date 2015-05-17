@@ -43,7 +43,7 @@ namespace Kaiga.Processes
 
 			foreach ( var node in nodeList.Nodes )
 			{
-				float ratio = (float)Math.Sin( node.pulser.Offset + elapsed * node.pulser.Frequency * 0.5f );
+				float ratio = 1.0f;//(float)Math.Sin( node.pulser.Offset + elapsed * node.pulser.Frequency * 0.5f );
 				ratio = ratio < 0.0f ? 0.0f : ratio;
 				//ratio *= ratio;
 				//ratio *= 0.5f;

@@ -26,7 +26,7 @@ namespace Kaiga.Core
 		readonly Texture2DToScreenShader 					texture2DOutputShader;
 		readonly LightTransportShader				 		lightTransportShader;
 		readonly ResolveShader						 		resolveShader;
-		readonly ScreenSpaceReflectionShader				screenSpaceReflectionShader;
+		//readonly ScreenSpaceReflectionShader				screenSpaceReflectionShader;
 
 		// Helpers
 		readonly TextureRectToMippedTexture2DHelper 		directLightTextureMipper;
@@ -73,7 +73,7 @@ namespace Kaiga.Core
 			normalTextureMipper = new TextureRectToMippedTexture2DHelper();
 			lightTransportShader = new LightTransportShader();
 			resolveShader = new ResolveShader();
-			screenSpaceReflectionShader = new ScreenSpaceReflectionShader();
+			//screenSpaceReflectionShader = new ScreenSpaceReflectionShader();
 		}
 
 		public void Dispose()
@@ -94,7 +94,7 @@ namespace Kaiga.Core
 			indirectLightTextureMipper.Dispose();
 			lightTransportShader.Dispose();
 			resolveShader.Dispose();
-			screenSpaceReflectionShader.Dispose();
+			//screenSpaceReflectionShader.Dispose();
 		}
 		
 		public void OnAddedToScene( Scene scene )
@@ -140,11 +140,15 @@ namespace Kaiga.Core
 			int renderWidth = scene.GameWindow.Width;
 			int renderHeight = scene.GameWindow.Height;
 			renderTarget.SetSize( renderWidth, renderHeight );
+			renderParams.BackBufferWidth = renderWidth;
+			renderParams.BackBufferHeight = renderHeight;
 
 			int lightTransportRenderWidth = (int)( renderWidth * renderParams.LightTransportResolutionScalar );
 			int lightTransportRenderHeight = (int)( renderHeight * renderParams.LightTransportResolutionScalar );
 			lightTransportRenderTarget.SetSize( lightTransportRenderWidth, lightTransportRenderHeight );
-			
+			renderParams.LightTransportBufferWidth = lightTransportRenderWidth;
+			renderParams.LightTransportBuffferHeight = lightTransportRenderHeight;
+
 			renderParams.CameraLens = Camera.GetComponentByType<ILens>();
 			renderParams.CameraLens.AspectRatio = (float)scene.GameWindow.Width / scene.GameWindow.Height;
 			renderParams.ViewMatrix = Camera.GetComponentByType<Transform>().Matrix;
@@ -221,14 +225,15 @@ namespace Kaiga.Core
 			GL.DepthMask( true );
 			GL.Disable( EnableCap.DepthTest );
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
-			GL.Enable( EnableCap.FramebufferSrgb );
+			//GL.Enable( EnableCap.FramebufferSrgb );
 
 			// Output final output texture to backbuffer
-			screenSpaceReflectionShader.Render( renderParams );
+			//screenSpaceReflectionShader.Render( renderParams );]
+
 			//textureRectOutputShader.Render( renderParams, renderParams.DirectLightTextureRect.Texture );
-			//textureOutputShader.Render( renderParams, aoRenderTarget.AOBuffer.Texture );
-			//textureOutputShader.Render( renderParams, renderTarget.OutputBuffer.Texture );
-			//textureOutputShader.Render( renderParams, renderParams.AORenderTarget.AOBuffer.Texture );
+			//texture2DOutputShader.Render( renderParams, aoRenderTarget.AOBuffer.Texture );
+			textureRectOutputShader.Render( renderParams, renderTarget.OutputBuffer.Texture );
+			//texture2DOutputShader.Render( renderParams, renderParams.AORenderTarget.AOBuffer.Texture );
 
 			scene.GameWindow.SwapBuffers();
 		}
