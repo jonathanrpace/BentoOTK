@@ -1,38 +1,14 @@
 ﻿#version 450 core
 
 //-----------------------------------------------------------
+// Outputs
+//-----------------------------------------------------------
+layout( location = 0 ) out vec4 out_bounceAndAO;
+layout( location = 1 ) out vec4 out_reflections;
+
+//-----------------------------------------------------------
 // Inputs
 //-----------------------------------------------------------
-const float rayStep = 0.02f;
-const float minRayStep = 0.01f;
-const int maxSteps = 32;
-const int numBinarySearchSteps = 6;
-const float distanceFalloff = rayStep * maxSteps + minRayStep;
-
-uniform sampler2D s_positionBuffer;
-uniform sampler2D s_normalBuffer;
-uniform sampler2D s_directLightBuffer2D;
-uniform sampler2D s_indirectLightBuffer2D;
-uniform sampler2D s_randomTexture;
-uniform sampler2DRect s_material;
-
-uniform mat4 u_projectionMatrix;
-uniform float u_roughnessJitter;
-uniform float u_zDistanceMin;
-
-uniform float radius;
-uniform float bias;
-uniform float falloffScalar;
-uniform float q;
-uniform float u_aspectRatio;
-uniform float u_radiosityScalar;
-uniform float u_colorBleedingBoost;
-uniform float epsilon;
-uniform int u_maxMip;
-uniform bool u_aoEnabled;
-uniform bool u_radiosityEnabled;
-uniform float u_lightTransportResolutionScalar;
-
 // TAU_LOOKUP[N-1] = optimal number of spiral turns for N samples
 const int TAU_LOOKUP[ ] = 
 {
@@ -42,22 +18,41 @@ const int TAU_LOOKUP[ ] =
 	25, 39, 29, 17, 21, 27
 };
 const int NUM_SAMPLES = 32;
-const float NUM_SAMPLES_RCP = 1.0f / NUM_SAMPLES;
 const int TAU = TAU_LOOKUP[NUM_SAMPLES];
+const float NUM_SAMPLES_RCP = 1.0f / NUM_SAMPLES;
 const float PI = 3.142f;
+const float Q = 0.006f;			// The screen space radius as which we begin dropping mips
+const float BIAS = 0.2f;		// The offset applied to minimise self-occlusion.
+const float EPSILON = 0.003f;	// A small offset to avoid divide by zero
 
+const int MAX_REFLECTION_STEPS = 128;
+const int NUM_BINARY_SERACH_STEPS = 6;
+uniform float rayStep;// = 0.1f;
+const float MAX_RAY_LENGTH = rayStep * MAX_REFLECTION_STEPS;
+
+uniform sampler2D s_positionBuffer;
+uniform sampler2D s_normalBuffer;
+uniform sampler2D s_directLightBuffer2D;
+uniform sampler2D s_indirectLightBuffer2D;
+uniform sampler2D s_randomTexture;
+uniform sampler2DRect s_material;
+
+uniform int u_maxMip;
+uniform mat4 u_projectionMatrix;
+uniform float u_roughnessJitter;
+uniform float u_radius;
+uniform float u_falloffScalar;
+uniform float u_aspectRatio;
+uniform float u_radiosityScalar;
+uniform float u_colorBleedingBoost;
+uniform float u_lightTransportResolutionScalar;
+uniform float u_maxReflectDepthDiff;
 
 // Inputs
 in Varying
 {
 	in vec2 in_uv;
 };
-
-//-----------------------------------------------------------
-// Outputs
-//-----------------------------------------------------------
-layout( location = 0 ) out vec4 out_fragColor;
-
 
 //-----------------------------------------------------------
 // Functions
@@ -76,73 +71,85 @@ void AOAndBounce
 	float vLength = length(v);
 	v = normalize(v);
 
-	float falloff = 1.0f - min(1.0f, vLength / falloffScalar );
+	float falloff = 1.0f - min(1.0f, vLength / u_falloffScalar );
 	
-	float vDotFragNormal = max( dot( v, fragNormal ) - bias, 0.0f );
+	float vDotFragNormal = max( dot( v, fragNormal ) - BIAS, 0.0f );
 
-	float denominator = vLength + epsilon;
+	float denominator = vLength + EPSILON;
 	aoTotal += falloff * min( 1.0f, ( vDotFragNormal / denominator ) );
 	bounceTotal += sampleColor * falloff * min( 1.0f, ( vDotFragNormal  ) / denominator );
 }
 
-vec3 BinarySearch(vec3 dir, float mipLevel, inout vec3 hitCoord, out float dDepth)
+vec2 BinarySearch(vec3 dir, inout vec3 pointAlongRay, out float depthDiff)
 {
-    float depth;
- 	
-    for(int i = 0; i < numBinarySearchSteps; i++)
+    for(int i = 0; i < NUM_BINARY_SERACH_STEPS; i++)
     {
-        vec4 projectedCoord = u_projectionMatrix * vec4(hitCoord, 1.0f);
+        vec4 projectedCoord = u_projectionMatrix * vec4(pointAlongRay, 1.0f);
         projectedCoord.xy /= projectedCoord.w;
         projectedCoord.xy = projectedCoord.xy * 0.5f + 0.5f;
  
-        depth = textureLod(s_positionBuffer, projectedCoord.xy, mipLevel).z;
-        dDepth = hitCoord.z - depth;
- 
-        if( dDepth > 0.0f )
-            hitCoord += dir;
+        depthDiff = pointAlongRay.z - texture(s_positionBuffer, projectedCoord.xy).z;
+
+        if( depthDiff > 0.0f )
+            pointAlongRay += dir;
  
         dir *= 0.5f;
-        hitCoord -= dir;  
+        pointAlongRay -= dir;  
     }
 
-    vec4 projectedCoord = u_projectionMatrix * vec4(hitCoord, 1.0f);
+    vec4 projectedCoord = u_projectionMatrix * vec4(pointAlongRay, 1.0f);
     projectedCoord.xy /= projectedCoord.w;
     projectedCoord.xy = projectedCoord.xy * 0.5f + 0.5f;
  
-    return vec3(projectedCoord.xy, depth);
+    return projectedCoord.xy;
 }
 
-vec3 RayCast(vec3 dir, inout vec3 hitCoord, out float dDepth, vec3 reflectVec )
+void RayCast
+(
+	vec3 dir, 
+	vec3 startPos, 
+	out vec2 bestHitUV, 
+	out vec3 bestPosition, 
+	out float smallestDepthDiff
+)
 {
+
+	vec3 pointAlongRay = startPos;
+
+	vec3 direction = dir;
+	float xyLength = length( direction.xy );
+	direction /= xyLength;
+
+
+    pointAlongRay += dir * rayStep;
+
     dir *= rayStep;
-    float depth;
-    for(int i = 0; i < maxSteps; i++)
+
+    bestHitUV = vec2(0.0f,0.0f);
+    smallestDepthDiff = 99999.0f;
+    bestPosition = startPos;
+
+    float distanceAlongRay = 0.0f;
+    for(int i = 0; i < MAX_REFLECTION_STEPS; i++)
     {
-    	float mipLevel = 1.0f;//(i / (maxSteps-1)) * 0.0f;
-
-		hitCoord += dir;
-
-		vec4 projectedCoord = u_projectionMatrix * vec4(hitCoord, 1.0);
+		pointAlongRay += dir;
+		vec4 projectedCoord = u_projectionMatrix * vec4(pointAlongRay, 1.0);
 		projectedCoord.xy /= projectedCoord.w;
 		projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
-		depth = textureLod(s_positionBuffer, projectedCoord.xy, mipLevel).z;
-        dDepth = hitCoord.z - depth;
-		
-		if( dDepth < 0.0f && -dDepth < 0.3f )
+		float depthDiff = abs( pointAlongRay.z - texture(s_positionBuffer, projectedCoord.xy).z );
+
+		depthDiff += distanceAlongRay * 0.05f;
+
+		if ( depthDiff < smallestDepthDiff )
 		{
-
-			//vec3 normal = texture(s_normalBuffer, projectedCoord.xy, mipLevel ).xyz;
-			//float dotProduct = dot( -normal, reflectVec );
-
-			//if ( dotProduct > 0.1f )
-			//{
-				return BinarySearch(dir, mipLevel, hitCoord, dDepth);
-			//}
+			smallestDepthDiff = depthDiff;
+			bestHitUV = projectedCoord.xy;
+			bestPosition = pointAlongRay;
 		}
+
+		distanceAlongRay += rayStep;
 	}
- 
-	return vec3(0.0f, 0.0f, 0.0f);
 }
 
 void main()
@@ -170,14 +177,14 @@ void main()
 		float currAngle = 2.0f * PI * theta * TAU + angle;
 
 		// Distance away from frag UV
-		float h = radius * theta;
+		float h = u_radius * theta;
 
 		// UV offset away from frag UV
 		vec2 offset = vec2( cos( currAngle ), sin( currAngle ) );
 		offset.y *= u_aspectRatio;
 		vec2 sampleUV = in_uv + offset * h;
 
-		float mipLevel = min( log2( h / q ), u_maxMip );
+		float mipLevel = min( log2( h / Q ), u_maxMip );
 		vec3 samplePosition = textureLod( s_positionBuffer, sampleUV, mipLevel ).xyz;
 
 		if ( abs(samplePosition.x) < 0.0001f )
@@ -210,14 +217,13 @@ void main()
 
 	// Normalise ao
 	aoTotal /= numContributingSamples;
-	aoTotal *= 6.0f;
-	aoTotal = max( 0.0f, 1.0f - sqrt(aoTotal) );
-
+	aoTotal = sqrt(aoTotal);
+	aoTotal = max( 0.0, aoTotal );
+	aoTotal *= 2.0f;
+	aoTotal = min( 1.0, aoTotal );
+	aoTotal *= roughness;
+	aoTotal = 1.0f - aoTotal;
 	bounceTotal *= roughness;
-
-	//aoTotal = u_aoEnabled ? aoTotal : 1.0f;
-	//bounceTotal *= u_radiosityEnabled ? 1.0f : 0.0f;
-
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Reflections
@@ -229,22 +235,28 @@ void main()
 
 	vec3 reflectVec = reflect( normalize( fragPos ), fragNormal ); 
 
-	// Screen-space reflections
-	vec3 hitPos = fragPos;
-	float dDepth;
-	vec3 coords = RayCast(reflectVec * max(minRayStep, -fragPos.z), hitPos, dDepth, reflectVec);
-	vec3 reflectionColor = texture(s_directLightBuffer2D, coords.xy ).rgb + texture(s_indirectLightBuffer2D, coords.xy ).rgb;
-	vec3 reflectionNormal = texture(s_normalBuffer, coords.xy ).xyz;
+	vec2 hitUV;					// Output
+	vec3 hitPos;				// Output
+	float hitDepthDiff;			// Output
 
+	RayCast(reflectVec, fragPos, hitUV, hitPos, hitDepthDiff);
+	vec3 reflectionColor = texture(s_directLightBuffer2D, hitUV ).rgb + texture(s_indirectLightBuffer2D, hitUV ).rgb;
+	vec3 reflectionNormal = texture(s_normalBuffer, hitUV ).xyz;
 
 	// Now we have a ray intersection, and we've got our color/normal sample.
 	// Time to find all the things wrong with this sample, and modulate it to make its
 	// shortcomings less obvious.
 	float reflectionAlpha = 1.0f;
 
+	// The RayCast function returns the point with the smallest depth difference it can find.
+	// If the smallest depth difference it can find is still rather large, it's likely we're just missing
+	// information, and shouldn't be reflecting this pixel.
+	float confidence = 1.0f - smoothstep( 0.0f, u_maxReflectDepthDiff, hitDepthDiff );
+	//reflectionAlpha *= confidence;
+
 	// The ray will eventually just stop, and we'd like to fade a bit before it does so
 	// there's no hard edge past a certain ray distance.
-	float distanceStrength = 1.0f - min( length(hitPos - fragPos) / distanceFalloff, 1.0f );
+	float distanceStrength = 1.0f - min( length(hitPos - fragPos) / MAX_RAY_LENGTH, 1.0f );
 	reflectionAlpha *= distanceStrength;
 
 	// Rays that are pointing towards the camera are suspect, because we have no 'back face'
@@ -254,18 +266,11 @@ void main()
 
 	// Rays that intersected at a surface pointing away from them also don't
 	// make sense to reflect back
-	reflectionAlpha *= max( 0.0f, dot( reflectionNormal, -reflectVec ) );
+	//reflectionAlpha *= max( 0.0f, dot( reflectionNormal, -reflectVec ) );
 
 	// Non-shiny things shouldn't reflect
 	reflectionAlpha *= (1.0f-roughness);
-
-
-	// Alpha blend frame buffer with reflections
-	//outputColor *= 1.0f - reflectionAlpha;
-
-	reflectionColor *= reflectionAlpha;
-
-	vec3 outColor = bounceTotal + reflectionColor;
-
-	out_fragColor = vec4( outColor, aoTotal );
+	
+	out_bounceAndAO = vec4( bounceTotal, aoTotal );
+	out_reflections = vec4( reflectionColor, reflectionAlpha );
 }

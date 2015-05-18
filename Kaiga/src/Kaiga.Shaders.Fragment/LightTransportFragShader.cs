@@ -36,27 +36,12 @@ namespace Kaiga.Shaders.Fragment
 			//float radius = (float)Mouse.GetState().X / 1000.0f;
 			//Debug.WriteLine( radius );
 			const float radius = 0.2f;
-			SetUniform1( "radius", radius );
-
-			//float bias = (float)Mouse.GetState().Y / 100.0f;
-			//Debug.WriteLine( bias );
-			const float bias = 0.4f;
-			SetUniform1( "bias", bias );
+			SetUniform1( "u_radius", radius );
 
 			//float falloffScalar = (float)Mouse.GetState().X / 100.0f;
 			//Debug.WriteLine( falloffScalar );
-			const float falloffScalar = 10000.0f;
-			SetUniform1( "falloffScalar", falloffScalar );
-
-			//float q = (float)Mouse.GetState().X / 50000.0f;
-			//Debug.WriteLine( q );
-			const float q = 0.006f;
-			SetUniform1( "q", q );
-
-			//float epsilon = (float)Mouse.GetState().X / 500.0f;
-			//Debug.WriteLine( epsilon );
-			const float epsilon= 0.03f;
-			SetUniform1( "epsilon", epsilon );
+			const float falloffScalar = 100.0f;
+			SetUniform1( "u_falloffScalar", falloffScalar );
 
 			//float radiosityScalar = (float)Mouse.GetState().X / 10.0f;
 			//Debug.WriteLine( radiosityScalar );
@@ -71,19 +56,6 @@ namespace Kaiga.Shaders.Fragment
 			SetUniform1( "u_aspectRatio", renderParams.CameraLens.AspectRatio );
 
 
-			bool aoEnabled = Mouse.GetState().X > 200.0f;
-			bool radiosityEnabled = Mouse.GetState().Y > 100.0f;
-			SetUniform1( "u_aoEnabled", aoEnabled );
-			SetUniform1( "u_radiosityEnabled", radiosityEnabled );
-
-
-			//const int numSteps = 32;
-			//SetUniform1( "u_numSteps", numSteps );
-
-			//int maxSteps = Mouse.GetState().X / 50;
-			//Debug.WriteLine( maxSteps );
-			//const int maxSteps =8;
-			//SetUniform1( "maxSteps", maxSteps );
 
 			//int numBinarySearchSteps = Mouse.GetState().Y / 50;
 			//Debug.WriteLine( numBinarySearchSteps );
@@ -92,15 +64,18 @@ namespace Kaiga.Shaders.Fragment
 
 			//float roughnessJitter = (float)Mouse.GetState().Y / 1000.0f;
 			//Debug.WriteLine( roughnessJitter );
-			const float roughnessJitter = 0.1f;
+			const float roughnessJitter = 0.0f;
 			SetUniform1( "u_roughnessJitter", roughnessJitter );
 
-			//float zDistanceMin = (float)Mouse.GetState().Y / 2000.0f;
-			//Debug.WriteLine( zDistanceMin );
-			//const float zDistanceMin = 1.0f;
-			//SetUniform1( "u_zDistanceMin", zDistanceMin );
+			float maxReflectDepthDiff = (float)Mouse.GetState().Y / 2000.0f;
+			Debug.WriteLine( maxReflectDepthDiff );
+			//const float maxReflectDepthDiff = 0.2f;
+			SetUniform1( "u_maxReflectDepthDiff", maxReflectDepthDiff );
 
-			Debug.WriteLine( "" );
+
+			float rayStep = (float)Mouse.GetState().X / 5000.0f;
+			Debug.WriteLine( rayStep );
+			SetUniform1( "rayStep", rayStep );
 		}
 
 		/*

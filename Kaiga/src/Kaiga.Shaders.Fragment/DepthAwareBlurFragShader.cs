@@ -15,9 +15,10 @@ namespace Kaiga.Shaders.Fragment
 			SetTexture( "s_texture", texture, TextureTarget.TextureRectangle );
 			SetTexture( "s_positionTexture", positionTexture, TextureTarget.TextureRectangle );
 
-			//float depthMax = Mouse.GetState().X / 5000.0f;
+			//float depthMax = Mouse.GetState().Y / 5000.0f;
 			//Debug.WriteLine( depthMax.ToString() );
-			SetUniform1( "u_depthMax", 0.15f );
+			const float depthMax = 0.015f;
+			SetUniform1( "u_depthMax", depthMax );
 
 			//float colorDiffMax = Mouse.GetState().X / 500.0f;
 			//Debug.WriteLine( colorDiffMax.ToString() );
@@ -55,13 +56,21 @@ const float[] OFFSETS =
 {
 	-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8
 };
+
 const float[] WEIGHTS = 
 { 
 	0.042481,	0.047756,	0.052854,	0.05759,	0.06178,	0.065248,	0.067844,	0.06945,
 	0.069994,	0.06945,	0.067844,	0.065248,	0.06178,	0.05759,	0.052854,	0.047756,	0.042481
-
 };
 
+/*
+const float[] WEIGHTS =
+{
+	0.014076,	0.022439,	0.033613,	0.047318,	0.062595,	0.077812,	0.090898,	0.099783,	
+	0.102934,	0.099783,	0.090898,	0.077812,	0.062595,	0.047318,	0.033613,	0.022439,	0.014076
+
+};
+*/
 
 void main(void)
 {
@@ -77,16 +86,15 @@ void main(void)
 		float offset = OFFSETS[i];
 		float weight = WEIGHTS[i];
 
-		vec4 colorSample = texture2DRect( s_texture, uv + u_direction * offset );
 		float depthSample = texture2DRect( s_positionTexture, (uv + u_direction * offset) / u_lightTransportResScalar ).z;
-
-		float depthDiff = fragDepth - depthSample;
-		float depthMax = u_depthMax * ( 1.0f );// + ddx + ddy );
-		float depthStep = 1.0f - smoothstep( 0.0f, depthMax, depthDiff );
-
+		float depthDiff = abs(fragDepth - depthSample);
+		float depthStep = 1.0f - min( depthDiff / u_depthMax, 1.0f );
+	
+		vec4 colorSample = texture2DRect( s_texture, uv + u_direction * offset );
 		vec4 colorDiff = abs(colorSample - fragColor);
-		float colorStep = 1.0f - smoothstep( 0.0f, u_colorDiffMax, max(max(colorDiff.x, colorDiff.y), max(colorDiff.z, colorDiff.w)) );
-
+		float maxChannel = max(max(colorDiff.x, colorDiff.y), max(colorDiff.z, colorDiff.w));
+		float colorStep = 1.0f - min( maxChannel / u_colorDiffMax, 1.0f );
+		
 		outputColor += colorSample * weight * depthStep * colorStep;
 		denominator += weight * depthStep * colorStep;
 	}

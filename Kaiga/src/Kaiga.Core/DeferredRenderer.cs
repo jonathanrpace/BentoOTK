@@ -225,7 +225,7 @@ namespace Kaiga.Core
 			GL.DepthMask( true );
 			GL.Disable( EnableCap.DepthTest );
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
-			//GL.Enable( EnableCap.FramebufferSrgb );
+			GL.Enable( EnableCap.FramebufferSrgb );
 
 			// Output final output texture to backbuffer
 			//screenSpaceReflectionShader.Render( renderParams );]

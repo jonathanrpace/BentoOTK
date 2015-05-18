@@ -31,8 +31,8 @@ namespace Kaiga.Core
 			RadiosityAndAOTextureRect = new RectangleTexture( internalFormat );
 			ReflectionsTextureRect = new RectangleTexture( internalFormat );
 			BlurBufferTextureRect = new RectangleTexture( internalFormat );
-			RadiosityAndAOTextureRect.MagFilter = TextureMagFilter.Nearest;
-			BlurBufferTextureRect.MagFilter = TextureMagFilter.Nearest;
+			RadiosityAndAOTextureRect.MagFilter = TextureMagFilter.Linear;
+			BlurBufferTextureRect.MagFilter = TextureMagFilter.Linear;
 			AttachTexture( FramebufferAttachment.ColorAttachment0, RadiosityAndAOTextureRect );
 			AttachTexture( FramebufferAttachment.ColorAttachment1, ReflectionsTextureRect );
 

@@ -15,6 +15,7 @@ namespace Kaiga.Shaders.Fragment
 			SetRectangleTexture( "s_directLight", renderParams.DirectLightTextureRect.Texture );
 			SetRectangleTexture( "s_indirectLight", renderParams.IndirectLightTextureRect.Texture );
 			SetRectangleTexture( "s_lightTransport", renderParams.LightTransportRenderTarget.RadiosityAndAOTextureRect.Texture );
+			SetRectangleTexture( "s_reflections", renderParams.LightTransportRenderTarget.ReflectionsTextureRect.Texture );
 
 			SetUniform1( "u_lightTransportResScalar", renderParams.LightTransportResolutionScalar );
 		}
