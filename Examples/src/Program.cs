@@ -77,7 +77,7 @@ namespace Examples
 					entity.AddComponent( sphereGeom );
 
 					var material = new StandardMaterial();
-					material.Roughness = 0.0f;//0.1f + (1.0f-columnRatio) * 0.9f;
+					material.Roughness = 0.5f;//0.1f + (1.0f-columnRatio) * 0.9f;
 					entity.AddComponent( material );
 
 					var transform = new Transform();
@@ -116,7 +116,7 @@ namespace Examples
 				entity.AddComponent( transform );
 
 				var material = new StandardMaterial();
-				material.Roughness = 0.0f;
+				material.Roughness = 0.5f;
 				material.Diffuse = new Vector3( 1.0f, 1.0f, 1.0f );
 				entity.AddComponent( material );
 
@@ -140,7 +140,7 @@ namespace Examples
 				entity.AddComponent( transform );
 
 				var material = new StandardMaterial();
-				material.Roughness = 0.0f;
+				material.Roughness = 0.5f;
 				//material.Diffuse = new Vector3( 0.0f, 1.0f, 0.0f );
 				entity.AddComponent( material );
 
@@ -164,7 +164,7 @@ namespace Examples
 				entity.AddComponent( transform );
 
 				var material = new StandardMaterial();
-				material.Roughness = 0.0f;
+				material.Roughness = 0.5f;
 				//material.Diffuse = new Vector3( 1.0f, 0.0f, 0.0f );
 				entity.AddComponent( material );
 

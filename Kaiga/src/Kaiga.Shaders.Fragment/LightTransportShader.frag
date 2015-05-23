@@ -25,10 +25,11 @@ const float Q = 0.006f;			// The screen space radius as which we begin dropping 
 const float BIAS = 0.2f;		// The offset applied to minimise self-occlusion.
 const float EPSILON = 0.003f;	// A small offset to avoid divide by zero
 
-const int MAX_REFLECTION_STEPS = 128;
-const int NUM_BINARY_SERACH_STEPS = 6;
-uniform float rayStep;// = 0.1f;
+const int MAX_REFLECTION_STEPS = 32;
+const int NUM_BINARY_SERACH_STEPS = 4;
+const float rayStep = 0.01f;
 const float MAX_RAY_LENGTH = rayStep * MAX_REFLECTION_STEPS;
+const int NUM_REFLECTION_SAMPLES = 1;
 
 uniform sampler2D s_positionBuffer;
 uniform sampler2D s_normalBuffer;
@@ -80,30 +81,6 @@ void AOAndBounce
 	bounceTotal += sampleColor * falloff * min( 1.0f, ( vDotFragNormal  ) / denominator );
 }
 
-vec2 BinarySearch(vec3 dir, inout vec3 pointAlongRay, out float depthDiff)
-{
-    for(int i = 0; i < NUM_BINARY_SERACH_STEPS; i++)
-    {
-        vec4 projectedCoord = u_projectionMatrix * vec4(pointAlongRay, 1.0f);
-        projectedCoord.xy /= projectedCoord.w;
-        projectedCoord.xy = projectedCoord.xy * 0.5f + 0.5f;
- 
-        depthDiff = pointAlongRay.z - texture(s_positionBuffer, projectedCoord.xy).z;
-
-        if( depthDiff > 0.0f )
-            pointAlongRay += dir;
- 
-        dir *= 0.5f;
-        pointAlongRay -= dir;  
-    }
-
-    vec4 projectedCoord = u_projectionMatrix * vec4(pointAlongRay, 1.0f);
-    projectedCoord.xy /= projectedCoord.w;
-    projectedCoord.xy = projectedCoord.xy * 0.5f + 0.5f;
- 
-    return projectedCoord.xy;
-}
-
 void RayCast
 (
 	vec3 dir, 
@@ -129,7 +106,6 @@ void RayCast
     smallestDepthDiff = 99999.0f;
     bestPosition = startPos;
 
-    float distanceAlongRay = 0.0f;
     for(int i = 0; i < MAX_REFLECTION_STEPS; i++)
     {
 		pointAlongRay += dir;
@@ -137,18 +113,35 @@ void RayCast
 		projectedCoord.xy /= projectedCoord.w;
 		projectedCoord.xy = projectedCoord.xy * 0.5 + 0.5;
 
-		float depthDiff = abs( pointAlongRay.z - texture(s_positionBuffer, projectedCoord.xy).z );
+		float mipLevel = 1.0f + (float(i)/MAX_REFLECTION_STEPS) * 2.0f;
 
-		depthDiff += distanceAlongRay * 0.05f;
+		float depthDiff = pointAlongRay.z - textureLod(s_positionBuffer, projectedCoord.xy, mipLevel).z;
 
-		if ( depthDiff < smallestDepthDiff )
+		if ( depthDiff < 0.0f )
 		{
-			smallestDepthDiff = depthDiff;
-			bestHitUV = projectedCoord.xy;
-			bestPosition = pointAlongRay;
-		}
+			for(int j = 0; j < NUM_BINARY_SERACH_STEPS; j++)
+		    {
+		        projectedCoord = u_projectionMatrix * vec4(pointAlongRay, 2.0f);
+		        projectedCoord.xy /= projectedCoord.w;
+		        projectedCoord.xy = projectedCoord.xy * 0.5f + 0.5f;
+		 
+		        depthDiff = pointAlongRay.z - textureLod(s_positionBuffer, projectedCoord.xy, mipLevel).z;
 
-		distanceAlongRay += rayStep;
+		        if( depthDiff > 0.0f )
+		            pointAlongRay += dir;
+		 
+		        dir *= -0.5f;
+		        pointAlongRay -= dir; 
+
+		        if ( depthDiff < smallestDepthDiff )
+				{
+					smallestDepthDiff = abs(depthDiff);
+					bestHitUV = projectedCoord.xy;
+					bestPosition = pointAlongRay;
+				}
+		    }
+			return;
+		}
 	}
 }
 
@@ -162,7 +155,6 @@ void main()
 	
 	ivec2 randomTextureSize = textureSize( s_randomTexture, 0 );
 	vec4 randomSample = texture2D( s_randomTexture, (gl_FragCoord.xy / randomTextureSize) );
-	//vec4 randomSample2 = texture2D( s_randomTexture, (gl_FragCoord.xy / randomTextureSize) * 0.5f );
 
 	float randomNumber = randomSample.w;
 
@@ -229,44 +221,50 @@ void main()
 	// Reflections
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	vec3 randomDirection = randomSample.xyz;
-	fragNormal += randomDirection * roughness * u_roughnessJitter;
-	fragNormal = normalize(fragNormal);
+	vec3 reflectionColor = vec3(0.0f,0.0f,0.0f);
+	float reflectionAlpha = 0.0f;
 
-	vec3 reflectVec = reflect( normalize( fragPos ), fragNormal ); 
+	for ( int i = 0; i < NUM_REFLECTION_SAMPLES; i++ )
+	{
+		vec3 randomSampleReflect = texture2D( s_randomTexture, (gl_FragCoord.xy / randomTextureSize) + randomSample.xy * NUM_REFLECTION_SAMPLES * 10.0f ).xyz;
+		vec3 randomDirection = randomSampleReflect.xyz;
+		fragNormal += randomDirection * roughness * u_roughnessJitter;
+		fragNormal = normalize(fragNormal);
 
-	vec2 hitUV;					// Output
-	vec3 hitPos;				// Output
-	float hitDepthDiff;			// Output
+		vec3 reflectVec = reflect( normalize( fragPos ), fragNormal ); 
 
-	RayCast(reflectVec, fragPos, hitUV, hitPos, hitDepthDiff);
-	vec3 reflectionColor = texture(s_directLightBuffer2D, hitUV ).rgb + texture(s_indirectLightBuffer2D, hitUV ).rgb;
-	vec3 reflectionNormal = texture(s_normalBuffer, hitUV ).xyz;
+		vec2 hitUV;					// Output
+		vec3 hitPos;				// Output
+		float hitDepthDiff;			// Output
 
-	// Now we have a ray intersection, and we've got our color/normal sample.
-	// Time to find all the things wrong with this sample, and modulate it to make its
-	// shortcomings less obvious.
-	float reflectionAlpha = 1.0f;
+		RayCast(reflectVec, fragPos, hitUV, hitPos, hitDepthDiff);
+		reflectionColor += textureLod(s_directLightBuffer2D, hitUV, 1.0 ).rgb + textureLod(s_indirectLightBuffer2D, hitUV, 1.0 ).rgb;
+		
+		// Now we have a ray intersection, and we've got our color/normal sample.
+		// Time to find all the things wrong with this sample, and modulate it to make its
+		// shortcomings less obvious.
+		float reflectionAlphaCurrent = 1.0f;
 
-	// The RayCast function returns the point with the smallest depth difference it can find.
-	// If the smallest depth difference it can find is still rather large, it's likely we're just missing
-	// information, and shouldn't be reflecting this pixel.
-	float confidence = 1.0f - smoothstep( 0.0f, u_maxReflectDepthDiff, hitDepthDiff );
-	//reflectionAlpha *= confidence;
+		// The RayCast function returns the point with the smallest depth difference it can find.
+		// If the smallest depth difference it can find is still rather large, it's likely we're just missing
+		// information, and shouldn't be reflecting this pixel.
+		float confidence = 1.0f - min( hitDepthDiff / u_maxReflectDepthDiff, 1.0f );
+		reflectionAlphaCurrent *= confidence;
 
-	// The ray will eventually just stop, and we'd like to fade a bit before it does so
-	// there's no hard edge past a certain ray distance.
-	float distanceStrength = 1.0f - min( length(hitPos - fragPos) / MAX_RAY_LENGTH, 1.0f );
-	reflectionAlpha *= distanceStrength;
+		// The ray will eventually just stop, and we'd like to fade a bit before it does so
+		// there's no hard edge past a certain ray distance.
+		float distanceStrength = 1.0f - min( length(hitPos - fragPos) / MAX_RAY_LENGTH, 1.0f );
+		reflectionAlphaCurrent *= distanceStrength;
 
-	// Rays that are pointing towards the camera are suspect, because we have no 'back face'
-	// information in the framebuffer. 
-	float backFaceFalloff = smoothstep( 0.0f, 1.0f, 1.0f - fragNormal.z );
-	reflectionAlpha *= backFaceFalloff;
+		// Rays that are pointing towards the camera are suspect, because we have no 'back face'
+		// information in the framebuffer. 
+		float backFaceFalloff = max( 0.0f, -reflectVec.z );
+		reflectionAlphaCurrent *= backFaceFalloff;
 
-	// Rays that intersected at a surface pointing away from them also don't
-	// make sense to reflect back
-	//reflectionAlpha *= max( 0.0f, dot( reflectionNormal, -reflectVec ) );
+		reflectionAlpha += reflectionAlphaCurrent;
+	}
+	reflectionColor /= NUM_REFLECTION_SAMPLES;
+	reflectionAlpha /= NUM_REFLECTION_SAMPLES;
 
 	// Non-shiny things shouldn't reflect
 	reflectionAlpha *= (1.0f-roughness);

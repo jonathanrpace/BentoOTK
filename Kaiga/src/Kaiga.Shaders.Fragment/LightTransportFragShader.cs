@@ -12,8 +12,8 @@ namespace Kaiga.Shaders.Fragment
 		public LightTransportFragShader() : base( "LightTransportShader.frag" )
 		{
 			randomTexture = new RandomDirectionTexture();
-			randomTexture.Width = 8;
-			randomTexture.Height = 8;
+			randomTexture.Width = 128;
+			randomTexture.Height = 128;
 		}
 
 		override public void BindPerPass( RenderParams renderParams )
@@ -62,20 +62,17 @@ namespace Kaiga.Shaders.Fragment
 			//const int numBinarySearchSteps = 16;
 			//SetUniform1( "numBinarySearchSteps", numBinarySearchSteps );
 
-			//float roughnessJitter = (float)Mouse.GetState().Y / 1000.0f;
+			//float roughnessJitter = (float)Mouse.GetState().Y / 5000.0f;
 			//Debug.WriteLine( roughnessJitter );
 			const float roughnessJitter = 0.0f;
 			SetUniform1( "u_roughnessJitter", roughnessJitter );
 
-			float maxReflectDepthDiff = (float)Mouse.GetState().Y / 2000.0f;
-			Debug.WriteLine( maxReflectDepthDiff );
-			//const float maxReflectDepthDiff = 0.2f;
+
+			//float maxReflectDepthDiff = (float)Mouse.GetState().Y / 2000.0f;
+			//Debug.WriteLine( maxReflectDepthDiff );
+			const float maxReflectDepthDiff = 0.1f;
 			SetUniform1( "u_maxReflectDepthDiff", maxReflectDepthDiff );
 
-
-			float rayStep = (float)Mouse.GetState().X / 5000.0f;
-			Debug.WriteLine( rayStep );
-			SetUniform1( "rayStep", rayStep );
 		}
 
 		/*
