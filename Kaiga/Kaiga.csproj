@@ -93,7 +93,6 @@
     <Compile Include="src\Kaiga.Shaders.Fragment\GFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\ImageLightFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\NullFragShader.cs" />
-    <Compile Include="src\Kaiga.Shaders.Fragment\PointLightFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\SkyboxFragmentShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\RectangleTextureFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\SquareTextureFragShader.cs" />
@@ -120,6 +119,10 @@
     <Compile Include="src\Kaiga.Shaders\TextureRectToMippedTexture2DHelper.cs" />
     <Compile Include="src\Kaiga.Shaders\TextureRectToScreenShader.cs" />
     <Compile Include="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Shaders\Texture2DToScreenShader.cs" />
+    <Compile Include="src\Kaiga.RenderPasses\DirectionalLightRenderPass.cs" />
+    <Compile Include="src\Kaiga.Lights\DirectionalLight.cs" />
+    <Compile Include="src\Kaiga.Shaders\DirectionalLightShader.cs" />
+    <Compile Include="src\Kaiga.Shaders.Fragment\PointLightFragShader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -179,6 +182,16 @@
     <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\ScreenSpaceReflectionShader.frag">
       <DependentUpon>ScreenSpaceReflectionFragShader.cs</DependentUpon>
       <LogicalName>ScreenSpaceReflectionShader.frag</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\PointLightShader.frag">
+      <DependentUpon>PointLightFragShader.cs</DependentUpon>
+      <LogicalName>PointLightShader.frag</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\LightingLib.frag">
+      <LogicalName>LightingLib.frag</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\DirectionalLightShader.frag">
+      <LogicalName>DirectionalLightShader.frag</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

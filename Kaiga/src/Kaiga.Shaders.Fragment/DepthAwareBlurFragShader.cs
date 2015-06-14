@@ -22,7 +22,7 @@ namespace Kaiga.Shaders.Fragment
 
 			//float colorDiffMax = Mouse.GetState().X / 500.0f;
 			//Debug.WriteLine( colorDiffMax.ToString() );
-			const float colorDiffMax = 0.5f;
+			const float colorDiffMax = 1.0f;
 			SetUniform1( "u_colorDiffMax", colorDiffMax );
 
 			//float colorDiffMax = Mouse.GetState().X / 500.0f;
@@ -88,7 +88,8 @@ void main(void)
 
 		float depthSample = texture2DRect( s_positionTexture, (uv + u_direction * offset) / u_lightTransportResScalar ).z;
 		float depthDiff = abs(fragDepth - depthSample);
-		float depthStep = 1.0f - min( depthDiff / u_depthMax, 1.0f );
+		float depthmax = u_depthMax;// + (dFdx(depthSample) * u_direction.x + dFdy(depthSample) * u_direction.y) * 20.0f;
+		float depthStep = 1.0f - min( depthDiff / depthmax, 1.0f );
 	
 		vec4 colorSample = texture2DRect( s_texture, uv + u_direction * offset );
 		vec4 colorDiff = abs(colorSample - fragColor);

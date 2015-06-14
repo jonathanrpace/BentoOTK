@@ -42,12 +42,14 @@ uniform int u_maxMip;
 uniform mat4 u_projectionMatrix;
 uniform float u_roughnessJitter;
 uniform float u_radius;
-uniform float u_falloffScalar;
+uniform float u_aoFalloffScalar;
+uniform float u_bounceFalloffScalar;
 uniform float u_aspectRatio;
 uniform float u_radiosityScalar;
 uniform float u_colorBleedingBoost;
 uniform float u_lightTransportResolutionScalar;
 uniform float u_maxReflectDepthDiff;
+uniform bool u_flag;
 
 // Inputs
 in Varying
@@ -65,20 +67,24 @@ void AOAndBounce
 	vec3 samplePos, 
 	vec3 sampleColor, 
 	out float aoTotal, 
-	out vec3 bounceTotal
+	out vec3 bounceTotal,
+	out vec3 directionTotal
 )
 {
 	vec3 v = samplePos - fragPos;
 	float vLength = length(v);
 	v = normalize(v);
 
-	float falloff = 1.0f - min(1.0f, vLength / u_falloffScalar );
+	float aoFalloff = 1.0f - min(1.0f, vLength / u_aoFalloffScalar );
+	float bounceFalloff = 1.0f - min(1.0f, vLength / u_bounceFalloffScalar );
 	
 	float vDotFragNormal = max( dot( v, fragNormal ) - BIAS, 0.0f );
 
 	float denominator = vLength + EPSILON;
-	aoTotal += falloff * min( 1.0f, ( vDotFragNormal / denominator ) );
-	bounceTotal += sampleColor * falloff * min( 1.0f, ( vDotFragNormal  ) / denominator );
+	aoTotal += aoFalloff * min( 1.0f, ( vDotFragNormal / denominator ) );
+	bounceTotal += sampleColor * bounceFalloff * min( 1.0f, ( vDotFragNormal  ) / denominator );
+
+	directionTotal += (samplePos - fragPos) * ((bounceTotal.r + bounceTotal.g + bounceTotal.b) / 3);
 }
 
 void RayCast
@@ -150,6 +156,8 @@ void main()
 	vec4 material = texture( s_material, gl_FragCoord.xy / u_lightTransportResolutionScalar );
 	float roughness = material.x;
 
+	ivec2 materialTextureSize = textureSize( s_material, 0 );
+
 	vec3 fragPos = texture( s_positionBuffer, in_uv ).xyz;
 	vec3 fragNormal = texture( s_normalBuffer, in_uv ).xyz;
 	
@@ -162,6 +170,7 @@ void main()
 	float aoTotal = 0.0f;
 	vec3 bounceTotal = vec3(0.0f, 0.0f, 0.0f);
 	int numContributingSamples = 1;
+	vec3 directionTotal = vec3(0.0f,0.0f,0.0f);
 	for ( int i = 0; i < NUM_SAMPLES; i++ )
 	{
 		// The ratio along the spiral
@@ -186,6 +195,8 @@ void main()
 
 		vec3 sampleDirectColor = textureLod( s_directLightBuffer2D, sampleUV, mipLevel ).xyz;
 		vec3 sampleIndirectColor = textureLod( s_indirectLightBuffer2D, sampleUV, mipLevel ).xyz;
+		vec3 sampleMaterial = texture( s_material, sampleUV * materialTextureSize.xy  ).xyz;
+		float sampleRoughness = sampleMaterial.x;
 		vec3 sampleColor = sampleDirectColor + sampleIndirectColor;
 
 		// Fade off samples as they near the edge of the screen
@@ -194,7 +205,9 @@ void main()
 		vec2 edgeBottomRight = vec2(1.0f) - smoothstep( vec2(1.0f-edge), vec2(1.0f), sampleUV.xy );
 		sampleColor *= (edgeTopLeft.x * edgeTopLeft.y * edgeBottomRight.x * edgeBottomRight.y);
 
-		AOAndBounce( fragPos, fragNormal, samplePosition, sampleColor, aoTotal, bounceTotal );
+		sampleColor *= sampleRoughness;
+
+		AOAndBounce( fragPos, fragNormal, samplePosition, sampleColor, aoTotal, bounceTotal, directionTotal );
 
 		numContributingSamples++;
 	}
@@ -211,7 +224,7 @@ void main()
 	aoTotal /= numContributingSamples;
 	aoTotal = sqrt(aoTotal);
 	aoTotal = max( 0.0, aoTotal );
-	aoTotal *= 2.0f;
+	aoTotal *= 1.5f;
 	aoTotal = min( 1.0, aoTotal );
 	aoTotal *= roughness;
 	aoTotal = 1.0f - aoTotal;
@@ -223,13 +236,13 @@ void main()
 
 	vec3 reflectionColor = vec3(0.0f,0.0f,0.0f);
 	float reflectionAlpha = 0.0f;
-
+	vec3 reflectionFragNormal = fragNormal;
 	for ( int i = 0; i < NUM_REFLECTION_SAMPLES; i++ )
 	{
 		vec3 randomSampleReflect = texture2D( s_randomTexture, (gl_FragCoord.xy / randomTextureSize) + randomSample.xy * NUM_REFLECTION_SAMPLES * 10.0f ).xyz;
 		vec3 randomDirection = randomSampleReflect.xyz;
-		fragNormal += randomDirection * roughness * u_roughnessJitter;
-		fragNormal = normalize(fragNormal);
+		reflectionFragNormal += randomDirection * roughness * u_roughnessJitter;
+		reflectionFragNormal = normalize(reflectionFragNormal);
 
 		vec3 reflectVec = reflect( normalize( fragPos ), fragNormal ); 
 
@@ -268,7 +281,13 @@ void main()
 
 	// Non-shiny things shouldn't reflect
 	reflectionAlpha *= (1.0f-roughness);
-	
+
+	// During the bounce light calculations, we built a vector pointing towards where most of the light
+	// is coming from. Now we can dot product that with the fragment normal to give us an indication
+	// of how much we should multiply the bounce light by AO.
+	float indirectDotProduct = max( 0.0f, dot( fragNormal, normalize(directionTotal) ) );
+	bounceTotal = mix( bounceTotal, bounceTotal*aoTotal, 1.0f - indirectDotProduct );
+
 	out_bounceAndAO = vec4( bounceTotal, aoTotal );
 	out_reflections = vec4( reflectionColor, reflectionAlpha );
 }

@@ -77,7 +77,7 @@ namespace Examples
 					entity.AddComponent( sphereGeom );
 
 					var material = new StandardMaterial();
-					material.Roughness = 0.5f;//0.1f + (1.0f-columnRatio) * 0.9f;
+					material.Roughness = 0.1f + (1.0f-columnRatio) * 0.9f;
 					entity.AddComponent( material );
 
 					var transform = new Transform();
@@ -140,8 +140,8 @@ namespace Examples
 				entity.AddComponent( transform );
 
 				var material = new StandardMaterial();
-				material.Roughness = 0.5f;
-				//material.Diffuse = new Vector3( 0.0f, 1.0f, 0.0f );
+				material.Roughness = 0.8f;
+				material.Diffuse = new Vector3( 0.0f, 1.0f, 0.0f );
 				entity.AddComponent( material );
 
 				//entity.AddComponent( new EmissivePulser( 1.12f, 0.0f, 0.5f, 0.2f ) );
@@ -164,8 +164,8 @@ namespace Examples
 				entity.AddComponent( transform );
 
 				var material = new StandardMaterial();
-				material.Roughness = 0.5f;
-				//material.Diffuse = new Vector3( 1.0f, 0.0f, 0.0f );
+				material.Roughness = 0.8f;
+				material.Diffuse = new Vector3( 1.0f, 0.0f, 0.0f );
 				entity.AddComponent( material );
 
 				//entity.AddComponent( new EmissivePulser( 1.0f, 0.0f, 0.5f, 3.1f ) );
@@ -178,8 +178,8 @@ namespace Examples
 				CreateLight();
 			}
 
-			CreateImageLight();
-			//CreateAmbientLight();
+			//CreateImageLight();
+			CreateAmbientLight();
 
 			scene.AddProcess( new OrbitCamera() );
 			scene.AddProcess( new SwarmProcess() );
@@ -200,24 +200,24 @@ namespace Examples
 			pointLight.Intensity = 5.0f;
 			pointLight.AttenuationRadius = radius * 10.0f;
 			pointLight.Color = color;
-			//entity.AddComponent( pointLight );
+			entity.AddComponent( pointLight );
 
 			var sphereGeom = new SphereGeometry();
 			sphereGeom.Radius = pointLight.Radius * 2.0f;
-			entity.AddComponent( sphereGeom );
+			//entity.AddComponent( sphereGeom );
 
 			var material = new StandardMaterial();
 
-			//if ( random() < 0.8f )
+			//if ( random() < 1.0f )
 			//{
-			//	material.Diffuse = color;
-			//	entity.AddComponent( new EmissivePulser( 1.0f, 0.0f, 10.0f, random() * (float)Math.PI ) );
+				material.Diffuse = color;
+			//	entity.AddComponent( new EmissivePulser( 1.0f, 0.0f, 2.0f, random() * (float)Math.PI ) );
 			//}
 
 			//material.Diffuse = color;
 			//material.Emissive = 1.0f;
 
-			material.Roughness = 0.6f;//0.1f + random() * 0.9f;
+			material.Roughness = 1.0f;//0.1f;//0.1f + random() * 0.9f;
 			entity.AddComponent( material );
 
 			var swarmMember = new SwarmMember
@@ -235,7 +235,7 @@ namespace Examples
 		void CreateImageLight()
 		{
 			var imageLight = new Entity();
-			var light = new ImageLight( 0.5f );
+			var light = new ImageLight( 0.25f );
 			light.Texture = new ExternalCubeTexture();
 			imageLight.AddComponent( light, -1 );
 			scene.AddEntity( imageLight );
@@ -251,7 +251,7 @@ namespace Examples
 
 			var entity = new Entity();
 
-			var ambientLight = new AmbientLight( 1.0f, 1.0f, 1.0f, 0.25f );
+			var ambientLight = new AmbientLight( 1.0f, 1.0f, 1.0f, 0.1f );
 			entity.AddComponent( ambientLight );
 
 			scene.AddEntity( entity );

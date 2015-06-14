@@ -15,6 +15,12 @@ namespace Kaiga.Shaders.Fragment
 			
 		}
 
+		protected AbstractFragmentShaderStage( params string[] shaderResourceIDs )
+			: base ( shaderResourceIDs )
+		{
+
+		}
+
 		override protected ShaderType GetShaderType()
 		{
 			return ShaderType.FragmentShader;

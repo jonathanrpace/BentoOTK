@@ -10,7 +10,7 @@ namespace Kaiga.Shaders
 {
 	abstract public class AbstractShaderStage : AbstractValidatable
 	{
-		readonly string shaderResourceID;
+		readonly string[] shaderResourceIDs;
 		int textureUnit;
 
 		protected int shaderProgram;
@@ -25,7 +25,12 @@ namespace Kaiga.Shaders
 
 		protected AbstractShaderStage( string shaderResourceID )
 		{
-			this.shaderResourceID = shaderResourceID;
+			shaderResourceIDs = new [] { shaderResourceID };
+		}
+
+		protected AbstractShaderStage( params string[] shaderResourceIDs )
+		{
+			this.shaderResourceIDs = shaderResourceIDs;
 		}
 
 		protected AbstractShaderStage()
@@ -35,20 +40,26 @@ namespace Kaiga.Shaders
 
 		protected override void onValidate()
 		{
-			var shaderSource = new string[1];
+			string[] shaderSource;
 
-			if ( shaderResourceID != null )
+			if ( shaderResourceIDs == null )
 			{
-				var assembly = Assembly.GetExecutingAssembly();
-				using (Stream stream = assembly.GetManifestResourceStream( shaderResourceID ))
-				using (var reader = new StreamReader( stream ))
-				{
-					shaderSource[ 0 ] = reader.ReadToEnd();
-				}
+				shaderSource = new [] { GetShaderSource() };
 			}
 			else
 			{
-				shaderSource[ 0 ] = GetShaderSource();
+				shaderSource = new string[shaderResourceIDs.Length];
+
+				for ( int i = 0; i < shaderResourceIDs.Length; i++ )
+				{
+					var shaderResourceID = shaderResourceIDs[i];
+					var assembly = Assembly.GetExecutingAssembly();
+					using (Stream stream = assembly.GetManifestResourceStream( shaderResourceID ))
+					using (var reader = new StreamReader( stream ))
+					{
+						shaderSource[ i ] = reader.ReadToEnd();
+					}
+				}
 			}
 
 			shaderProgram = GL.CreateShaderProgram

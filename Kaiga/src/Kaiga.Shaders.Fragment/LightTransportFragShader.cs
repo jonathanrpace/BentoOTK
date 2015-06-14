@@ -40,8 +40,13 @@ namespace Kaiga.Shaders.Fragment
 
 			//float falloffScalar = (float)Mouse.GetState().X / 100.0f;
 			//Debug.WriteLine( falloffScalar );
-			const float falloffScalar = 100.0f;
-			SetUniform1( "u_falloffScalar", falloffScalar );
+			const float aoFalloffScalar = 1.0f;
+			SetUniform1( "u_aoFalloffScalar", aoFalloffScalar );
+
+			const float bounceFalloffScalar = 20.0f;
+			SetUniform1( "u_bounceFalloffScalar", bounceFalloffScalar );
+
+			SetUniform1( "u_flag", Mouse.GetState().X > 500  );
 
 			//float radiosityScalar = (float)Mouse.GetState().X / 10.0f;
 			//Debug.WriteLine( radiosityScalar );
