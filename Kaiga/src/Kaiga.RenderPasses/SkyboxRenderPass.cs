@@ -31,7 +31,7 @@ namespace Kaiga.RenderPasses
 		public void Render( RenderParams renderParams )
 		{
 			geom.Bind();
-			shader.BindPipeline( renderParams );
+			shader.BindPerPass( renderParams );
 
 			//GL.Disable( EnableCap.DepthTest );
 			//GL.Disable( EnableCap.CullFace );
@@ -43,7 +43,7 @@ namespace Kaiga.RenderPasses
 			}
 			//GL.DepthFunc( DepthFunction.Less );
 
-			shader.UnbindPipeline();
+			shader.UnbindPerPass();
 			geom.Unbind();
 		}
 	}

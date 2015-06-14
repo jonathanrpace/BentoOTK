@@ -30,7 +30,7 @@ namespace Kaiga.RenderPasses
 
 		public void Render( RenderParams renderParams )
 		{
-			shader.BindPipeline( renderParams );
+			shader.BindPerPass( renderParams );
 			foreach ( var node in nodeList.Nodes )
 			{
 				renderParams.SetModelMatrix( node.transform.Matrix );
@@ -42,7 +42,7 @@ namespace Kaiga.RenderPasses
 				node.geom.Unbind();
 			}
 
-			shader.UnbindPipeline();
+			shader.UnbindPerPass();
 		}
 	}
 }

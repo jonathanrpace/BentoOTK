@@ -55,9 +55,9 @@ namespace Kaiga.Shaders
 
 			GL.Viewport( 0, 0, outputSize, outputSize );
 
-			rectTo2DShader.BindPipeline( renderParams );
+			rectTo2DShader.BindPerPass( renderParams );
 			rectTo2DShader.Render( renderParams, source.Texture );
-			rectTo2DShader.UnbindPipeline();
+			rectTo2DShader.UnbindPerPass();
 			output.GenerateMipMaps();
 
 			GL.BindFramebuffer( FramebufferTarget.Framebuffer, 0 );

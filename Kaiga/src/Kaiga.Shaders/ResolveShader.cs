@@ -23,17 +23,17 @@ namespace Kaiga.Shaders
 
 		public void Render( RenderParams renderParams )
 		{
-			BindPipeline( renderParams );
+			BindPerPass( renderParams );
 
-			BindFragmentShader();
+			ActivateFragmentShader();
 			fragmentShader.BindPerPass( renderParams );
-			BindVertexShader();
+			ActivateVertexShader();
 
 			screenQuadGeom.Bind();
 			screenQuadGeom.Draw();
 			screenQuadGeom.Unbind();
 
-			UnbindPipeline();
+			UnbindPerPass();
 		}
 	}
 }

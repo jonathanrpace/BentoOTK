@@ -22,11 +22,11 @@ namespace Kaiga.Shaders
 
 		public void Render( RenderParams renderParams, int texture, int positionTexture, float radiusU, float radiusV )
 		{
-			BindPipeline( renderParams );
+			BindPerPass( renderParams );
 			fragmentShader.Bind( renderParams, texture, positionTexture, radiusU, radiusV );
 			screenQuadGeom.Bind();
 			screenQuadGeom.Draw();
-			UnbindPipeline();
+			UnbindPerPass();
 		}
 	}
 }

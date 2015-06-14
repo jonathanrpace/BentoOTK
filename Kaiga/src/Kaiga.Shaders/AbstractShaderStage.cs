@@ -48,7 +48,9 @@ namespace Kaiga.Shaders
 			}
 			else
 			{
-				shaderSource = new string[shaderResourceIDs.Length];
+				var inlineShaderSource = GetShaderSource();
+
+				shaderSource = new string[shaderResourceIDs.Length + (inlineShaderSource == null ? 0 : 1) ];
 
 				for ( int i = 0; i < shaderResourceIDs.Length; i++ )
 				{
@@ -59,6 +61,11 @@ namespace Kaiga.Shaders
 					{
 						shaderSource[ i ] = reader.ReadToEnd();
 					}
+				}
+
+				if ( inlineShaderSource != null )
+				{
+					shaderSource[ shaderSource.Length - 1 ] = inlineShaderSource;
 				}
 			}
 

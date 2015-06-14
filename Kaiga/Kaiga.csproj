@@ -56,7 +56,6 @@
     <Compile Include="src\Kaiga.Shaders\PointLightShader.cs" />
     <Compile Include="src\Kaiga.Core\DeferredRenderTarget.cs" />
     <Compile Include="src\Kaiga.Core\FBAttachmentName.cs" />
-    <Compile Include="src\Kaiga.Shaders\PointLightStencilShader.cs" />
     <Compile Include="src\Kaiga.Components\SwarmMember.cs" />
     <Compile Include="src\Kaiga.Processes\SwarmProcess.cs" />
     <Compile Include="src\Kaiga.Textures\RandomDirectionTexture.cs" />
@@ -85,12 +84,8 @@
     <Compile Include="src\Kaiga.Shaders\AbstractShaderStage.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\AbstractFragmentShaderStage.cs" />
     <Compile Include="src\Kaiga.Shaders.Vertex\AbstractVertexShaderStage.cs" />
-    <Compile Include="src\Kaiga.Shaders.Vertex\GVertexShader.cs" />
-    <Compile Include="src\Kaiga.Shaders.Vertex\PointLightVertexShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Vertex\ScreenQuadVertexShader.cs" />
-    <Compile Include="src\Kaiga.Shaders.Vertex\SkyboxVertexShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\AmbientLightFragShader.cs" />
-    <Compile Include="src\Kaiga.Shaders.Fragment\GFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\ImageLightFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\NullFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\SkyboxFragmentShader.cs" />
@@ -106,7 +101,6 @@
     <Compile Include="src\Kaiga.Shaders.Fragment\LightBufferConvolutionFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders\LightBufferConvolutionShader.cs" />
     <Compile Include="src\Kaiga.Textures\RandomAngleTexture.cs" />
-    <Compile Include="src\Kaiga.Shaders.Fragment\LightTransportFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders\LightTransportShader.cs" />
     <Compile Include="src\Kaiga.Shaders\DepthAwareBlurShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\ResolveFragShader.cs" />
@@ -122,7 +116,6 @@
     <Compile Include="src\Kaiga.RenderPasses\DirectionalLightRenderPass.cs" />
     <Compile Include="src\Kaiga.Lights\DirectionalLight.cs" />
     <Compile Include="src\Kaiga.Shaders\DirectionalLightShader.cs" />
-    <Compile Include="src\Kaiga.Shaders.Fragment\PointLightFragShader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -153,6 +146,7 @@
     <Folder Include="src\Kaiga.Lights\" />
     <Folder Include="src\Kaiga.Shaders.Fragment\" />
     <Folder Include="src\Kaiga.Shaders.Vertex\" />
+    <Folder Include="src\Kaiga.Shaders\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\RectangleTextureShader.frag">
@@ -171,10 +165,6 @@
       <DependentUpon>LightBufferConvolutionFragShader.cs</DependentUpon>
       <LogicalName>LightBufferConvolutionShader.frag</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\LightTransportShader.frag">
-      <DependentUpon>LightTransportFragShader.cs</DependentUpon>
-      <LogicalName>LightTransportShader.frag</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\ResolveShader.frag">
       <DependentUpon>ResolveFragShader.cs</DependentUpon>
       <LogicalName>ResolveShader.frag</LogicalName>
@@ -183,15 +173,20 @@
       <DependentUpon>ScreenSpaceReflectionFragShader.cs</DependentUpon>
       <LogicalName>ScreenSpaceReflectionShader.frag</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\PointLightShader.frag">
-      <DependentUpon>PointLightFragShader.cs</DependentUpon>
-      <LogicalName>PointLightShader.frag</LogicalName>
+    <EmbeddedResource Include="src\Kaiga.Shaders\DirectionalLightShader.frag">
+      <DependentUpon>DirectionalLightShader.cs</DependentUpon>
+      <LogicalName>DirectionalLightShader.frag</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\LightingLib.frag">
+    <EmbeddedResource Include="src\Kaiga.Shaders\Shared\LightingLib.frag">
       <LogicalName>LightingLib.frag</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\DirectionalLightShader.frag">
-      <LogicalName>DirectionalLightShader.frag</LogicalName>
+    <EmbeddedResource Include="src\Kaiga.Shaders\LightTransportShader.frag">
+      <DependentUpon>LightTransportShader.cs</DependentUpon>
+      <LogicalName>LightTransportShader.frag</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Kaiga.Shaders\PointLightShader.frag">
+      <DependentUpon>PointLightShader.cs</DependentUpon>
+      <LogicalName>PointLightShader.frag</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

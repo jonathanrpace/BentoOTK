@@ -24,15 +24,15 @@ namespace Kaiga.Shaders
 
 		public void Render( RenderParams renderParams, int texture )
 		{
-			BindPipeline( renderParams );
+			BindPerPass( renderParams );
 
-			BindFragmentShader();
+			ActivateFragmentShader();
 			fragmentShader.SetTexture( texture );
 
 			screenQuadGeom.Bind();
 			screenQuadGeom.Draw();
 
-			UnbindPipeline();
+			UnbindPerPass();
 		}
 	}
 }
