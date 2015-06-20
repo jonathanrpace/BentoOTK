@@ -29,12 +29,6 @@ namespace Kaiga.Geom
 			GL.BindVertexArray( vertexArrayBuffer );
 			GL.BindBuffer( BufferTarget.ElementArrayBuffer, indexBuffers[ 0 ] );
 		}
-
-		public void Unbind()
-		{ 
-			GL.BindVertexArray( 0 );
-			GL.BindBuffer( BufferTarget.ElementArrayBuffer, 0 );
-		}
 		
 		override protected void onInvalidate()
 		{

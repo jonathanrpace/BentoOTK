@@ -42,9 +42,6 @@ namespace Kaiga.RenderPasses
 				geom.Draw();
 			}
 			//GL.DepthFunc( DepthFunction.Less );
-
-			shader.UnbindPerPass();
-			geom.Unbind();
 		}
 	}
 }

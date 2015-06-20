@@ -25,13 +25,10 @@ namespace Kaiga.Shaders
 		{
 			BindPerPass();
 
-			ActivateFragmentShader();
 			fragmentShader.SetTexture( texture );
 
 			screenQuadGeom.Bind();
 			screenQuadGeom.Draw();
-
-			UnbindPerPass();
 		}
 	}
 }

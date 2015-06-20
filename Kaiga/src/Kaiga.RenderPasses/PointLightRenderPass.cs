@@ -64,7 +64,6 @@ namespace Kaiga.RenderPasses
 				stencilShader.BindPerLight();
 				geom.Draw();
 			}
-			stencilShader.UnbindPerPass();
 
 
 			RenderParams.RenderTarget.BindForDirectLightPhase();
@@ -87,13 +86,10 @@ namespace Kaiga.RenderPasses
 
 				geom.Draw();
 			}
-			shader.UnbindPerPass();
 
 			GL.Enable( EnableCap.DepthTest );
 			GL.Disable( EnableCap.StencilTest );
 			GL.CullFace( CullFaceMode.Back );
-
-			geom.Unbind();
 		}
 		/*
 		static float CalcPointLightRadius(PointLight light)

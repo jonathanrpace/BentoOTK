@@ -26,7 +26,6 @@ namespace Kaiga.Shaders
 			fragmentShader.Bind( texture, positionTexture, radiusU, radiusV );
 			screenQuadGeom.Bind();
 			screenQuadGeom.Draw();
-			UnbindPerPass();
 		}
 	}
 }

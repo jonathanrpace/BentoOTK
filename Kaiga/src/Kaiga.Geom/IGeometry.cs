@@ -6,7 +6,6 @@ namespace Kaiga.Geom
 	{
 		void Bind();
 		void Draw();
-		void Unbind();
 	}
 }
 

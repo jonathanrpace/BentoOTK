@@ -1,5 +1,4 @@
 ﻿using System;
-using Kaiga.Core;
 using OpenTK.Graphics.OpenGL4;
 
 namespace Kaiga.Shaders
@@ -66,7 +65,7 @@ namespace Kaiga.Shaders
 				fragmentShader.BindPerPass();
 			}
 		}
-
+		/*
 		protected void ActivateVertexShader()
 		{
 			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
@@ -76,19 +75,7 @@ namespace Kaiga.Shaders
 		{
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
 		}
-		
-		public virtual void UnbindPerPass()
-		{
-			GL.BindProgramPipeline( 0 );
-			if ( vertexShader != null )
-			{
-				vertexShader.UnbindPerPass();
-			}
-			if ( fragmentShader != null )
-			{
-				fragmentShader.UnbindPerPass();
-			}
-		}
+		*/
 	}
 }
 

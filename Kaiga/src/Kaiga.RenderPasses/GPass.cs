@@ -39,10 +39,7 @@ namespace Kaiga.RenderPasses
 				shader.BindPerMaterial( node.material );
 				shader.BindPerModel();
 				node.geom.Draw();
-				node.geom.Unbind();
 			}
-
-			shader.UnbindPerPass();
 		}
 	}
 }

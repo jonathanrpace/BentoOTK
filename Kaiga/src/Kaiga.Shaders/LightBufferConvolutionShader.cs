@@ -36,7 +36,6 @@ namespace Kaiga.Shaders
 
 			screenQuadGeom.Bind();
 			screenQuadGeom.Draw();
-			UnbindPerPass();
 		}
 	}
 }

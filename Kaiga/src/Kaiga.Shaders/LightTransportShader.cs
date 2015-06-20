@@ -38,8 +38,6 @@ namespace Kaiga.Shaders
 			fragmentShader.BindPerPass();
 			screenQuadGeom.Bind();
 			screenQuadGeom.Draw();
-			screenQuadGeom.Unbind();
-			UnbindPerPass();
 			
 			RenderParams.LightTransportRenderTarget.BindForBlurA();
 			blurShader.Render( RenderParams.LightTransportRenderTarget.RadiosityAndAOTextureRect.Texture, RenderParams.RenderTarget.PositionBuffer.Texture, 1.0f, 0.0f );

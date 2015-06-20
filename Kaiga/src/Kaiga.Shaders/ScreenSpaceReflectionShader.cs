@@ -1,7 +1,6 @@
 ﻿using Kaiga.Shaders.Vertex;
 using Kaiga.Shaders.Fragment;
 using Kaiga.Geom;
-using Kaiga.Core;
 
 namespace Kaiga.Shaders
 {
@@ -24,15 +23,10 @@ namespace Kaiga.Shaders
 		{
 			BindPerPass();
 
-			ActivateFragmentShader();
 			fragmentShader.BindPerPass();
-			ActivateVertexShader();
 
 			screenQuadGeom.Bind();
 			screenQuadGeom.Draw();
-			screenQuadGeom.Unbind();
-
-			UnbindPerPass();
 		}
 	}
 }

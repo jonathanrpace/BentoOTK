@@ -10,6 +10,8 @@ namespace Kaiga.Shaders
 {
 	abstract public class AbstractShaderStage : AbstractValidatable
 	{
+		static private AbstractShaderStage s_activeShaderStage;
+
 		readonly string[] shaderResourceIDs;
 		int textureUnit;
 
@@ -23,11 +25,20 @@ namespace Kaiga.Shaders
 			}
 		}
 
+		protected int pipeline;
+		public int Pipeline
+		{
+			set
+			{
+				pipeline = value;
+			}
+		}
+
 		protected AbstractShaderStage( string shaderResourceID )
 		{
 			shaderResourceIDs = new [] { shaderResourceID };
 		}
-
+			
 		protected AbstractShaderStage( params string[] shaderResourceIDs )
 		{
 			this.shaderResourceIDs = shaderResourceIDs;
@@ -36,6 +47,11 @@ namespace Kaiga.Shaders
 		protected AbstractShaderStage()
 		{
 			
+		}
+
+		public virtual void BindPerPass()
+		{
+			textureUnit = 0;
 		}
 
 		protected override void onValidate()
@@ -86,15 +102,13 @@ namespace Kaiga.Shaders
 				GL.DeleteProgram( shaderProgram );
 			}
 		}
-		
-		public virtual void BindPerPass()
-		{
-			textureUnit = 0;
-		}
 
-		public virtual void UnbindPerPass()
+		private void SetAsActiveShader()
 		{
-
+			if ( s_activeShaderStage == this )
+				return;
+			s_activeShaderStage = this;
+			GL.ActiveShaderProgram( pipeline, ShaderProgram );
 		}
 
 		protected virtual string GetShaderSource()
@@ -108,54 +122,63 @@ namespace Kaiga.Shaders
 
 		protected void SetUniformMatrix4( string name, ref Matrix4 matrix, bool transposed = false )
 		{
+			SetAsActiveShader();
 			int location = GL.GetUniformLocation( shaderProgram, name );
 			GL.UniformMatrix4( location, transposed, ref matrix );
 		}
 
 		protected void SetUniformMatrix3( string name, ref Matrix3 matrix, bool transposed = false )
 		{
+			SetAsActiveShader();
 			int location = GL.GetUniformLocation( shaderProgram, name );
 			GL.UniformMatrix3( location, transposed, ref matrix );
 		}
 
 		protected void SetUniform1( string name, float value )
 		{
+			SetAsActiveShader();
 			int location = GL.GetUniformLocation( shaderProgram, name );
 			GL.Uniform1( location, value );
 		}
 
 		protected void SetUniform1( string name, int value )
 		{
+			SetAsActiveShader();
 			int location = GL.GetUniformLocation( shaderProgram, name );
 			GL.Uniform1( location, value );
 		}
 
 		protected void SetUniform1( string name, bool value )
 		{
+			SetAsActiveShader();
 			int location = GL.GetUniformLocation( shaderProgram, name );
 			GL.Uniform1( location, value ? 1 : 0 );
 		}
 
 		protected void SetUniform2( string name, Vector2 value )
 		{
+			SetAsActiveShader();
 			int location = GL.GetUniformLocation( shaderProgram, name );
 			GL.Uniform2( location, value );
 		}
 
 		protected void SetUniform3( string name, Vector3 value )
 		{
+			SetAsActiveShader();
 			int location = GL.GetUniformLocation( shaderProgram, name );
 			GL.Uniform3( location, value );
 		}
 
 		protected void SetUniform4( string name, Vector4 value )
 		{
+			SetAsActiveShader();
 			int location = GL.GetUniformLocation( shaderProgram, name );
 			GL.Uniform4( location, value );
 		}
 
 		protected void SetTexture( string name, int texture, TextureTarget textureTarget )
 		{
+			SetAsActiveShader();
 			SetUniform1( name, textureUnit );
 			GL.ActiveTexture( TextureUnit.Texture0 + textureUnit );
 			GL.BindTexture( textureTarget, texture );
@@ -164,6 +187,7 @@ namespace Kaiga.Shaders
 
 		protected void SetTexture2D( string name, int texture )
 		{
+			SetAsActiveShader();
 			SetUniform1( name, textureUnit );
 			GL.ActiveTexture( TextureUnit.Texture0 + textureUnit );
 			GL.BindTexture( TextureTarget.Texture2D, texture );
@@ -172,6 +196,7 @@ namespace Kaiga.Shaders
 
 		protected void SetRectangleTexture( string name, int texture )
 		{
+			SetAsActiveShader();
 			SetUniform1( name, textureUnit );
 			GL.ActiveTexture( TextureUnit.Texture0 + textureUnit );
 			GL.BindTexture( TextureTarget.TextureRectangle, texture );

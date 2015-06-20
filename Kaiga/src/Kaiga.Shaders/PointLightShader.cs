@@ -11,10 +11,7 @@ namespace Kaiga.Shaders
 	{
 		public void BindPerLight(PointLight pointLight )
 		{
-			ActivateVertexShader();
 			vertexShader.BindPerLight();
-
-			ActivateFragmentShader();
 			fragmentShader.BindPerLight( pointLight );
 		}
 	}
@@ -23,7 +20,6 @@ namespace Kaiga.Shaders
 	{
 		public void BindPerLight()
 		{
-			ActivateVertexShader();
 			vertexShader.BindPerLight();
 		}
 	}

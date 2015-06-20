@@ -38,9 +38,6 @@ namespace Kaiga.RenderPasses
 				shader.BindPerLight( node.light );
 				geom.Draw();
 			}
-
-			geom.Unbind();
-			shader.UnbindPerPass();
 		}
 	}
 }
