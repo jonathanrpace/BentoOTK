@@ -17,11 +17,11 @@ namespace Kaiga.Shaders
 
 	public class SkyboxVertexShader : AbstractVertexShaderStage
 	{
-		override public void BindPerPass( RenderParams renderParams )
+		override public void BindPerPass()
 		{
-			base.BindPerPass( renderParams );
+			base.BindPerPass();
 
-			SetUniformMatrix4( "u_viewProjectionMatrix", ref renderParams.NormalViewProjectionMatrix );
+			SetUniformMatrix4( "u_viewProjectionMatrix", ref RenderParams.NormalViewProjectionMatrix );
 		}
 
 		protected override string GetShaderSource()

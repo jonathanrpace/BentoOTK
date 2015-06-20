@@ -8,16 +8,16 @@ namespace Kaiga.Shaders.Fragment
 		{
 		}
 
-		public override void BindPerPass(RenderParams renderParams)
+		public override void BindPerPass()
 		{
-			base.BindPerPass(renderParams);
+			base.BindPerPass();
 
-			SetRectangleTexture( "s_directLight", renderParams.DirectLightTextureRect.Texture );
-			SetRectangleTexture( "s_indirectLight", renderParams.IndirectLightTextureRect.Texture );
-			SetRectangleTexture( "s_lightTransport", renderParams.LightTransportRenderTarget.RadiosityAndAOTextureRect.Texture );
-			SetRectangleTexture( "s_reflections", renderParams.LightTransportRenderTarget.ReflectionsTextureRect.Texture );
+			SetRectangleTexture( "s_directLight", RenderParams.DirectLightTextureRect.Texture );
+			SetRectangleTexture( "s_indirectLight", RenderParams.IndirectLightTextureRect.Texture );
+			SetRectangleTexture( "s_lightTransport", RenderParams.LightTransportRenderTarget.RadiosityAndAOTextureRect.Texture );
+			SetRectangleTexture( "s_reflections", RenderParams.LightTransportRenderTarget.ReflectionsTextureRect.Texture );
 
-			SetUniform1( "u_lightTransportResScalar", renderParams.LightTransportResolutionScalar );
+			SetUniform1( "u_lightTransportResScalar", RenderParams.LightTransportResolutionScalar );
 		}
 	}
 }

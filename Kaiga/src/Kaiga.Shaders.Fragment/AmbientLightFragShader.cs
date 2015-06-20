@@ -6,15 +6,15 @@ namespace Kaiga.Shaders.Fragment
 {
 	public class AmbientLightFragShader : AbstractFragmentShaderStage
 	{
-		override public void BindPerPass( RenderParams renderParams )
+		override public void BindPerPass()
 		{
-			base.BindPerPass( renderParams );
+			base.BindPerPass();
 			
-			SetTexture( "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture, TextureTarget.TextureRectangle );
-			SetTexture( "s_albedoBuffer", renderParams.RenderTarget.AlbedoBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_materialBuffer", RenderParams.RenderTarget.MaterialBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_albedoBuffer", RenderParams.RenderTarget.AlbedoBuffer.Texture, TextureTarget.TextureRectangle );
 		}
 
-		public void BindPerLight( RenderParams renderParams, AmbientLight light )
+		public void BindPerLight(AmbientLight light ) 
 		{
 			SetUniform3( "u_color", light.Color );
 			SetUniform1( "u_intensity", light.Intensity );

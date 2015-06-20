@@ -1,5 +1,4 @@
 ﻿using System;
-using OpenTK.Graphics.OpenGL4;
 using Kaiga.Geom;
 using Kaiga.Core;
 using Kaiga.Shaders.Vertex;
@@ -22,9 +21,9 @@ namespace Kaiga.Shaders
 			screenQuadGeom.Dispose();
 		}
 
-		public void Render( RenderParams renderParams, int texture )
+		public void Render( int texture )
 		{
-			BindPerPass( renderParams );
+			BindPerPass();
 
 			ActivateFragmentShader();
 			fragmentShader.SetTexture( texture );

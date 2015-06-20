@@ -16,7 +16,6 @@ namespace Kaiga.Core
 	{
 		// Private
 		Scene												scene;
-		readonly RenderParams 								renderParams;
 		readonly List<IRenderPass>							renderPasses;
 		readonly Dictionary<RenderPhase, List<IRenderPass>> passesByPhase;
 		readonly Dictionary<Type, IRenderPass>				passesByType; 
@@ -49,7 +48,6 @@ namespace Kaiga.Core
 
 		public DeferredRenderer( string name ) : base( name )
 		{
-			renderParams = new RenderParams();
 			renderPasses = new List<IRenderPass>();
 			passesByPhase = new Dictionary<RenderPhase, List<IRenderPass>>();
 			passesByType = new Dictionary<Type, IRenderPass>();
@@ -86,8 +84,6 @@ namespace Kaiga.Core
 			renderPasses.Clear();
 			passesByPhase.Clear();
 			passesByType.Clear();
-
-			renderParams.Dispose();
 
 			textureRectOutputShader.Dispose();
 			directLightTextureMipper.Dispose();
@@ -134,33 +130,33 @@ namespace Kaiga.Core
 			//const float scalar = 1.0f;
 			//renderParams.LightTransportResolutionScalar = scalar;
 
-			DeferredRenderTarget renderTarget = renderParams.RenderTarget;
-			LightTransportRenderTarget lightTransportRenderTarget = renderParams.LightTransportRenderTarget;
+			DeferredRenderTarget renderTarget = RenderParams.RenderTarget;
+			LightTransportRenderTarget lightTransportRenderTarget = RenderParams.LightTransportRenderTarget;
 
 			int renderWidth = scene.GameWindow.Width;
 			int renderHeight = scene.GameWindow.Height;
 			renderTarget.SetSize( renderWidth, renderHeight );
-			renderParams.BackBufferWidth = renderWidth;
-			renderParams.BackBufferHeight = renderHeight;
+			RenderParams.BackBufferWidth = renderWidth;
+			RenderParams.BackBufferHeight = renderHeight;
 
-			int lightTransportRenderWidth = (int)( renderWidth * renderParams.LightTransportResolutionScalar );
-			int lightTransportRenderHeight = (int)( renderHeight * renderParams.LightTransportResolutionScalar );
+			int lightTransportRenderWidth = (int)( renderWidth * RenderParams.LightTransportResolutionScalar );
+			int lightTransportRenderHeight = (int)( renderHeight * RenderParams.LightTransportResolutionScalar );
 			lightTransportRenderTarget.SetSize( lightTransportRenderWidth, lightTransportRenderHeight );
-			renderParams.LightTransportBufferWidth = lightTransportRenderWidth;
-			renderParams.LightTransportBuffferHeight = lightTransportRenderHeight;
+			RenderParams.LightTransportBufferWidth = lightTransportRenderWidth;
+			RenderParams.LightTransportBuffferHeight = lightTransportRenderHeight;
 
-			renderParams.CameraLens = Camera.GetComponentByType<ILens>();
-			renderParams.CameraLens.AspectRatio = (float)scene.GameWindow.Width / scene.GameWindow.Height;
-			renderParams.ViewMatrix = Camera.GetComponentByType<Transform>().Matrix;
-			renderParams.NormalViewMatrix = renderParams.ViewMatrix.ClearScale();
-			renderParams.NormalViewMatrix = renderParams.NormalViewMatrix.ClearTranslation();
-			renderParams.InvViewMatrix = renderParams.ViewMatrix.Inverted();
-			renderParams.ProjectionMatrix = renderParams.CameraLens.ProjectionMatrix;
-			renderParams.InvProjectionMatrix = renderParams.CameraLens.InvProjectionMatrix;
-			renderParams.ViewProjectionMatrix = renderParams.ViewMatrix * renderParams.ProjectionMatrix;
-			renderParams.InvViewProjectionMatrix = renderParams.ViewProjectionMatrix.Inverted();
-			renderParams.NormalViewProjectionMatrix = renderParams.NormalViewMatrix * renderParams.ProjectionMatrix;
-			renderParams.NormalInvViewMatrix = new Matrix3( renderParams.InvViewMatrix.ClearTranslation() );
+			RenderParams.CameraLens = Camera.GetComponentByType<ILens>();
+			RenderParams.CameraLens.AspectRatio = (float)scene.GameWindow.Width / scene.GameWindow.Height;
+			RenderParams.ViewMatrix = Camera.GetComponentByType<Transform>().Matrix;
+			RenderParams.NormalViewMatrix = RenderParams.ViewMatrix.ClearScale();
+			RenderParams.NormalViewMatrix = RenderParams.NormalViewMatrix.ClearTranslation();
+			RenderParams.InvViewMatrix = RenderParams.ViewMatrix.Inverted();
+			RenderParams.ProjectionMatrix = RenderParams.CameraLens.ProjectionMatrix;
+			RenderParams.InvProjectionMatrix = RenderParams.CameraLens.InvProjectionMatrix;
+			RenderParams.ViewProjectionMatrix = RenderParams.ViewMatrix * RenderParams.ProjectionMatrix;
+			RenderParams.InvViewProjectionMatrix = RenderParams.ViewProjectionMatrix.Inverted();
+			RenderParams.NormalViewProjectionMatrix = RenderParams.NormalViewMatrix * RenderParams.ProjectionMatrix;
+			RenderParams.NormalInvViewMatrix = new Matrix3( RenderParams.InvViewMatrix.ClearTranslation() );
 
 			// Setup some default render states
 			GL.Viewport( 0, 0, renderWidth, renderHeight );
@@ -199,26 +195,26 @@ namespace Kaiga.Core
 			GL.Disable( EnableCap.DepthTest );
 
 			// Downsample direct and indirect buffers into 2D mipmapped textures
-			directLightTextureMipper.Render( renderParams, renderTarget.DirectLightBuffer );
-			renderParams.DirectLightTexture2D = directLightTextureMipper.Output;
-			indirectLightTextureMipper.Render( renderParams, renderTarget.IndirectLightBuffer );
-			renderParams.IndirectLightTexture2D = indirectLightTextureMipper.Output;
+			directLightTextureMipper.Render( renderTarget.DirectLightBuffer );
+			RenderParams.DirectLightTexture2D = directLightTextureMipper.Output;
+			indirectLightTextureMipper.Render( renderTarget.IndirectLightBuffer );
+			RenderParams.IndirectLightTexture2D = indirectLightTextureMipper.Output;
 
 			// Convert position and normal buffers to 2D mipped textures
 			// These are used during resolve pass to provide cache performant scalable AO and radiosity.
-			positionTextureMipper.Render( renderParams, renderTarget.PositionBuffer );
-			renderParams.PositionTexture2D = positionTextureMipper.Output;
-			normalTextureMipper.Render( renderParams, renderTarget.NormalBuffer );
-			renderParams.NormalTexture2D = normalTextureMipper.Output;
+			positionTextureMipper.Render( renderTarget.PositionBuffer );
+			RenderParams.PositionTexture2D = positionTextureMipper.Output;
+			normalTextureMipper.Render( renderTarget.NormalBuffer );
+			RenderParams.NormalTexture2D = normalTextureMipper.Output;
 
 			// Perform light transport.
 			GL.Viewport( 0, 0, lightTransportRenderWidth, lightTransportRenderHeight );
-			lightTransportShader.Render( renderParams );
+			lightTransportShader.Render();
 			
 			// Resolve
 			GL.Viewport( 0, 0, renderWidth, renderHeight );
 			renderTarget.BindForResolvePhase();
-			resolveShader.Render( renderParams );
+			resolveShader.Render();
 
 			// Switch draw target to back buffer
 			GL.Viewport( 0, 0, renderWidth, renderHeight );
@@ -230,10 +226,10 @@ namespace Kaiga.Core
 			// Output final output texture to backbuffer
 			//screenSpaceReflectionShader.Render( renderParams );]
 
-			//textureRectOutputShader.Render( renderParams, renderParams.DirectLightTextureRect.Texture );
-			//texture2DOutputShader.Render( renderParams, aoRenderTarget.AOBuffer.Texture );
-			textureRectOutputShader.Render( renderParams, renderTarget.OutputBuffer.Texture );
-			//texture2DOutputShader.Render( renderParams, renderParams.AORenderTarget.AOBuffer.Texture );
+			//textureRectOutputShader.Render( renderParams.DirectLightTextureRect.Texture );
+			//texture2DOutputShader.Render( aoRenderTarget.AOBuffer.Texture );
+			textureRectOutputShader.Render( renderTarget.OutputBuffer.Texture );
+			//texture2DOutputShader.Render( renderParams.AORenderTarget.AOBuffer.Texture );
 
 			scene.GameWindow.SwapBuffers();
 		}
@@ -294,7 +290,7 @@ namespace Kaiga.Core
 				{
 					continue;
 				}
-				renderPass.Render( renderParams );
+				renderPass.Render();
 			}
 		}
 

@@ -50,20 +50,20 @@ namespace Kaiga.Shaders
 			}
 		}
 
-		public virtual void BindPerPass( RenderParams renderParams )
+		public virtual void BindPerPass()
 		{
 			GL.BindProgramPipeline( pipeline );
 
 			if ( vertexShader != null )
 			{
 				GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
-				vertexShader.BindPerPass( renderParams );
+				vertexShader.BindPerPass();
 			}
 
 			if ( fragmentShader != null )
 			{
 				GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
-				fragmentShader.BindPerPass( renderParams );
+				fragmentShader.BindPerPass();
 			}
 		}
 

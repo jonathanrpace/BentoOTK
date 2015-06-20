@@ -20,12 +20,12 @@ namespace Kaiga.Shaders
 			screenQuadGeom.Dispose();
 		}
 
-		public void Render( RenderParams renderParams )
+		public void Render()
 		{
-			BindPerPass( renderParams );
+			BindPerPass();
 
 			ActivateFragmentShader();
-			fragmentShader.BindPerPass( renderParams );
+			fragmentShader.BindPerPass();
 			ActivateVertexShader();
 
 			screenQuadGeom.Bind();

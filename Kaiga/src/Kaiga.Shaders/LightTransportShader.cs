@@ -26,25 +26,25 @@ namespace Kaiga.Shaders
 			blurShader.Dispose();
 		}
 
-		public void Render( RenderParams renderParams )
+		public void Render()
 		{
-			renderParams.LightTransportRenderTarget.BindForLightTransport();
+			RenderParams.LightTransportRenderTarget.BindForLightTransport();
 
 			// Perform light transport shader
-			BindPerPass( renderParams );
+			BindPerPass();
 			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
-			vertexShader.BindPerPass( renderParams );
+			vertexShader.BindPerPass();
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
-			fragmentShader.BindPerPass( renderParams );
+			fragmentShader.BindPerPass();
 			screenQuadGeom.Bind();
 			screenQuadGeom.Draw();
 			screenQuadGeom.Unbind();
 			UnbindPerPass();
 			
-			renderParams.LightTransportRenderTarget.BindForBlurA();
-			blurShader.Render( renderParams, renderParams.LightTransportRenderTarget.RadiosityAndAOTextureRect.Texture, renderParams.RenderTarget.PositionBuffer.Texture, 1.0f, 0.0f );
-			renderParams.LightTransportRenderTarget.BindForBlurB();
-			blurShader.Render( renderParams, renderParams.LightTransportRenderTarget.BlurBufferTextureRect.Texture, renderParams.RenderTarget.PositionBuffer.Texture, 0.0f, 1.0f );
+			RenderParams.LightTransportRenderTarget.BindForBlurA();
+			blurShader.Render( RenderParams.LightTransportRenderTarget.RadiosityAndAOTextureRect.Texture, RenderParams.RenderTarget.PositionBuffer.Texture, 1.0f, 0.0f );
+			RenderParams.LightTransportRenderTarget.BindForBlurB();
+			blurShader.Render( RenderParams.LightTransportRenderTarget.BlurBufferTextureRect.Texture, RenderParams.RenderTarget.PositionBuffer.Texture, 0.0f, 1.0f );
 
 		}
 	}
@@ -60,22 +60,22 @@ namespace Kaiga.Shaders
 			randomTexture.Height = 128;
 		}
 
-		override public void BindPerPass( RenderParams renderParams )
+		override public void BindPerPass()
 		{
-			base.BindPerPass( renderParams );
+			base.BindPerPass();
 
-			SetTexture2D( "s_positionBuffer", renderParams.PositionTexture2D.Texture );
-			SetTexture2D( "s_normalBuffer", renderParams.NormalTexture2D.Texture );
-			SetTexture2D( "s_directLightBuffer2D", renderParams.DirectLightTexture2D.Texture );
-			SetTexture2D( "s_indirectLightBuffer2D", renderParams.IndirectLightTexture2D.Texture );
+			SetTexture2D( "s_positionBuffer", RenderParams.PositionTexture2D.Texture );
+			SetTexture2D( "s_normalBuffer", RenderParams.NormalTexture2D.Texture );
+			SetTexture2D( "s_directLightBuffer2D", RenderParams.DirectLightTexture2D.Texture );
+			SetTexture2D( "s_indirectLightBuffer2D", RenderParams.IndirectLightTexture2D.Texture );
 			SetTexture2D( "s_randomTexture", randomTexture.Texture );
-			SetRectangleTexture( "s_material", renderParams.MaterialTextureRect.Texture );
+			SetRectangleTexture( "s_material", RenderParams.MaterialTextureRect.Texture );
 
-			SetUniformMatrix4( "u_projectionMatrix", ref renderParams.ProjectionMatrix );
+			SetUniformMatrix4( "u_projectionMatrix", ref RenderParams.ProjectionMatrix );
 
-			SetUniform1( "u_maxMip", renderParams.PositionTexture2D.NumMipMaps-4 );
+			SetUniform1( "u_maxMip", RenderParams.PositionTexture2D.NumMipMaps-4 );
 
-			SetUniform1( "u_lightTransportResolutionScalar", renderParams.LightTransportResolutionScalar );
+			SetUniform1( "u_lightTransportResolutionScalar", RenderParams.LightTransportResolutionScalar );
 
 			//float radius = (float)Mouse.GetState().X / 1000.0f;
 			//Debug.WriteLine( radius );
@@ -102,7 +102,7 @@ namespace Kaiga.Shaders
 			const float colorBleedingBoost = 0.25f;
 			SetUniform1( "u_colorBleedingBoost", colorBleedingBoost );
 
-			SetUniform1( "u_aspectRatio", renderParams.CameraLens.AspectRatio );
+			SetUniform1( "u_aspectRatio", RenderParams.CameraLens.AspectRatio );
 
 
 

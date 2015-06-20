@@ -25,18 +25,18 @@ namespace Kaiga.Shaders.Fragment
 			randomTexture.Dispose();
 		}
 
-		override public void BindPerPass( RenderParams renderParams )
+		override public void BindPerPass()
 		{
-			base.BindPerPass( renderParams );
+			base.BindPerPass();
 
-			SetTexture( "s_positionBuffer", renderParams.RenderTarget.PositionBuffer.Texture, 
+			SetTexture( "s_positionBuffer", RenderParams.RenderTarget.PositionBuffer.Texture, 
 								TextureTarget.TextureRectangle );
-			SetTexture( "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, 
+			SetTexture( "s_normalBuffer", RenderParams.RenderTarget.NormalBuffer.Texture, 
 				TextureTarget.TextureRectangle );
 
 			SetTexture( "s_randomTexture", randomTexture.Texture, TextureTarget.Texture2D );
 
-			SetUniformMatrix4( "projectionMatrix", ref renderParams.ProjectionMatrix );
+			SetUniformMatrix4( "projectionMatrix", ref RenderParams.ProjectionMatrix );
 		}
 
 		override protected string GetShaderSource()

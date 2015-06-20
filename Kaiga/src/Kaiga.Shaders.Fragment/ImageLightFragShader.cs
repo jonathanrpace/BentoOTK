@@ -6,19 +6,19 @@ namespace Kaiga.Shaders.Fragment
 {
 	public class ImageLightFragShader : AbstractFragmentShaderStage
 	{
-		override public void BindPerPass( RenderParams renderParams )
+		override public void BindPerPass()
 		{
-			base.BindPerPass( renderParams );
+			base.BindPerPass();
 
-			SetTexture( "s_positionBuffer", renderParams.RenderTarget.PositionBuffer.Texture, TextureTarget.TextureRectangle );
-			SetTexture( "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, TextureTarget.TextureRectangle );
-			SetTexture( "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture, TextureTarget.TextureRectangle );
-			SetTexture( "s_albedoBuffer", renderParams.RenderTarget.AlbedoBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_positionBuffer", RenderParams.RenderTarget.PositionBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_normalBuffer", RenderParams.RenderTarget.NormalBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_materialBuffer", RenderParams.RenderTarget.MaterialBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_albedoBuffer", RenderParams.RenderTarget.AlbedoBuffer.Texture, TextureTarget.TextureRectangle );
 
-			SetUniformMatrix3( "normalInvViewMatrix", ref renderParams.NormalInvViewMatrix, true );
+			SetUniformMatrix3( "normalInvViewMatrix", ref RenderParams.NormalInvViewMatrix, true );
 		}
 
-		public void BindPerLight( RenderParams renderParams, ImageLight light )
+		public void BindPerLight( ImageLight light )
 		{
 			SetTexture( "s_envMap", light.Texture.Texture, TextureTarget.TextureCubeMap );
 			SetUniform1( "u_intensity", light.Intensity );

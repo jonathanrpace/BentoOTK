@@ -9,30 +9,30 @@ namespace Kaiga.Shaders
 {
 	public class PointLightShader : AbstractShader<PointLightVertexShader, PointLightFragShader>
 	{
-		public void BindPerLight( RenderParams renderParams, PointLight pointLight )
+		public void BindPerLight(PointLight pointLight )
 		{
 			ActivateVertexShader();
-			vertexShader.BindPerLight( renderParams );
+			vertexShader.BindPerLight();
 
 			ActivateFragmentShader();
-			fragmentShader.BindPerLight( renderParams, pointLight );
+			fragmentShader.BindPerLight( pointLight );
 		}
 	}
 
 	public class PointLightStencilShader : AbstractShader<PointLightVertexShader, NullFragShader>
 	{
-		public void BindPerLight( RenderParams renderParams )
+		public void BindPerLight()
 		{
 			ActivateVertexShader();
-			vertexShader.BindPerLight( renderParams );
+			vertexShader.BindPerLight();
 		}
 	}
 
 	public class PointLightVertexShader : AbstractVertexShaderStage
 	{
-		public void BindPerLight( RenderParams renderParams )
+		public void BindPerLight()
 		{
-			SetUniformMatrix4( "u_mvpMat", ref renderParams.ModelViewProjectionMatrix );
+			SetUniformMatrix4( "u_mvpMat", ref RenderParams.ModelViewProjectionMatrix );
 		}
 
 		override protected string GetShaderSource()
@@ -66,17 +66,17 @@ namespace Kaiga.Shaders
 		{
 		}
 
-		override public void BindPerPass( RenderParams renderParams )
+		override public void BindPerPass()
 		{
-			base.BindPerPass( renderParams );
+			base.BindPerPass();
 
-			SetTexture( "s_positionBuffer", renderParams.RenderTarget.PositionBuffer.Texture, TextureTarget.TextureRectangle );
-			SetTexture( "s_materialBuffer", renderParams.RenderTarget.MaterialBuffer.Texture, TextureTarget.TextureRectangle );
-			SetTexture( "s_albedoBuffer", renderParams.RenderTarget.AlbedoBuffer.Texture, TextureTarget.TextureRectangle );
-			SetTexture( "s_normalBuffer", renderParams.RenderTarget.NormalBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_positionBuffer", RenderParams.RenderTarget.PositionBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_materialBuffer", RenderParams.RenderTarget.MaterialBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_albedoBuffer", RenderParams.RenderTarget.AlbedoBuffer.Texture, TextureTarget.TextureRectangle );
+			SetTexture( "s_normalBuffer", RenderParams.RenderTarget.NormalBuffer.Texture, TextureTarget.TextureRectangle );
 		}
 
-		public void BindPerLight( RenderParams renderParams, PointLight light )
+		public void BindPerLight( PointLight light )
 		{
 			SetUniform1( "u_attenuationRadius", light.AttenuationRadius );
 			SetUniform1( "u_attenuationPower", light.AttenuationPower );
@@ -87,7 +87,7 @@ namespace Kaiga.Shaders
 			var surfaceArea = 4.0f * (float)Math.PI * light.Radius * light.Radius;
 			var intensity = surfaceArea * light.Intensity;
 			SetUniform1( "u_intensity", intensity );
-			SetUniform3( "u_lightPosition", renderParams.ModelViewMatrix.ExtractTranslation() );
+			SetUniform3( "u_lightPosition", RenderParams.ModelViewMatrix.ExtractTranslation() );
 		}
 
 	}

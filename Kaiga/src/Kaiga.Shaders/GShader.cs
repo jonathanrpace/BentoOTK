@@ -17,23 +17,23 @@ namespace Kaiga.Shaders
 			fragmentShader.BindPerMaterial( material );
 		}
 
-		public void BindPerModel( RenderParams renderParams )
+		public void BindPerModel()
 		{
 			GL.ActiveShaderProgram( pipeline, vertexShader.ShaderProgram );
-			vertexShader.BindPerModel( renderParams );
+			vertexShader.BindPerModel();
 
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
-			//fragmentShader.BindPerModel( renderParams );
+			//fragmentShader.BindPerModel();
 		}
 	}
 
 	public class GVertexShader : AbstractVertexShaderStage
 	{
-		public void BindPerModel( RenderParams renderParams )
+		public void BindPerModel()
 		{
-			SetUniformMatrix4( "MVPMatrix", ref renderParams.ModelViewProjectionMatrix );
-			SetUniformMatrix4( "ModelViewMatrix", ref renderParams.ModelViewMatrix );
-			SetUniformMatrix3( "NormalModelViewMatrix", ref renderParams.NormalModelViewMatrix );
+			SetUniformMatrix4( "MVPMatrix", ref RenderParams.ModelViewProjectionMatrix );
+			SetUniformMatrix4( "ModelViewMatrix", ref RenderParams.ModelViewMatrix );
+			SetUniformMatrix3( "NormalModelViewMatrix", ref RenderParams.NormalModelViewMatrix );
 		}
 
 		override protected string GetShaderSource()

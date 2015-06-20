@@ -23,12 +23,16 @@ namespace Kaiga.Shaders
 			screenQuadGeom.Dispose();
 		}
 
-		public void Render( RenderParams renderParams, ITexture2D source, int level )
+		public void Render( ITexture2D source, int level )
 		{
-			BindPerPass( renderParams );
+			BindPerPass();
 
 			GL.ActiveShaderProgram( pipeline, fragmentShader.ShaderProgram );
-			fragmentShader.SetTexture( source.Texture, level, (float)renderParams.RenderTarget.OutputBuffer.Width / renderParams.RenderTarget.OutputBuffer.Height );
+			fragmentShader.SetTexture
+			( 
+				source.Texture, level, 
+				(float)RenderParams.RenderTarget.OutputBuffer.Width / RenderParams.RenderTarget.OutputBuffer.Height
+			);
 
 			screenQuadGeom.Bind();
 			screenQuadGeom.Draw();

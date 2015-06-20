@@ -28,16 +28,16 @@ namespace Kaiga.RenderPasses
 			shader.Dispose();
 		}
 
-		public void Render( RenderParams renderParams )
+		public void Render()
 		{
-			shader.BindPerPass( renderParams );
+			shader.BindPerPass();
 			foreach ( var node in nodeList.Nodes )
 			{
-				renderParams.SetModelMatrix( node.transform.Matrix );
+				RenderParams.SetModelMatrix( node.transform.Matrix );
 
 				node.geom.Bind();
 				shader.BindPerMaterial( node.material );
-				shader.BindPerModel( renderParams );
+				shader.BindPerModel();
 				node.geom.Draw();
 				node.geom.Unbind();
 			}

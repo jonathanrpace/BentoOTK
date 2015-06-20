@@ -37,11 +37,11 @@ namespace Kaiga.RenderPasses
 			geom.Dispose();
 		}
 
-		public void Render( RenderParams renderParams )
+		public void Render()
 		{
 			geom.Bind();
 
-			stencilShader.BindPerPass( renderParams );
+			stencilShader.BindPerPass();
 
 			GL.Disable( EnableCap.Blend );
 			GL.Disable( EnableCap.CullFace );
@@ -54,20 +54,20 @@ namespace Kaiga.RenderPasses
 			GL.StencilOpSeparate( StencilFace.Back, StencilOp.Keep, StencilOp.IncrWrap, StencilOp.Keep );
 			GL.StencilOpSeparate( StencilFace.Front, StencilOp.Keep, StencilOp.DecrWrap, StencilOp.Keep );
 
-			renderParams.RenderTarget.BindForNoDraw();
+			RenderParams.RenderTarget.BindForNoDraw();
 			foreach ( var node in nodeList.Nodes )
 			{
 				//var scale = CalcPointLightRadius( node.light );
 				var scale = node.light.AttenuationRadius * 2.0f;
 				Matrix4 mat = Matrix4.CreateScale( scale ) * node.transform.Matrix;
-				renderParams.SetModelMatrix( mat );
-				stencilShader.BindPerLight( renderParams );
+				RenderParams.SetModelMatrix( mat );
+				stencilShader.BindPerLight();
 				geom.Draw();
 			}
 			stencilShader.UnbindPerPass();
 
 
-			renderParams.RenderTarget.BindForDirectLightPhase();
+			RenderParams.RenderTarget.BindForDirectLightPhase();
 			GL.Disable( EnableCap.DepthTest );
 
 			GL.Enable( EnableCap.CullFace );
@@ -76,14 +76,14 @@ namespace Kaiga.RenderPasses
 
 			GL.StencilFunc( StencilFunction.Notequal, 0, 0xFF );
 			
-			shader.BindPerPass( renderParams );
+			shader.BindPerPass();
 			foreach ( var node in nodeList.Nodes )
 			{
 				//var scale = CalcPointLightRadius( node.light );
 				var scale = node.light.AttenuationRadius * 2.0f;
 				Matrix4 mat = Matrix4.CreateScale( scale ) * node.transform.Matrix;
-				renderParams.SetModelMatrix( mat );
-				shader.BindPerLight( renderParams, node.light );
+				RenderParams.SetModelMatrix( mat );
+				shader.BindPerLight( node.light );
 
 				geom.Draw();
 			}

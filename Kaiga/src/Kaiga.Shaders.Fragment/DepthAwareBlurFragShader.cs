@@ -8,7 +8,7 @@ namespace Kaiga.Shaders.Fragment
 {
 	public class DepthAwareBlurFragShader : AbstractFragmentShaderStage
 	{
-		public void Bind( RenderParams renderParams, int texture, int positionTexture, float radiusU, float radiusV )
+		public void Bind( int texture, int positionTexture, float radiusU, float radiusV )
 		{
 			SetUniform2( "u_direction", new Vector2( radiusU, radiusV ) );
 
@@ -30,7 +30,7 @@ namespace Kaiga.Shaders.Fragment
 			//const float colorDiffMax = 0.5f;
 			//SetUniform1( "u_colorDiffMax", colorDiffMax );
 
-			SetUniform1( "u_lightTransportResScalar", renderParams.LightTransportResolutionScalar );
+			SetUniform1( "u_lightTransportResScalar", RenderParams.LightTransportResolutionScalar );
 		}
 
 		protected override string GetShaderSource()

@@ -23,18 +23,18 @@ namespace Kaiga.Shaders.Fragment
 			randomTexture.Dispose();
 		}
 
-		public override void BindPerPass(RenderParams renderParams)
+		public override void BindPerPass()
 		{
-			SetTexture2D( "s_positionBuffer", renderParams.PositionTexture2D.Texture );
-			SetTexture2D( "s_normalBuffer", renderParams.NormalTexture2D.Texture );
-			SetTexture2D( "s_directLightBuffer2D", renderParams.DirectLightTexture2D.Texture );
-			SetTexture2D( "s_indirectLightBuffer2D", renderParams.IndirectLightTexture2D.Texture );
+			SetTexture2D( "s_positionBuffer", RenderParams.PositionTexture2D.Texture );
+			SetTexture2D( "s_normalBuffer", RenderParams.NormalTexture2D.Texture );
+			SetTexture2D( "s_directLightBuffer2D", RenderParams.DirectLightTexture2D.Texture );
+			SetTexture2D( "s_indirectLightBuffer2D", RenderParams.IndirectLightTexture2D.Texture );
 			SetTexture2D( "s_randomTexture", randomTexture.Texture );
-			SetRectangleTexture( "s_material", renderParams.MaterialTextureRect.Texture );
+			SetRectangleTexture( "s_material", RenderParams.MaterialTextureRect.Texture );
 
-			SetUniformMatrix4( "u_projectionMatrix", ref renderParams.ProjectionMatrix );
+			SetUniformMatrix4( "u_projectionMatrix", ref RenderParams.ProjectionMatrix );
 
-			SetUniform1( "u_lightTransportResolutionScalar", renderParams.LightTransportResolutionScalar );
+			SetUniform1( "u_lightTransportResolutionScalar", RenderParams.LightTransportResolutionScalar );
 
 			//float maxReflectDepthDiff = (float)Mouse.GetState().X / 500.0f;
 			//Debug.WriteLine( maxReflectDepthDiff );

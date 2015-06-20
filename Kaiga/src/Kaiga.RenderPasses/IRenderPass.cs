@@ -8,7 +8,7 @@ namespace Kaiga.RenderPasses
 	{
 		void OnAddedToScene( Scene scene );
 		void OnRemovedFromScene( Scene scene );
-		void Render( RenderParams renderParams );
+		void Render();
 
 		RenderPhase RenderPhase{ get; }
 		bool Enabled{ get; }

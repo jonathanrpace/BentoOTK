@@ -28,14 +28,14 @@ namespace Kaiga.RenderPasses
 			geom.Dispose();
 		}
 		
-		public void Render( RenderParams renderParams )
+		public void Render()
 		{
-			shader.BindPerPass( renderParams );
+			shader.BindPerPass();
 			geom.Bind();
 
 			foreach ( var node in nodeList.Nodes )
 			{
-				shader.BindPerLight( renderParams, node.light );
+				shader.BindPerLight( node.light );
 				geom.Draw();
 			}
 

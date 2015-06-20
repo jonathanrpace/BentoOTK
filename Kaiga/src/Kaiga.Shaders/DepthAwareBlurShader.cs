@@ -20,10 +20,10 @@ namespace Kaiga.Shaders
 			screenQuadGeom.Dispose();
 		}
 
-		public void Render( RenderParams renderParams, int texture, int positionTexture, float radiusU, float radiusV )
+		public void Render( int texture, int positionTexture, float radiusU, float radiusV )
 		{
-			BindPerPass( renderParams );
-			fragmentShader.Bind( renderParams, texture, positionTexture, radiusU, radiusV );
+			BindPerPass();
+			fragmentShader.Bind( texture, positionTexture, radiusU, radiusV );
 			screenQuadGeom.Bind();
 			screenQuadGeom.Draw();
 			UnbindPerPass();

@@ -87,7 +87,7 @@ namespace Kaiga.Shaders
 			}
 		}
 		
-		public virtual void BindPerPass( RenderParams renderParams )
+		public virtual void BindPerPass()
 		{
 			textureUnit = 0;
 		}

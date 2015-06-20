@@ -40,7 +40,7 @@ namespace Kaiga.Shaders
 			GL.DeleteFramebuffer( frameBuffer );
 		}
 
-		public void Render( RenderParams renderParams, RectangleTexture source )
+		public void Render( RectangleTexture source )
 		{
 			GL.BindFramebuffer( FramebufferTarget.Framebuffer, frameBuffer );
 
@@ -55,8 +55,8 @@ namespace Kaiga.Shaders
 
 			GL.Viewport( 0, 0, outputSize, outputSize );
 
-			rectTo2DShader.BindPerPass( renderParams );
-			rectTo2DShader.Render( renderParams, source.Texture );
+			rectTo2DShader.BindPerPass();
+			rectTo2DShader.Render( source.Texture );
 			rectTo2DShader.UnbindPerPass();
 			output.GenerateMipMaps();
 

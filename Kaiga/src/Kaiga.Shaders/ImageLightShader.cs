@@ -7,9 +7,9 @@ namespace Kaiga.Shaders
 {
 	public class ImageLightShader : AbstractShader<ScreenQuadVertexShader, ImageLightFragShader>
 	{
-		public void BindPerLight( RenderParams renderParams, ImageLight light )
+		public void BindPerLight( ImageLight light )
 		{
-			fragmentShader.BindPerLight( renderParams, light );
+			fragmentShader.BindPerLight( light );
 		}
 	}
 }

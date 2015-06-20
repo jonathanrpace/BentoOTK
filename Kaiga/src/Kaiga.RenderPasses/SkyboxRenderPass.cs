@@ -28,10 +28,10 @@ namespace Kaiga.RenderPasses
 			geom.Dispose();
 		}
 
-		public void Render( RenderParams renderParams )
+		public void Render()
 		{
 			geom.Bind();
-			shader.BindPerPass( renderParams );
+			shader.BindPerPass();
 
 			//GL.Disable( EnableCap.DepthTest );
 			//GL.Disable( EnableCap.CullFace );
