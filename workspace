@@ -1,0 +1,9 @@
+<NotepadPlus>
+    <Project name="GLSL">
+        <File name="Kaiga\src\GLSL\DirectionalLight.frag" />
+        <File name="Kaiga\src\GLSL\LightingLib.frag" />
+        <File name="Kaiga\src\GLSL\LightTransportShader.frag" />
+        <File name="Kaiga\src\GLSL\PointLight.frag" />
+        <File name="Kaiga\src\GLSL\PointLight.vert" />
+    </Project>
+</NotepadPlus>

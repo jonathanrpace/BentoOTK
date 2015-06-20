@@ -62,7 +62,7 @@ namespace Kaiga.Shaders
 
 	public class PointLightFragShader : AbstractFragmentShaderStage
 	{
-		public PointLightFragShader() : base( "LightingLib.frag", "PointLightShader.frag" )
+		public PointLightFragShader() : base( "LightingLib.frag", "PointLight.frag" )
 		{
 		}
 

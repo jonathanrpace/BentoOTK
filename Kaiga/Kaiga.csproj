@@ -146,7 +146,7 @@
     <Folder Include="src\Kaiga.Lights\" />
     <Folder Include="src\Kaiga.Shaders.Fragment\" />
     <Folder Include="src\Kaiga.Shaders.Vertex\" />
-    <Folder Include="src\Kaiga.Shaders\Shared\" />
+    <Folder Include="src\GLSL\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\RectangleTextureShader.frag">
@@ -173,20 +173,20 @@
       <DependentUpon>ScreenSpaceReflectionFragShader.cs</DependentUpon>
       <LogicalName>ScreenSpaceReflectionShader.frag</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Kaiga.Shaders\DirectionalLightShader.frag">
-      <DependentUpon>DirectionalLightShader.cs</DependentUpon>
-      <LogicalName>DirectionalLightShader.frag</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="src\Kaiga.Shaders\Shared\LightingLib.frag">
+    <EmbeddedResource Include="src\GLSL\LightingLib.frag">
       <LogicalName>LightingLib.frag</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Kaiga.Shaders\LightTransportShader.frag">
-      <DependentUpon>LightTransportShader.cs</DependentUpon>
+    <EmbeddedResource Include="src\GLSL\LightTransportShader.frag">
       <LogicalName>LightTransportShader.frag</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Kaiga.Shaders\PointLightShader.frag">
-      <DependentUpon>PointLightShader.cs</DependentUpon>
-      <LogicalName>PointLightShader.frag</LogicalName>
+    <EmbeddedResource Include="src\GLSL\PointLight.vert">
+      <LogicalName>PointLight.vert</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\GLSL\PointLight.frag">
+      <LogicalName>PointLight.frag</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\GLSL\DirectionalLight.frag">
+      <LogicalName>DirectionalLight.frag</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

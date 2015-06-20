@@ -55,6 +55,7 @@ namespace Examples
 			scene.AddProcess( renderer );
 			renderer.AddRenderPass( new GPass() );
 			renderer.AddRenderPass( new PointLightRenderPass() );
+			renderer.AddRenderPass( new DirectionalLightRenderPass() );
 			renderer.AddRenderPass( new AmbientLightRenderPass() );
 			renderer.AddRenderPass( new ImageLightRenderPass() );
 			//renderer.AddRenderPass( new SkyboxRenderPass() );
@@ -180,6 +181,7 @@ namespace Examples
 
 			//CreateImageLight();
 			CreateAmbientLight();
+			CreateDirectionalLight();
 
 			scene.AddProcess( new OrbitCamera() );
 			scene.AddProcess( new SwarmProcess() );
@@ -200,7 +202,7 @@ namespace Examples
 			pointLight.Intensity = 5.0f;
 			pointLight.AttenuationRadius = radius * 10.0f;
 			pointLight.Color = color;
-			entity.AddComponent( pointLight );
+			//entity.AddComponent( pointLight );
 
 			var sphereGeom = new SphereGeometry();
 			sphereGeom.Radius = pointLight.Radius * 2.0f;
@@ -255,6 +257,16 @@ namespace Examples
 			entity.AddComponent( ambientLight );
 
 			scene.AddEntity( entity );
+		}
+
+		void CreateDirectionalLight()
+		{
+			var directionalLight = new Entity();
+			var light = new DirectionalLight();
+			directionalLight.AddComponent( light );
+			var transform = new Transform();
+			directionalLight.AddComponent( transform );
+			scene.AddEntity( directionalLight );
 		}
 
 		protected override void OnClosing( System.ComponentModel.CancelEventArgs e )

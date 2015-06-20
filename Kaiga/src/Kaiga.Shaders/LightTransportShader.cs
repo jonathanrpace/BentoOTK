@@ -94,7 +94,7 @@ namespace Kaiga.Shaders
 
 			//float radiosityScalar = (float)Mouse.GetState().X / 10.0f;
 			//Debug.WriteLine( radiosityScalar );
-			const float radiosityScalar = 2.0f;
+			const float radiosityScalar = 1.0f;
 			SetUniform1( "u_radiosityScalar", radiosityScalar );
 
 			//float colorBleedingBoost = (float)Mouse.GetState().X / 1000.0f;
