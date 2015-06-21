@@ -5,6 +5,8 @@ using Kaiga.Shaders.Vertex;
 using Kaiga.Shaders.Fragment;
 using Kaiga.Textures;
 using OpenTK.Input;
+using System.Diagnostics;
+using System;
 
 namespace Kaiga.Shaders
 {
@@ -75,17 +77,22 @@ namespace Kaiga.Shaders
 
 			SetUniform1( "u_lightTransportResolutionScalar", RenderParams.LightTransportResolutionScalar );
 
-			//float radius = (float)Mouse.GetState().X / 1000.0f;
+			//float radius = Math.Abs( (float)Mouse.GetState().Y / 1000.0f );
 			//Debug.WriteLine( radius );
-			const float radius = 0.2f;
+			const float radius = 0.5f;
 			SetUniform1( "u_radius", radius );
 
-			//float falloffScalar = (float)Mouse.GetState().X / 100.0f;
-			//Debug.WriteLine( falloffScalar );
-			const float aoFalloffScalar = 1.0f;
+			//float aoFalloffScalar = Math.Abs( (float)Mouse.GetState().X / 1000.0f );
+			//Debug.WriteLine( aoFalloffScalar );
+			const float aoFalloffScalar = 0.8f;
 			SetUniform1( "u_aoFalloffScalar", aoFalloffScalar );
 
-			const float bounceFalloffScalar = 20.0f;
+			float aoZFalloffScalar = Math.Abs( (float)Mouse.GetState().X / 1000.0f );
+			Debug.WriteLine( aoZFalloffScalar );
+			//const float aoZFalloffScalar = 0.9f;
+			SetUniform1( "u_aoZFalloffScalar", aoZFalloffScalar );
+
+			const float bounceFalloffScalar = 0.7f;
 			SetUniform1( "u_bounceFalloffScalar", bounceFalloffScalar );
 
 			SetUniform1( "u_flag", Mouse.GetState().X > 500  );

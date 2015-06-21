@@ -14,7 +14,6 @@ namespace Kaiga.Shaders.Fragment
 		public void SetTexture( int texture )
 		{
 			SetTexture( "tex", texture, TextureTarget.Texture2D );
-
 			SetUniform1( "u_mipRatio", (float)Mouse.GetState().X / 100.0f );
 		}
 	}

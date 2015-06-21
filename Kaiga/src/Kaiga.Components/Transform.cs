@@ -9,12 +9,17 @@ namespace Kaiga.Components
 
 		public Transform()
 		{
-			Matrix = Matrix4.Identity;
+			Identity();
 		}
 
 		public Transform( Matrix4 matrix )
 		{
 			Matrix = matrix;
+		}
+
+		public void Identity()
+		{
+			Matrix = Matrix4.Identity;
 		}
 
 		public void Scale( float value )
@@ -40,6 +45,13 @@ namespace Kaiga.Components
 		public void RotateZ( float radians )
 		{
 			Matrix *= Matrix4.CreateRotationZ( radians );
+		}
+
+		public Vector3 Forward()
+		{
+			var forward = new Vector4( 0.0f, 0.0f, 1.0f, 1.0f );
+			forward = Vector4.Transform( forward, Matrix );
+			return forward.Xyz;
 		}
 	}
 }

@@ -85,7 +85,7 @@ namespace Kaiga.Shaders
 			SetUniform1( "u_reflectivity", material.Reflectivity );
 			SetUniform1( "u_roughness", material.Roughness );
 			SetUniform1( "u_emissive", material.Emissive );
-			SetUniform3( "u_albedo", material.Diffuse );
+			SetUniform3( "u_albedo", Degamma(material.Diffuse) );
 		}
 
 		override protected string GetShaderSource()

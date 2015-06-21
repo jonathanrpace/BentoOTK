@@ -85,17 +85,14 @@
     <Compile Include="src\Kaiga.Shaders.Fragment\AbstractFragmentShaderStage.cs" />
     <Compile Include="src\Kaiga.Shaders.Vertex\AbstractVertexShaderStage.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\NullFragShader.cs" />
-    <Compile Include="src\Kaiga.Shaders.Fragment\SkyboxFragmentShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\RectangleTextureFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\SquareTextureFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\SSAOFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Fragment\SAOFragShader.cs" />
-    <Compile Include="src\Kaiga.Shaders.Fragment\DepthAwareBlurFragShader.cs" />
     <Compile Include="src\Kaiga.Geom\AbstractGeometry.cs" />
     <Compile Include="src\Kaiga.RenderPasses\AbstractRenderPass.cs" />
     <Compile Include="src\Kaiga.RenderPasses\AbstractNodeRenderPass.cs" />
     <Compile Include="src\Kaiga.Shaders\LightBufferConvolver.cs" />
-    <Compile Include="src\Kaiga.Shaders.Fragment\LightBufferConvolutionFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders\LightBufferConvolutionShader.cs" />
     <Compile Include="src\Kaiga.Textures\RandomAngleTexture.cs" />
     <Compile Include="src\Kaiga.Shaders\LightTransportShader.cs" />
@@ -103,7 +100,6 @@
     <Compile Include="src\Kaiga.Shaders\ResolveShader.cs" />
     <Compile Include="src\Kaiga.Processes\EmissivePulseProcess.cs" />
     <Compile Include="src\Kaiga.Components\EmissivePulser.cs" />
-    <Compile Include="src\Kaiga.Shaders.Fragment\ScreenSpaceReflectionFragShader.cs" />
     <Compile Include="src\Kaiga.Shaders\ScreenSpaceReflectionShader.cs" />
     <Compile Include="src\Kaiga.Core\LightTransportRenderTarget.cs" />
     <Compile Include="src\Kaiga.Shaders\TextureRectToMippedTexture2DHelper.cs" />
@@ -113,6 +109,8 @@
     <Compile Include="src\Kaiga.Lights\DirectionalLight.cs" />
     <Compile Include="src\Kaiga.Shaders\DirectionalLightShader.cs" />
     <Compile Include="src\Kaiga.Shaders.Vertex\ScreenQuadVertexShader.cs" />
+    <Compile Include="src\Kaiga.Processes\DebugMouseDirectionalTransformProcess.cs" />
+    <Compile Include="src\Kaiga.Geom\BoxGeometry.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -154,10 +152,6 @@
       <DependentUpon>SAOFragShader.cs</DependentUpon>
       <LogicalName>SAOShader.frag</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Kaiga.Shaders.Fragment\ScreenSpaceReflectionShader.frag">
-      <DependentUpon>ScreenSpaceReflectionFragShader.cs</DependentUpon>
-      <LogicalName>ScreenSpaceReflectionShader.frag</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="src\GLSL\LightingLib.frag">
       <LogicalName>LightingLib.frag</LogicalName>
     </EmbeddedResource>
@@ -176,11 +170,14 @@
     <EmbeddedResource Include="src\GLSL\ResolveShader.frag">
       <LogicalName>ResolveShader.frag</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\GLSL\LightBufferConvolutionShader.frag">
-      <LogicalName>LightBufferConvolutionShader.frag</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="src\GLSL\RectangleTextureShader.frag">
       <LogicalName>RectangleTextureShader.frag</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\GLSL\ScreenSpaceReflectionShader.frag">
+      <LogicalName>ScreenSpaceReflectionShader.frag</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\GLSL\LightBufferConvolution.frag">
+      <LogicalName>LightBufferConvolution.frag</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

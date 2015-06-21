@@ -202,6 +202,16 @@ namespace Kaiga.Shaders
 			GL.BindTexture( TextureTarget.TextureRectangle, texture );
 			textureUnit++;
 		}
+
+		protected Vector3 Degamma( Vector3 input )
+		{
+			var output = new Vector3();
+			output.X = (float)Math.Pow( (double)input.X, 2.2 );
+			output.Y = (float)Math.Pow( (double)input.Y, 2.2 );
+			output.Z = (float)Math.Pow( (double)input.Z, 2.2 );
+			return output;
+		}
+
 		#endregion
 	}
 }

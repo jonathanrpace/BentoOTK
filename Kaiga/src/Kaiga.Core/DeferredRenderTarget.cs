@@ -45,7 +45,7 @@ namespace Kaiga.Core
 		};
 
 		public DeferredRenderTarget() :
-		base( PixelInternalFormat.Rgba32f, true, true )
+		base( PixelInternalFormat.Rgba16f, true, true )
 		{
 			PositionBuffer = new RectangleTexture( internalFormat );
 			NormalBuffer = new RectangleTexture( internalFormat );

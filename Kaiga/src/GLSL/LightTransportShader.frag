@@ -43,6 +43,7 @@ uniform mat4 u_projectionMatrix;
 uniform float u_roughnessJitter;
 uniform float u_radius;
 uniform float u_aoFalloffScalar;
+uniform float u_aoZFalloffScalar;
 uniform float u_bounceFalloffScalar;
 uniform float u_aspectRatio;
 uniform float u_radiosityScalar;
@@ -66,25 +67,32 @@ void AOAndBounce
 	vec3 fragNormal, 
 	vec3 samplePos, 
 	vec3 sampleColor, 
+	vec3 sampleNormal,
 	out float aoTotal, 
-	out vec3 bounceTotal,
-	out vec3 directionTotal
+	out vec3 bounceTotal
 )
 {
+	// Calculate distance and direction between fragment and sample pos
 	vec3 v = samplePos - fragPos;
 	float vLength = length(v);
 	v = normalize(v);
 
-	float aoFalloff = 1.0f - min(1.0f, vLength / u_aoFalloffScalar );
-	float bounceFalloff = 1.0f - min(1.0f, vLength / u_bounceFalloffScalar );
-	
+	// Some values used in modulating ao and bounce
+	float denominator = vLength + EPSILON;
 	float vDotFragNormal = max( dot( v, fragNormal ) - BIAS, 0.0f );
 
-	float denominator = vLength + EPSILON;
-	aoTotal += aoFalloff * min( 1.0f, ( vDotFragNormal / denominator ) );
-	bounceTotal += sampleColor * bounceFalloff * min( 1.0f, ( vDotFragNormal  ) / denominator );
+	// Modulate ao
+	float aoAmount = 1.0f / pow(vLength+u_aoFalloffScalar, 2.0f);
+	aoAmount *= vDotFragNormal > 0.02f ? 1.0f : 0.0f;
+	aoTotal += aoAmount;
 
-	directionTotal += (samplePos - fragPos) * ((bounceTotal.r + bounceTotal.g + bounceTotal.b) / 3);
+	// Modulate bounce
+	float sampleNormalDotFragNormal = max( dot( -sampleNormal, fragNormal ) + 1.0f, 0.0f );
+	//float bounceStrength = 1.0f - min(1.0f, vLength / u_bounceFalloffScalar );
+	//bounceTotal += sampleColor * bounceFalloff * min( 1.0f, ( vDotFragNormal  ) / denominator );
+	float bounceStrength =  1.0f / pow(vLength+u_bounceFalloffScalar, 2.0f);
+	bounceStrength *= sampleNormalDotFragNormal;// > 0.02f ? 1.0f : 0.0f;
+	bounceTotal += sampleColor * bounceStrength;
 }
 
 void RayCast
@@ -153,24 +161,25 @@ void RayCast
 
 void main()
 {
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Shared values
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	vec4 material = texture( s_material, gl_FragCoord.xy / u_lightTransportResolutionScalar );
 	float roughness = material.x;
-
 	ivec2 materialTextureSize = textureSize( s_material, 0 );
-
 	vec3 fragPos = texture( s_positionBuffer, in_uv ).xyz;
 	vec3 fragNormal = texture( s_normalBuffer, in_uv ).xyz;
-	
 	ivec2 randomTextureSize = textureSize( s_randomTexture, 0 );
 	vec4 randomSample = texture2D( s_randomTexture, (gl_FragCoord.xy / randomTextureSize) );
-
 	float randomNumber = randomSample.w;
 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// AO and Bounce
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	float angle = randomNumber * PI * 2.0f;
 	float aoTotal = 0.0f;
 	vec3 bounceTotal = vec3(0.0f, 0.0f, 0.0f);
 	int numContributingSamples = 1;
-	vec3 directionTotal = vec3(0.0f,0.0f,0.0f);
 	for ( int i = 0; i < NUM_SAMPLES; i++ )
 	{
 		// The ratio along the spiral
@@ -180,6 +189,11 @@ void main()
 		// Distance away from frag UV
 		float h = u_radius * theta;
 
+		// Scale distance based on frag distance from camera.
+		// Fragments that are further away have a smaller radius
+		float distanceRadiusScale = max( 0.2f, 1.0f / pow(-fragPos.z+1.0f, 2.0f) );
+		h *= distanceRadiusScale;
+
 		// UV offset away from frag UV
 		vec2 offset = vec2( cos( currAngle ), sin( currAngle ) );
 		offset.y *= u_aspectRatio;
@@ -187,11 +201,7 @@ void main()
 
 		float mipLevel = min( log2( h / Q ), u_maxMip );
 		vec3 samplePosition = textureLod( s_positionBuffer, sampleUV, mipLevel ).xyz;
-
-		if ( abs(samplePosition.x) < 0.0001f )
-		{
-			continue;
-		}
+		vec3 sampleNormal = textureLod( s_normalBuffer, sampleUV, mipLevel ).xyz;
 
 		vec3 sampleDirectColor = textureLod( s_directLightBuffer2D, sampleUV, mipLevel ).xyz;
 		vec3 sampleIndirectColor = textureLod( s_indirectLightBuffer2D, sampleUV, mipLevel ).xyz;
@@ -205,14 +215,15 @@ void main()
 		vec2 edgeBottomRight = vec2(1.0f) - smoothstep( vec2(1.0f-edge), vec2(1.0f), sampleUV.xy );
 		sampleColor *= (edgeTopLeft.x * edgeTopLeft.y * edgeBottomRight.x * edgeBottomRight.y);
 
+		// Fade off bounce light from shiny surfaces, as their color is view dependant.
 		sampleColor *= sampleRoughness;
 
-		AOAndBounce( fragPos, fragNormal, samplePosition, sampleColor, aoTotal, bounceTotal, directionTotal );
+		AOAndBounce( fragPos, fragNormal, samplePosition, sampleColor, sampleNormal, aoTotal, bounceTotal );
 
 		numContributingSamples++;
 	}
 
-	// Normalise bounds
+	// Normalise bounce
 	bounceTotal /= numContributingSamples;
 	float maxBounceChannel = max( max( bounceTotal.r, bounceTotal.g ), bounceTotal.b );
 	float minBounceChannel = min( min( bounceTotal.r, bounceTotal.g ), bounceTotal.b );
@@ -222,10 +233,7 @@ void main()
 
 	// Normalise ao
 	aoTotal /= numContributingSamples;
-	aoTotal = sqrt(aoTotal);
-	aoTotal = max( 0.0, aoTotal );
-	aoTotal *= 1.5f;
-	aoTotal = min( 1.0, aoTotal );
+	//aoTotal *= 1.0f + u_aoFalloffScalar * u_aoFalloffScalar;
 	aoTotal *= roughness;
 	aoTotal = 1.0f - aoTotal;
 	bounceTotal *= roughness;
@@ -281,12 +289,6 @@ void main()
 
 	// Non-shiny things shouldn't reflect
 	reflectionAlpha *= (1.0f-roughness);
-
-	// During the bounce light calculations, we built a vector pointing towards where most of the light
-	// is coming from. Now we can dot product that with the fragment normal to give us an indication
-	// of how much we should multiply the bounce light by AO.
-	float indirectDotProduct = max( 0.0f, dot( fragNormal, normalize(directionTotal) ) );
-	bounceTotal = mix( bounceTotal, bounceTotal*aoTotal, 1.0f - indirectDotProduct );
 
 	out_bounceAndAO = vec4( bounceTotal, aoTotal );
 	out_reflections = vec4( reflectionColor, reflectionAlpha );

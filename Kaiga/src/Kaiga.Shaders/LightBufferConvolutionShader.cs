@@ -38,5 +38,20 @@ namespace Kaiga.Shaders
 			screenQuadGeom.Draw();
 		}
 	}
+
+	public class LightBufferConvolutionFragShader : AbstractFragmentShaderStage
+	{
+		public LightBufferConvolutionFragShader()
+			:base( "LightBufferConvolution.frag" )
+		{
+		}
+
+		public void SetTexture( int texture, int level, float aspectRatio )
+		{
+			SetTexture( "s_tex", texture, TextureTarget.Texture2D );
+			SetUniform1( "u_mipLevel", level );
+			SetUniform1( "u_aspectRatio", aspectRatio );
+		}
+	}
 }
 

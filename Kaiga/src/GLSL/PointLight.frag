@@ -38,7 +38,7 @@ void main()
 	float attenuation = 1.0f - min( distance / u_attenuationRadius, 1.0f );
 	attenuation = pow( attenuation, u_attenuationPower );
 	
-	float lightAmount = min( 1000.0f, LightingFuncGGX( normal, viewDir, lightDir, roughness, reflectivity, angularSize ) );
+	float lightAmount = LightingFuncGGXAngular( normal, viewDir, lightDir, roughness, reflectivity, angularSize );
 	vec3 light = vec3( lightAmount );
 	
 	light *= u_color;

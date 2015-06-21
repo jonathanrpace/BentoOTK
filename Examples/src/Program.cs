@@ -63,10 +63,16 @@ namespace Examples
 			const int numColumns = 10;
 			const int numRows = 10;
 			const float spacing = 0.25f;
-			const float radius = 0.1f;
+			//const float radius = 0.1f;
+			const float envWidth = numColumns * spacing;
+			const float envDepth = numRows * spacing;
+			const float envHeight = numRows * spacing;
 
 			var sphereGeom = new SphereGeometry();
 			sphereGeom.SubDivisions = 32;
+			sphereGeom.Radius = 0.1f;
+			var boxGeom = new BoxGeometry();
+			boxGeom.Width = boxGeom.Height = boxGeom.Depth = 0.2f;
 			for ( int i = 0; i < numColumns; i++ )
 			{
 				var columnRatio = (float)i / ( numColumns - 1 );
@@ -75,26 +81,46 @@ namespace Examples
 					var rowRatio = (float)j / ( numRows - 1 );
 
 					var entity = new Entity();
-					entity.AddComponent( sphereGeom );
+
+					if ( random() < 0.5f )
+					{
+						entity.AddComponent( sphereGeom );
+					}
+					else
+					{
+						entity.AddComponent( boxGeom );
+					}
 
 					var material = new StandardMaterial();
-					material.Roughness = 0.1f + (1.0f-columnRatio) * 0.9f;
+					material.Roughness = 1.0f;//0.1f + (1.0f-columnRatio) * 0.9f;
 					entity.AddComponent( material );
 
 					var transform = new Transform();
-					transform.Scale( radius );
+					transform.Scale( ( random() + 1.0f ) * 1.5f );
+					transform.Translate
+					(
+						(random() - 0.5f) * envWidth,
+						(random() - 0.5f) * envHeight + envHeight * 0.5f,
+						(random() - 0.5f) * envDepth
+					);
+					/*
 					transform.Translate
 					(
 						( i - numColumns * 0.5f ) * spacing, 
 						radius + random() * 0.0f,
 						( j - numRows * 0.5f ) * spacing
 					);
+					*/
 					entity.AddComponent( transform );
 
 					if ( random() < 0.25f )
 					{
 						material.Diffuse = new Vector3( random(), random(), random() );
-						entity.AddComponent( new EmissivePulser( 1.0f, 0.0f, 1.0f, random() * (float)Math.PI ) );
+						//entity.AddComponent( new EmissivePulser( 1.0f, 0.0f, 1.0f, random() * (float)Math.PI ) );
+					}
+					else
+					{
+						material.Diffuse = new Vector3( 0.3f, 0.3f, 0.3f );
 					}
 					scene.AddEntity( entity );
 				}
@@ -117,8 +143,8 @@ namespace Examples
 				entity.AddComponent( transform );
 
 				var material = new StandardMaterial();
-				material.Roughness = 0.5f;
-				material.Diffuse = new Vector3( 1.0f, 1.0f, 1.0f );
+				material.Roughness = 1.0f;
+				material.Diffuse = new Vector3( 0.3f, 0.3f, 0.3f );
 				entity.AddComponent( material );
 
 				//entity.AddComponent( new EmissivePulser( 1.32f, 0.0f, 0.1f, 0.75f ) );
@@ -141,8 +167,8 @@ namespace Examples
 				entity.AddComponent( transform );
 
 				var material = new StandardMaterial();
-				material.Roughness = 0.8f;
-				material.Diffuse = new Vector3( 0.0f, 1.0f, 0.0f );
+				material.Roughness = 1.0f;
+				material.Diffuse = new Vector3( 0.3f, 0.3f, 0.3f );
 				entity.AddComponent( material );
 
 				//entity.AddComponent( new EmissivePulser( 1.12f, 0.0f, 0.5f, 0.2f ) );
@@ -165,8 +191,32 @@ namespace Examples
 				entity.AddComponent( transform );
 
 				var material = new StandardMaterial();
-				material.Roughness = 0.8f;
-				material.Diffuse = new Vector3( 1.0f, 0.0f, 0.0f );
+				material.Roughness = 1.0f;
+				material.Diffuse = new Vector3( 0.3f, 0.3f, 0.3f );
+				entity.AddComponent( material );
+
+				//entity.AddComponent( new EmissivePulser( 1.0f, 0.0f, 0.5f, 3.1f ) );
+
+				scene.AddEntity( entity );
+			}
+
+			// Blue wall
+			{
+				var entity = new Entity();
+
+				var geom = new PlaneGeometry();
+				geom.Width = planeWidth;
+				geom.Height = planeHeight;
+				entity.AddComponent( geom );
+
+				var transform = new Transform();
+				//transform.RotateY( (float)Math.PI * -1.0f);
+				transform.Translate( 0.0f, planeWidth * 0.5f, planeHeight * 0.5f );
+				entity.AddComponent( transform );
+
+				var material = new StandardMaterial();
+				material.Roughness = 1.0f;
+				material.Diffuse = new Vector3( 0.3f, 0.3f, 0.3f );
 				entity.AddComponent( material );
 
 				//entity.AddComponent( new EmissivePulser( 1.0f, 0.0f, 0.5f, 3.1f ) );
@@ -186,6 +236,7 @@ namespace Examples
 			scene.AddProcess( new OrbitCamera() );
 			scene.AddProcess( new SwarmProcess() );
 			scene.AddProcess( new EmissivePulseProcess() );
+			scene.AddProcess( new DebugMouseDirectionalTransformProcess() );
 		}
 
 		Entity CreateLight()
@@ -253,7 +304,8 @@ namespace Examples
 
 			var entity = new Entity();
 
-			var ambientLight = new AmbientLight( 1.0f, 1.0f, 1.0f, 0.1f );
+			var ambientLight = new AmbientLight();
+			ambientLight.Intensity = 0.6f;
 			entity.AddComponent( ambientLight );
 
 			scene.AddEntity( entity );
@@ -263,6 +315,7 @@ namespace Examples
 		{
 			var directionalLight = new Entity();
 			var light = new DirectionalLight();
+			light.Intensity = 0.4f;
 			directionalLight.AddComponent( light );
 			var transform = new Transform();
 			directionalLight.AddComponent( transform );
