@@ -42,9 +42,17 @@ namespace Kaiga.Shaders
 			screenQuadGeom.Draw();
 			
 			RenderParams.LightTransportRenderTarget.BindForBlurA();
-			blurShader.Render( RenderParams.LightTransportRenderTarget.RadiosityAndAOTextureRect.Texture, RenderParams.RenderTarget.PositionBuffer.Texture, 1.0f, 0.0f );
+			blurShader.Render( 
+				RenderParams.LightTransportRenderTarget.RadiosityAndAOTextureRect.Texture, 
+				RenderParams.RenderTarget.PositionBuffer.Texture, 
+				RenderParams.RenderTarget.NormalBuffer.Texture,
+				1.0f, 0.0f );
 			RenderParams.LightTransportRenderTarget.BindForBlurB();
-			blurShader.Render( RenderParams.LightTransportRenderTarget.BlurBufferTextureRect.Texture, RenderParams.RenderTarget.PositionBuffer.Texture, 0.0f, 1.0f );
+			blurShader.Render( 
+				RenderParams.LightTransportRenderTarget.BlurBufferTextureRect.Texture, 
+				RenderParams.RenderTarget.PositionBuffer.Texture, 
+				RenderParams.RenderTarget.NormalBuffer.Texture,
+				0.0f, 1.0f );
 
 		}
 	}
@@ -53,11 +61,11 @@ namespace Kaiga.Shaders
 	{
 		readonly RandomDirectionTexture randomTexture;
 
-		public LightTransportFragShader() : base( "LightTransportShader.frag" )
+		public LightTransportFragShader() : base( "LightingLib.frag", "LightTransportShader.frag" )
 		{
 			randomTexture = new RandomDirectionTexture();
-			randomTexture.Width = 128;
-			randomTexture.Height = 128;
+			randomTexture.Width = 17;
+			randomTexture.Height = 17;
 		}
 
 		override public void BindPerPass()
@@ -79,20 +87,17 @@ namespace Kaiga.Shaders
 
 			//float radius = Math.Abs( (float)Mouse.GetState().Y / 1000.0f );
 			//Debug.WriteLine( radius );
-			const float radius = 0.5f;
+			const float radius = 1.5f;
 			SetUniform1( "u_radius", radius );
 
 			//float aoFalloffScalar = Math.Abs( (float)Mouse.GetState().X / 1000.0f );
 			//Debug.WriteLine( aoFalloffScalar );
-			const float aoFalloffScalar = 0.8f;
+			const float aoFalloffScalar = 0.6f;
 			SetUniform1( "u_aoFalloffScalar", aoFalloffScalar );
 
-			float aoZFalloffScalar = Math.Abs( (float)Mouse.GetState().X / 1000.0f );
-			Debug.WriteLine( aoZFalloffScalar );
-			//const float aoZFalloffScalar = 0.9f;
-			SetUniform1( "u_aoZFalloffScalar", aoZFalloffScalar );
-
-			const float bounceFalloffScalar = 0.7f;
+			//float bounceFalloffScalar = Math.Abs( (float)Mouse.GetState().X / 1000.0f );
+			//Debug.WriteLine( bounceFalloffScalar );
+			const float bounceFalloffScalar = 0.6f;
 			SetUniform1( "u_bounceFalloffScalar", bounceFalloffScalar );
 
 			SetUniform1( "u_flag", Mouse.GetState().X > 500  );

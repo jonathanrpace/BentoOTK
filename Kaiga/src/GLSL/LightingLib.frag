@@ -19,6 +19,13 @@ float angularDot( vec3 A, vec3 B, in float angularSize )
 	return ret;
 }
 
+float Fresnel( float dotLH, float F0 )
+{
+	float dotLH5 = pow(1.0f-dotLH,5);
+	float F = F0 + (1.0-F0)*(dotLH5);
+	return F;
+}
+
 float LightingFuncGGXAngular( vec3 N, vec3 V, vec3 L, float roughness, float F0, float angularSize )
 {
 	float alpha = roughness*roughness;
@@ -37,16 +44,11 @@ float LightingFuncGGXAngular( vec3 N, vec3 V, vec3 L, float roughness, float F0,
 	float D = alphaSqr/(pi * denom * denom);
 
 	// F
-	float dotLH5 = pow(1.0f-dotLH,5);
-	float F = F0 + (1.0-F0)*(dotLH5);
+	float F = Fresnel(dotLH, F0);
 
 	// V
 	float k = alpha/2.0f;
 	float vis = G1V(dotNL,k)*G1V(dotNV,k);
-
-	float numerator = D * F * vis;
-    float denominator = dotNL;
-    float rs = numerator/ denominator;
 
 	return min( 100.0f, dotNL * D * F * vis );
 }
@@ -69,16 +71,12 @@ float LightingFuncGGX( vec3 N, vec3 V, vec3 L, float roughness, float F0 )
 	float D = alphaSqr/(pi * denom * denom);
 
 	// F
-	float dotLH5 = pow(1.0f-dotLH,5);
-	float F = F0 + (1.0-F0)*(dotLH5);
+	float F = Fresnel(dotLH, F0);
 
 	// V
 	float k = alpha/2.0f;
 	float vis = G1V(dotNL,k)*G1V(dotNV,k);
 
-	float numerator = D * F * vis;
-    float denominator = dotNL;
-    float rs = numerator/ denominator;
-
 	return min( 100.0f, dotNL * D * F * vis );
 }
+

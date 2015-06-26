@@ -4,6 +4,8 @@ using Kaiga.Shaders.Vertex;
 using Kaiga.Shaders.Fragment;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK;
+using OpenTK.Input;
+using System.Diagnostics;
 
 namespace Kaiga.Shaders
 {
@@ -22,10 +24,10 @@ namespace Kaiga.Shaders
 			screenQuadGeom.Dispose();
 		}
 
-		public void Render( int texture, int positionTexture, float radiusU, float radiusV )
+		public void Render( int texture, int positionTexture, int normalTexture, float radiusU, float radiusV )
 		{
 			BindPerPass();
-			fragmentShader.Bind( texture, positionTexture, radiusU, radiusV );
+			fragmentShader.Bind( texture, positionTexture, normalTexture, radiusU, radiusV );
 			screenQuadGeom.Bind();
 			screenQuadGeom.Draw();
 		}
@@ -33,22 +35,29 @@ namespace Kaiga.Shaders
 
 	public class DepthAwareBlurFragShader : AbstractFragmentShaderStage
 	{
-		public void Bind( int texture, int positionTexture, float radiusU, float radiusV )
+		public void Bind( int texture, int positionTexture, int normalTexture, float radiusU, float radiusV )
 		{
 			SetUniform2( "u_direction", new Vector2( radiusU, radiusV ) );
 
 			SetTexture( "s_texture", texture, TextureTarget.TextureRectangle );
 			SetTexture( "s_positionTexture", positionTexture, TextureTarget.TextureRectangle );
+			SetTexture( "s_normalTexture", normalTexture, TextureTarget.TextureRectangle );
 
-			float depthMax = Mouse.GetState().Y / 5000.0f;
-			Debug.WriteLine( depthMax.ToString() );
-			const float depthMax = 0.015f;
+			//float depthMax = Mouse.GetState().Y / 5000.0f;
+			//Debug.WriteLine( "depthMax : " + depthMax.ToString() );
+			const float depthMax = 0.01f;
 			SetUniform1( "u_depthMax", depthMax );
+
 
 			//float colorDiffMax = Mouse.GetState().X / 500.0f;
 			//Debug.WriteLine( colorDiffMax.ToString() );
-			const float colorDiffMax = 1.0f;
+			const float colorDiffMax = 0.25f;
 			SetUniform1( "u_colorDiffMax", colorDiffMax );
+
+			//float normalDiffMax = Mouse.GetState().X / 500.0f;
+			//Debug.WriteLine( "normalDiffMax : " + normalDiffMax.ToString() );
+			const float normalDiffMax = 1.0f;
+			SetUniform1( "u_normalDiffMax", normalDiffMax );
 
 			//float colorDiffMax = Mouse.GetState().X / 500.0f;
 			//Debug.WriteLine( "colorDiffMax: " + colorDiffMax.ToString() );
@@ -66,11 +75,13 @@ namespace Kaiga.Shaders
 // Samplers
 uniform sampler2DRect s_texture;
 uniform sampler2DRect s_positionTexture;
+uniform sampler2DRect s_normalTexture;
 
 // Uniforms
 uniform vec2 u_direction;
 uniform float u_depthMax;
 uniform float u_colorDiffMax;
+uniform float u_normalDiffMax;
 uniform float u_lightTransportResScalar;
 
 // Outputs
@@ -104,8 +115,9 @@ void main(void)
 	float denominator = 0.0f;
 	vec4 outputColor = vec4(0.0f,0.0f,0.0f,0.0f);
 	float fragDepth = texture2DRect( s_positionTexture, uv / u_lightTransportResScalar ).z;
+	vec3 fragNormal = texture2DRect( s_normalTexture, uv / u_lightTransportResScalar ).xyz;
 	vec4 fragColor = texture2DRect( s_texture, uv );
-
+	
 	for ( int i = 0; i < NUM_SAMPLES; i++ )
 	{
 		float offset = OFFSETS[i];
@@ -115,14 +127,18 @@ void main(void)
 		float depthDiff = abs(fragDepth - depthSample);
 		float depthmax = u_depthMax;// + (dFdx(depthSample) * u_direction.x + dFdy(depthSample) * u_direction.y) * 20.0f;
 		float depthStep = 1.0f - min( depthDiff / depthmax, 1.0f );
-	
+
+		vec3 normalSample = texture2DRect( s_normalTexture, (uv + u_direction * offset) / u_lightTransportResScalar ).xyz;
+		float dotProduct = clamp( dot( normalSample, fragNormal ), 0.0f, 1.0f );
+		float normalStep = max( 0.001f, (dotProduct * 4.0) - 3.0f );
+
 		vec4 colorSample = texture2DRect( s_texture, uv + u_direction * offset );
 		vec4 colorDiff = abs(colorSample - fragColor);
 		float maxChannel = max(max(colorDiff.x, colorDiff.y), max(colorDiff.z, colorDiff.w));
 		float colorStep = 1.0f - min( maxChannel / u_colorDiffMax, 1.0f );
 		
-		outputColor += colorSample * weight * depthStep;// * colorStep;
-		denominator += weight * depthStep ;//* colorStep;
+		outputColor += colorSample * weight * colorStep * normalStep;
+		denominator += weight * colorStep * normalStep;
 	}
 	outputColor /= denominator;
 
