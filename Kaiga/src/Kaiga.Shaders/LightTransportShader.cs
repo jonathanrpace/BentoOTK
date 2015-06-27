@@ -64,8 +64,8 @@ namespace Kaiga.Shaders
 		public LightTransportFragShader() : base( "LightingLib.frag", "LightTransportShader.frag" )
 		{
 			randomTexture = new RandomDirectionTexture();
-			randomTexture.Width = 17;
-			randomTexture.Height = 17;
+			randomTexture.Width = 16;
+			randomTexture.Height = 16;
 		}
 
 		override public void BindPerPass()
@@ -87,7 +87,7 @@ namespace Kaiga.Shaders
 
 			//float radius = Math.Abs( (float)Mouse.GetState().Y / 1000.0f );
 			//Debug.WriteLine( radius );
-			const float radius = 1.5f;
+			const float radius = 0.5f;
 			SetUniform1( "u_radius", radius );
 
 			//float aoFalloffScalar = Math.Abs( (float)Mouse.GetState().X / 1000.0f );
@@ -104,12 +104,12 @@ namespace Kaiga.Shaders
 
 			//float radiosityScalar = (float)Mouse.GetState().X / 10.0f;
 			//Debug.WriteLine( radiosityScalar );
-			const float radiosityScalar = 1.0f;
+			const float radiosityScalar = 1.5f;
 			SetUniform1( "u_radiosityScalar", radiosityScalar );
 
 			//float colorBleedingBoost = (float)Mouse.GetState().X / 1000.0f;
 			//Debug.WriteLine( colorBleedingBoost );
-			const float colorBleedingBoost = 0.25f;
+			const float colorBleedingBoost = 0.5f;
 			SetUniform1( "u_colorBleedingBoost", colorBleedingBoost );
 
 			SetUniform1( "u_aspectRatio", RenderParams.CameraLens.AspectRatio );

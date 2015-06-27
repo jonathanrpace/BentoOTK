@@ -159,8 +159,8 @@ void main()
 
 		// Scale distance based on frag distance from camera.
 		// Fragments that are further away have a smaller radius
-		float distanceRadiusScale = max( 0.2f, 1.0f / pow(-fragPos.z+1.0f, 2.0f) );
-		h *= distanceRadiusScale;
+		//float distanceRadiusScale = max( 0.2f, 1.0f / pow(-fragPos.z+1.0f, 2.0f) );
+		//h *= distanceRadiusScale;
 
 		// UV offset away from frag UV
 		vec2 offset = vec2( cos( currAngle ), sin( currAngle ) );
@@ -203,7 +203,7 @@ void main()
 		aoTotal += aoAmount;
 
 		// Modulate bounce
-		float sampleNormalDotFragNormal = max( dot( -sampleNormal, fragNormal ) + 1.0f, 0.0f );
+		float sampleNormalDotFragNormal = clamp( dot( sampleNormal, fragNormal ), 0.0f, 1.0f );
 		float bounceStrength =  1.0f / pow(vLength+u_bounceFalloffScalar, 2.0f);
 		bounceStrength *= vDotFragNormal;
 		bounceTotal += sampleColor * bounceStrength;
@@ -240,10 +240,10 @@ void main()
 
 	bounceTotal *= roughness;
 
-	// Module bounce light by ao
+	// Modulate bounce light by ao
 	prominantAODirection = normalize(prominantAODirection);
 	float prominantDot = 1.0f - clamp( dot( prominantAODirection, prominantBounceDirection ), 0.0f, 1.0f );
-	if ( u_flag )
+	if ( true )
 	{
 		bounceTotal -= prominantDot * aoTotal * prominantBounceStrength * prominantAOStrength;
 		bounceTotal = max( vec3(0.0f), bounceTotal );

@@ -2,17 +2,17 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Examples\src\Program.cs">
     <Files>
-      <File FileName="Kaiga\src\Kaiga.Shaders\LightTransportShader.cs" Line="82" Column="30" />
-      <File FileName="Kaiga\src\Kaiga.Shaders\DepthAwareBlurShader.cs" Line="1" Column="1" />
+      <File FileName="Kaiga\src\Kaiga.Shaders\LightTransportShader.cs" Line="125" Column="41" />
+      <File FileName="Kaiga\src\Kaiga.Shaders\DepthAwareBlurShader.cs" Line="42" Column="56" />
       <File FileName="Kaiga\src\Kaiga.Geom\PlaneGeometry.cs" Line="1" Column="1" />
       <File FileName="Kaiga\src\Kaiga.Geom\BoxGeometry.cs" Line="1" Column="1" />
-      <File FileName="Kaiga\src\GLSL\ResolveShader.frag" Line="41" Column="2" />
+      <File FileName="Kaiga\src\GLSL\ResolveShader.frag" Line="1" Column="1" />
       <File FileName="Kaiga\src\Kaiga.Shaders\GShader.cs" Line="1" Column="1" />
       <File FileName="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Shaders\AbstractShaderStage.cs" Line="1" Column="1" />
       <File FileName="Kaiga\src\GLSL\LightingLib.frag" Line="55" Column="1" />
       <File FileName="Kaiga\src\GLSL\PointLight.frag" Line="37" Column="2" />
-      <File FileName="Examples\src\Program.cs" Line="322" Column="32" />
-      <File FileName="Kaiga\src\GLSL\LightTransportShader.frag" Line="43" Column="33" NotebookId="1" />
+      <File FileName="Examples\src\Program.cs" Line="324" Column="4" />
+      <File FileName="Kaiga\src\GLSL\LightTransportShader.frag" Line="243" Column="13" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

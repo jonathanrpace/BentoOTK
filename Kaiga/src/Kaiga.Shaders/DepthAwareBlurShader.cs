@@ -43,9 +43,9 @@ namespace Kaiga.Shaders
 			SetTexture( "s_positionTexture", positionTexture, TextureTarget.TextureRectangle );
 			SetTexture( "s_normalTexture", normalTexture, TextureTarget.TextureRectangle );
 
-			//float depthMax = Mouse.GetState().Y / 5000.0f;
+			//float depthMax = Mouse.GetState().Y / 500.0f;
 			//Debug.WriteLine( "depthMax : " + depthMax.ToString() );
-			const float depthMax = 0.01f;
+			const float depthMax = 20.0f;
 			SetUniform1( "u_depthMax", depthMax );
 
 
@@ -118,27 +118,31 @@ void main(void)
 	vec3 fragNormal = texture2DRect( s_normalTexture, uv / u_lightTransportResScalar ).xyz;
 	vec4 fragColor = texture2DRect( s_texture, uv );
 	
+	float angleDepthMaxScalar = 1.0f + tan( (1.0f - fragNormal.z) * 1.57f );
+
 	for ( int i = 0; i < NUM_SAMPLES; i++ )
 	{
 		float offset = OFFSETS[i];
 		float weight = WEIGHTS[i];
 
-		float depthSample = texture2DRect( s_positionTexture, (uv + u_direction * offset) / u_lightTransportResScalar ).z;
-		float depthDiff = abs(fragDepth - depthSample);
-		float depthmax = u_depthMax;// + (dFdx(depthSample) * u_direction.x + dFdy(depthSample) * u_direction.y) * 20.0f;
-		float depthStep = 1.0f - min( depthDiff / depthmax, 1.0f );
+		vec2 sampleUV = (uv + u_direction * offset) / u_lightTransportResScalar;
 
-		vec3 normalSample = texture2DRect( s_normalTexture, (uv + u_direction * offset) / u_lightTransportResScalar ).xyz;
+		vec3 normalSample = texture2DRect( s_normalTexture, sampleUV ).xyz;
 		float dotProduct = clamp( dot( normalSample, fragNormal ), 0.0f, 1.0f );
-		float normalStep = max( 0.001f, (dotProduct * 4.0) - 3.0f );
+		float normalWeight = max( 0.001f, (dotProduct * 3.0) - 2.0f );
+
+		float depthSample = texture2DRect( s_positionTexture, sampleUV ).z;
+		float depthDiff = abs(fragDepth - depthSample);
+		float depthWeight = 1.0f - min( (depthDiff * u_depthMax) / angleDepthMaxScalar, 1.0f );
 
 		vec4 colorSample = texture2DRect( s_texture, uv + u_direction * offset );
-		vec4 colorDiff = abs(colorSample - fragColor);
-		float maxChannel = max(max(colorDiff.x, colorDiff.y), max(colorDiff.z, colorDiff.w));
-		float colorStep = 1.0f - min( maxChannel / u_colorDiffMax, 1.0f );
+		//vec4 colorDiff = abs(colorSample - fragColor);
+		//float maxChannel = max(max(colorDiff.x, colorDiff.y), max(colorDiff.z, colorDiff.w));
+		//float colorStep = 1.0f - min( maxChannel / u_colorDiffMax, 1.0f );
 		
-		outputColor += colorSample * weight * colorStep * normalStep;
-		denominator += weight * colorStep * normalStep;
+		float biasedWeight = normalWeight * depthWeight * weight;
+		outputColor += colorSample * biasedWeight;
+		denominator += biasedWeight;
 	}
 	outputColor /= denominator;
 
