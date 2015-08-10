@@ -28,6 +28,7 @@ namespace Kaiga.Core
 		static public SquareTexture2D DirectLightTexture2D;
 		static public SquareTexture2D IndirectLightTexture2D;
 		static public SquareTexture2D PositionTexture2D;
+		static public SquareTexture2D PrevPositionTexture2D;
 		static public SquareTexture2D NormalTexture2D;
 
 		// Transforms
@@ -49,6 +50,10 @@ namespace Kaiga.Core
 		static public Matrix3 NormalModelViewMatrix;
 		static public Matrix3 InvNormalModelViewMatrix;
 		static public Matrix4 NormalViewProjectionMatrix;
+
+		static public Matrix4 PrevViewProjectionMatrix;
+		static public Matrix4 PrevInvViewProjectionMatrix;
+
 
 		// Other
 		static public float LightTransportResolutionScalar = 0.5f;

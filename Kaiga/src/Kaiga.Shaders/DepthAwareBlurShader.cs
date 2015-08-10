@@ -24,10 +24,10 @@ namespace Kaiga.Shaders
 			screenQuadGeom.Dispose();
 		}
 
-		public void Render( int texture, int positionTexture, int normalTexture, float radiusU, float radiusV )
+		public void Render( int texture, int positionTexture, int normalTexture, float directionX, float directionY, int sigmaIndex )
 		{
 			BindPerPass();
-			fragmentShader.Bind( texture, positionTexture, normalTexture, radiusU, radiusV );
+			fragmentShader.Bind( texture, positionTexture, normalTexture, directionX, directionY, sigmaIndex );
 			screenQuadGeom.Bind();
 			screenQuadGeom.Draw();
 		}
@@ -35,9 +35,10 @@ namespace Kaiga.Shaders
 
 	public class DepthAwareBlurFragShader : AbstractFragmentShaderStage
 	{
-		public void Bind( int texture, int positionTexture, int normalTexture, float radiusU, float radiusV )
+		public void Bind( int texture, int positionTexture, int normalTexture, float directionX, float directionY, int sigmaIndex )
 		{
-			SetUniform2( "u_direction", new Vector2( radiusU, radiusV ) );
+			SetUniform2( "u_direction", new Vector2( directionX, directionY ) );
+			SetUniform1( "u_sigmaIndex", sigmaIndex );
 
 			SetTexture( "s_texture", texture, TextureTarget.TextureRectangle );
 			SetTexture( "s_positionTexture", positionTexture, TextureTarget.TextureRectangle );
@@ -45,19 +46,15 @@ namespace Kaiga.Shaders
 
 			//float depthMax = Mouse.GetState().Y / 500.0f;
 			//Debug.WriteLine( "depthMax : " + depthMax.ToString() );
-			const float depthMax = 20.0f;
-			SetUniform1( "u_depthMax", depthMax );
-
+			//SetUniform1( "u_depthMax", depthMax );
 
 			//float colorDiffMax = Mouse.GetState().X / 500.0f;
 			//Debug.WriteLine( colorDiffMax.ToString() );
-			const float colorDiffMax = 0.25f;
-			SetUniform1( "u_colorDiffMax", colorDiffMax );
+			//SetUniform1( "u_colorDiffMax", colorDiffMax );
 
 			//float normalDiffMax = Mouse.GetState().X / 500.0f;
 			//Debug.WriteLine( "normalDiffMax : " + normalDiffMax.ToString() );
-			const float normalDiffMax = 1.0f;
-			SetUniform1( "u_normalDiffMax", normalDiffMax );
+			//SetUniform1( "u_normalDiffMax", normalDiffMax );
 
 			//float colorDiffMax = Mouse.GetState().X / 500.0f;
 			//Debug.WriteLine( "colorDiffMax: " + colorDiffMax.ToString() );
@@ -79,34 +76,63 @@ uniform sampler2DRect s_normalTexture;
 
 // Uniforms
 uniform vec2 u_direction;
-uniform float u_depthMax;
-uniform float u_colorDiffMax;
-uniform float u_normalDiffMax;
+uniform float u_depthMax = 20.0f;
+uniform float u_colorDiffMax = 0.25f;
+uniform float u_normalDiffMax = 1.0f;
 uniform float u_lightTransportResScalar;
+uniform int u_sigmaIndex = 0;
 
 // Outputs
 layout( location = 0 ) out vec4 out_fragColor;
 
+// Kernel weights generated from tool here
+// http://dev.theomader.com/gaussian-kernel-calculator/
+
+/*
 const int NUM_SAMPLES = 17;
 const float[] OFFSETS = 
 {
 	-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8
 };
-
-const float[] WEIGHTS = 
-{ 
-	0.042481,	0.047756,	0.052854,	0.05759,	0.06178,	0.065248,	0.067844,	0.06945,
-	0.069994,	0.06945,	0.067844,	0.065248,	0.06178,	0.05759,	0.052854,	0.047756,	0.042481
-};
-
-/*
-const float[] WEIGHTS =
+const float [4][17] WEIGHTS =
 {
-	0.014076,	0.022439,	0.033613,	0.047318,	0.062595,	0.077812,	0.090898,	0.099783,	
-	0.102934,	0.099783,	0.090898,	0.077812,	0.062595,	0.047318,	0.033613,	0.022439,	0.014076
+	// Sigma 16.0
+	{ 
+		0.054357,	0.055973,	0.057412,	0.058658,	0.059698,	0.06052,	0.061113,	0.061472,
+		0.061592,	0.061472,	0.061113,	0.06052,	0.059698,	0.058658,	0.057412,	0.055973,	0.054357
+	},
+	// Sigma 8.0
+	{ 
+		0.042481,	0.047756,	0.052854,	0.05759,	0.06178,	0.065248,	0.067844,	0.06945,
+		0.069994,	0.06945,	0.067844,	0.065248,	0.06178,	0.05759,	0.052854,	0.047756,	0.042481
+	},
+	// Sigma 4.0
+	{
+		0.014076,	0.022439,	0.033613,	0.047318,	0.062595,	0.077812,	0.090898,	0.099783,	
+		0.102934,	0.099783,	0.090898,	0.077812,	0.062595,	0.047318,	0.033613,	0.022439,	0.014076
 
+	},
+	// Sigma 2.0
+	{
+		0.000078,	0.000489,	0.002403,	0.009245,	0.027835,	0.065592,	0.12098,	0.17467,	
+		0.197417,	0.17467,	0.12098,	0.065592,	0.027835,	0.009245,	0.002403,	0.000489,	0.000078
+	}
 };
 */
+
+const int NUM_SAMPLES = 9;
+const float[] OFFSETS = 
+{
+	-4, -3, -2, -1, 0, 1, 2, 3, 4
+};
+const float [][NUM_SAMPLES] WEIGHTS =
+{
+	// Sigma 8.0
+	{ 
+		0.103201,	0.108994,	0.11333,	0.116014,	0.116923,	0.116014,	0.11333,	0.108994,	0.103201
+	},
+};
+
 
 void main(void)
 {
@@ -120,10 +146,11 @@ void main(void)
 	
 	float angleDepthMaxScalar = 1.0f + tan( (1.0f - fragNormal.z) * 1.57f );
 
+	float[] weights = WEIGHTS[u_sigmaIndex];
 	for ( int i = 0; i < NUM_SAMPLES; i++ )
 	{
 		float offset = OFFSETS[i];
-		float weight = WEIGHTS[i];
+		float weight = weights[i];
 
 		vec2 sampleUV = (uv + u_direction * offset) / u_lightTransportResScalar;
 

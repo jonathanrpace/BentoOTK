@@ -44,8 +44,8 @@ namespace Kaiga.Shaders
 
 			SetRectangleTexture( "s_directLight", RenderParams.DirectLightTextureRect.Texture );
 			SetRectangleTexture( "s_indirectLight", RenderParams.IndirectLightTextureRect.Texture );
-			SetRectangleTexture( "s_lightTransport", RenderParams.LightTransportRenderTarget.RadiosityAndAOTextureRect.Texture );
-			SetRectangleTexture( "s_reflections", RenderParams.LightTransportRenderTarget.ReflectionsTextureRect.Texture );
+			SetRectangleTexture( "s_lightTransport", RenderParams.LightTransportRenderTarget.GetCurrentRadiosityAndAOTexture().Texture );
+			SetRectangleTexture( "s_reflections", RenderParams.LightTransportRenderTarget.GetCurrentReflectionTexture().Texture );
 
 			SetUniform1( "u_lightTransportResScalar", RenderParams.LightTransportResolutionScalar );
 		}

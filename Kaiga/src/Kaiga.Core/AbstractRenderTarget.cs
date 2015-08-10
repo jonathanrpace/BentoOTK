@@ -62,9 +62,7 @@ namespace Kaiga.Core
 		public void Bind()
 		{
 			validate();
-			
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
-			GL.DrawBuffers( 1, new [] { DrawBuffersEnum.ColorAttachment0 } );
 		}
 
 		public void AttachTexture( FramebufferAttachment attachment, RectangleTexture texture, int level = 0 )

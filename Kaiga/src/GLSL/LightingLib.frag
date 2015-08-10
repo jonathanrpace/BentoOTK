@@ -19,10 +19,10 @@ float angularDot( vec3 A, vec3 B, in float angularSize )
 	return ret;
 }
 
-float Fresnel( float dotLH, float F0 )
+float Fresnel( float dotNV, float F0 )
 {
-	float dotLH5 = pow(1.0f-dotLH,5);
-	float F = F0 + (1.0-F0)*(dotLH5);
+	float dotNVPow = pow(1.0f-dotNV,2);
+	float F = F0 + (1.0-F0)*(dotNVPow);
 	return F;
 }
 
@@ -44,7 +44,7 @@ float LightingFuncGGXAngular( vec3 N, vec3 V, vec3 L, float roughness, float F0,
 	float D = alphaSqr/(pi * denom * denom);
 
 	// F
-	float F = Fresnel(dotLH, F0);
+	float F = Fresnel(dotNV, F0);
 
 	// V
 	float k = alpha/2.0f;
@@ -71,7 +71,7 @@ float LightingFuncGGX( vec3 N, vec3 V, vec3 L, float roughness, float F0 )
 	float D = alphaSqr/(pi * denom * denom);
 
 	// F
-	float F = Fresnel(dotLH, F0);
+	float F = Fresnel(dotNV, F0);
 
 	// V
 	float k = alpha/2.0f;

@@ -3,11 +3,18 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Kaiga.Core
 {
-	public class LightTransportRenderTarget : AbstractRenderTarget
+	public class LightTransportRenderTarget
 	{
-		public RectangleTexture RadiosityAndAOTextureRect { get; private set; }
-		public RectangleTexture ReflectionsTextureRect { get; private set; }
+		public RectangleTexture RadiosityAndAOTextureRectA { get; private set; }
+		public RectangleTexture RadiosityAndAOTextureRectB { get; private set; }
+		public RectangleTexture BlurredRadiosityAndAOTexture { get; private set; }
+		public RectangleTexture ReflectionsTextureRectA { get; private set; }
+		public RectangleTexture ReflectionsTextureRectB { get; private set; }
 		public RectangleTexture BlurBufferTextureRect { get; private set; }
+
+		readonly AbstractRenderTarget renderTargetA;
+		readonly AbstractRenderTarget renderTargetB;
+		AbstractRenderTarget currRenderTarget;
 
 		readonly DrawBuffersEnum[] lightTransportDrawBuffers = 
 		{ 
@@ -15,52 +22,123 @@ namespace Kaiga.Core
 			DrawBuffersEnum.ColorAttachment1
 		};
 
-		readonly DrawBuffersEnum[] blurADrawBuffers = 
+		readonly DrawBuffersEnum[] blurXDrawBuffers = 
 		{ 
 			DrawBuffersEnum.ColorAttachment2
 		};
 
-		readonly DrawBuffersEnum[] blurBDrawBuffers = 
+		readonly DrawBuffersEnum[] blurYDrawBuffers = 
+		{ 
+			DrawBuffersEnum.ColorAttachment3
+		};
+
+		readonly DrawBuffersEnum[] radiosityAndAODrawBuffers = 
 		{ 
 			DrawBuffersEnum.ColorAttachment0
 		};
 
-		public LightTransportRenderTarget() :
-		base( PixelInternalFormat.Rgba16f, true, false )
-		{
-			RadiosityAndAOTextureRect = new RectangleTexture( internalFormat );
-			ReflectionsTextureRect = new RectangleTexture( internalFormat );
-			BlurBufferTextureRect = new RectangleTexture( internalFormat );
-			RadiosityAndAOTextureRect.MagFilter = TextureMagFilter.Linear;
-			BlurBufferTextureRect.MagFilter = TextureMagFilter.Linear;
-			AttachTexture( FramebufferAttachment.ColorAttachment0, RadiosityAndAOTextureRect );
-			AttachTexture( FramebufferAttachment.ColorAttachment1, ReflectionsTextureRect );
+		readonly DrawBuffersEnum[] reflectionDrawBuffers = 
+		{ 
+			DrawBuffersEnum.ColorAttachment1
+		};
 
-			AttachTexture( FramebufferAttachment.ColorAttachment2, BlurBufferTextureRect );
+		public LightTransportRenderTarget()
+		{
+			PixelInternalFormat internalFormat = PixelInternalFormat.Rgba16f;
+			renderTargetA = new AbstractRenderTarget(internalFormat, true, false);
+			renderTargetB = new AbstractRenderTarget(internalFormat, true, false);
+
+
+			RadiosityAndAOTextureRectA = new RectangleTexture( internalFormat );
+			RadiosityAndAOTextureRectA.MagFilter = TextureMagFilter.Linear;
+
+			RadiosityAndAOTextureRectB = new RectangleTexture( internalFormat );
+			RadiosityAndAOTextureRectB.MagFilter = TextureMagFilter.Linear;
+
+			ReflectionsTextureRectA = new RectangleTexture( internalFormat );
+			ReflectionsTextureRectA.MagFilter = TextureMagFilter.Linear;
+
+			ReflectionsTextureRectB = new RectangleTexture( internalFormat );
+			ReflectionsTextureRectB.MagFilter = TextureMagFilter.Linear;
+
+			BlurBufferTextureRect = new RectangleTexture( internalFormat );
+			BlurBufferTextureRect.MagFilter = TextureMagFilter.Linear;
+
+			BlurredRadiosityAndAOTexture = new RectangleTexture( internalFormat );
+			BlurredRadiosityAndAOTexture.MagFilter = TextureMagFilter.Linear;
+			
+			renderTargetA.AttachTexture( FramebufferAttachment.ColorAttachment0, RadiosityAndAOTextureRectA );
+			renderTargetA.AttachTexture( FramebufferAttachment.ColorAttachment1, ReflectionsTextureRectA );
+			renderTargetA.AttachTexture( FramebufferAttachment.ColorAttachment2, BlurBufferTextureRect );
+			renderTargetA.AttachTexture( FramebufferAttachment.ColorAttachment3, BlurredRadiosityAndAOTexture );
+
+			renderTargetB.AttachTexture( FramebufferAttachment.ColorAttachment0, RadiosityAndAOTextureRectB );
+			renderTargetB.AttachTexture( FramebufferAttachment.ColorAttachment1, ReflectionsTextureRectB );
+			renderTargetB.AttachTexture( FramebufferAttachment.ColorAttachment2, BlurBufferTextureRect );
+			renderTargetB.AttachTexture( FramebufferAttachment.ColorAttachment3, BlurredRadiosityAndAOTexture );
+
+			currRenderTarget = renderTargetA;
+		}
+
+		public void SetSize( int width, int height )
+		{
+			renderTargetA.SetSize( width, height );
+			renderTargetB.SetSize( width, height );
 		}
 
 		public void BindForLightTransport()
 		{
-			validate();
-
-			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
+			currRenderTarget.Bind();
 			GL.DrawBuffers( lightTransportDrawBuffers.Length, lightTransportDrawBuffers );
 		}
 
-		public void BindForBlurA()
+		public void BindForRadiosityAndAOBlurX()
 		{
-			validate();
-
-			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
-			GL.DrawBuffers( blurADrawBuffers.Length, blurADrawBuffers );
+			currRenderTarget.Bind();
+			GL.DrawBuffers( blurXDrawBuffers.Length, blurXDrawBuffers );
 		}
 
-		public void BindForBlurB()
+		public void BindForRadiosityAndAOBlurY()
 		{
-			validate();
+			currRenderTarget.Bind();
+			GL.DrawBuffers( blurYDrawBuffers.Length, blurYDrawBuffers );
+		}
 
-			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, FrameBuffer );
-			GL.DrawBuffers( blurBDrawBuffers.Length, blurBDrawBuffers );
+		public void BindForReflectionBlurX()
+		{
+			currRenderTarget.Bind();
+			GL.DrawBuffers( blurXDrawBuffers.Length, blurXDrawBuffers );
+		}
+
+		public void BindForReflectionBlurY()
+		{
+			currRenderTarget.Bind();
+			GL.DrawBuffers( reflectionDrawBuffers.Length, reflectionDrawBuffers );
+		}
+
+		public void SwapRadiosityAndAOTextures()
+		{
+			currRenderTarget = currRenderTarget == renderTargetA ? renderTargetB : renderTargetA;
+		}
+
+		public RectangleTexture GetCurrentRadiosityAndAOTexture()
+		{
+			return currRenderTarget == renderTargetA ? RadiosityAndAOTextureRectA : RadiosityAndAOTextureRectB;
+		}
+
+		public RectangleTexture GetPreviousRadiosityAndAOTexture()
+		{
+			return currRenderTarget == renderTargetA ? RadiosityAndAOTextureRectB : RadiosityAndAOTextureRectA;
+		}
+
+		public RectangleTexture GetCurrentReflectionTexture()
+		{
+			return currRenderTarget == renderTargetA ? ReflectionsTextureRectA : ReflectionsTextureRectB;
+		}
+
+		public RectangleTexture GetPreviousReflectionTexture()
+		{
+			return currRenderTarget == renderTargetA ? ReflectionsTextureRectB : ReflectionsTextureRectA;
 		}
 	}
 }

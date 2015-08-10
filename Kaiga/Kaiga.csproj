@@ -7,6 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Kaiga</RootNamespace>
     <AssemblyName>Kaiga</AssemblyName>
+    <UseMSBuildEngine>False</UseMSBuildEngine>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -104,7 +105,7 @@
     <Compile Include="src\Kaiga.Core\LightTransportRenderTarget.cs" />
     <Compile Include="src\Kaiga.Shaders\TextureRectToMippedTexture2DHelper.cs" />
     <Compile Include="src\Kaiga.Shaders\TextureRectToScreenShader.cs" />
-    <Compile Include="c:\Coding\BentoOTK\Kaiga\src\Kaiga.Shaders\Texture2DToScreenShader.cs" />
+    <Compile Include="src\Kaiga.Shaders\Texture2DToScreenShader.cs" />
     <Compile Include="src\Kaiga.RenderPasses\DirectionalLightRenderPass.cs" />
     <Compile Include="src\Kaiga.Lights\DirectionalLight.cs" />
     <Compile Include="src\Kaiga.Shaders\DirectionalLightShader.cs" />
@@ -178,6 +179,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\GLSL\LightBufferConvolution.frag">
       <LogicalName>LightBufferConvolution.frag</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\GLSL\AmbientLight.frag">
+      <LogicalName>AmbientLight.frag</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

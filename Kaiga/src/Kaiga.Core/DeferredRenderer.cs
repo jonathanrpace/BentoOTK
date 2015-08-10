@@ -30,7 +30,8 @@ namespace Kaiga.Core
 		// Helpers
 		readonly TextureRectToMippedTexture2DHelper 		directLightTextureMipper;
 		readonly TextureRectToMippedTexture2DHelper 		indirectLightTextureMipper;
-		readonly TextureRectToMippedTexture2DHelper 		positionTextureMipper;	
+		TextureRectToMippedTexture2DHelper 					positionTextureMipper;	
+		TextureRectToMippedTexture2DHelper 					prevPositionTextureMipper;	
 		readonly TextureRectToMippedTexture2DHelper 		normalTextureMipper;
 
 		// Properties
@@ -68,6 +69,7 @@ namespace Kaiga.Core
 			directLightTextureMipper = new TextureRectToMippedTexture2DHelper();
 			indirectLightTextureMipper = new TextureRectToMippedTexture2DHelper();
 			positionTextureMipper = new TextureRectToMippedTexture2DHelper();
+			prevPositionTextureMipper = new TextureRectToMippedTexture2DHelper();
 			normalTextureMipper = new TextureRectToMippedTexture2DHelper();
 			lightTransportShader = new LightTransportShader();
 			resolveShader = new ResolveShader();
@@ -145,6 +147,9 @@ namespace Kaiga.Core
 			RenderParams.LightTransportBufferWidth = lightTransportRenderWidth;
 			RenderParams.LightTransportBuffferHeight = lightTransportRenderHeight;
 
+			RenderParams.PrevViewProjectionMatrix = RenderParams.ViewProjectionMatrix;
+			RenderParams.PrevInvViewProjectionMatrix = RenderParams.InvViewProjectionMatrix;
+
 			RenderParams.CameraLens = Camera.GetComponentByType<ILens>();
 			RenderParams.CameraLens.AspectRatio = (float)scene.GameWindow.Width / scene.GameWindow.Height;
 			RenderParams.ViewMatrix = Camera.GetComponentByType<Transform>().Matrix;
@@ -207,6 +212,12 @@ namespace Kaiga.Core
 			normalTextureMipper.Render( renderTarget.NormalBuffer );
 			RenderParams.NormalTexture2D = normalTextureMipper.Output;
 
+			// We store the previous frames position texture too via ping-ponging between two render targets.
+			RenderParams.PrevPositionTexture2D = prevPositionTextureMipper.Output;
+			var tmp = positionTextureMipper;
+			positionTextureMipper = prevPositionTextureMipper;
+			prevPositionTextureMipper = tmp;
+
 			// Perform light transport.
 			GL.Viewport( 0, 0, lightTransportRenderWidth, lightTransportRenderHeight );
 			lightTransportShader.Render();
@@ -221,7 +232,7 @@ namespace Kaiga.Core
 			GL.DepthMask( true );
 			GL.Disable( EnableCap.DepthTest );
 			GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
-			GL.Enable( EnableCap.FramebufferSrgb );
+			//GL.Enable( EnableCap.FramebufferSrgb );
 
 			// Output final output texture to backbuffer
 			//screenSpaceReflectionShader.Render( renderParams );]

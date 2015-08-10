@@ -39,5 +39,5 @@ void main()
 
 	outColor = mix( outColor, reflections.rgb, reflections.a );
 
-	out_fragColor = vec4( outColor, 1.0f );
+	out_fragColor = vec4( ao,ao,ao, 1.0f );
 }

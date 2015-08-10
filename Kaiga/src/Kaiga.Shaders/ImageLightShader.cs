@@ -78,7 +78,7 @@ void main()
 
 	vec3 viewDir = normalize( position );
 	vec3 reflectVec = reflect( viewDir, normal );
-	vec3 lightDir = reflectVec * (1.0f - roughness) + roughness * normal;
+	vec3 lightDir = reflectVec;
 	lightDir = normalize( lightDir );
 	lightDir *= normalInvViewMatrix;
 
@@ -87,7 +87,7 @@ void main()
 
 	float mipBias = max( 0.0f, roughness * numMipMaps );
 
-	vec3 cubeNormal = getEdgeFixedCubeMapNormal( lightDir, mipBias, texSize.x );
+	vec3 cubeNormal = lightDir;//getEdgeFixedCubeMapNormal( lightDir, mipBias, texSize.x );
 	vec4 light = pow( textureLod( s_envMap, cubeNormal, mipBias ), vec4( 2.2 ) );
 	
 	light.xyz *= reflectivity;

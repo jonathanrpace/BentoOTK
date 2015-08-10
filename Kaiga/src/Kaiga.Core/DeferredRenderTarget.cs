@@ -13,7 +13,8 @@ namespace Kaiga.Core
 		public RectangleTexture DirectLightBuffer { get; private set; }
 		public RectangleTexture IndirectLightBuffer { get; private set; }
 		public RectangleTexture OutputBuffer { get; private set; }
-		
+		public RectangleTexture DepthBuffer { get; private set; }
+
 		DrawBuffersEnum[] gPhaseDrawBuffers = { 
 			DrawBufferName.Position, 
 			DrawBufferName.Normal, 
@@ -54,6 +55,9 @@ namespace Kaiga.Core
 			DirectLightBuffer = new RectangleTexture( internalFormat );
 			IndirectLightBuffer = new RectangleTexture( internalFormat );
 			OutputBuffer = new RectangleTexture( internalFormat );
+			DepthBuffer = new RectangleTexture( PixelInternalFormat.DepthComponent24, 256, 256, PixelFormat.DepthComponent );
+			DepthBuffer.MagFilter = TextureMagFilter.Nearest;
+			DepthBuffer.MinFilter = TextureMinFilter.Nearest;
 
 			AttachTexture( FBAttachmentName.Position, PositionBuffer );
 			AttachTexture( FBAttachmentName.Normal, NormalBuffer );
@@ -62,6 +66,7 @@ namespace Kaiga.Core
 			AttachTexture( FBAttachmentName.DirectLight, DirectLightBuffer );
 			AttachTexture( FBAttachmentName.IndirectLight, IndirectLightBuffer );
 			AttachTexture( FBAttachmentName.Output, OutputBuffer );
+			AttachTexture( FramebufferAttachment.DepthAttachment, DepthBuffer );
 		}
 
 		public void Clear()
