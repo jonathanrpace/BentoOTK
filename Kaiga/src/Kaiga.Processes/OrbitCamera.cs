@@ -41,7 +41,7 @@ namespace Kaiga.Processes
 			MaxDolly = 5.0f;
 
 			Position = PositionTarget = new Vector3( 0.0f, 0.0f, 0.0f );
-			PositionSpeed = new Vector3( 0.01f, 0.01f, 0.01f );
+			PositionSpeed = new Vector3( 0.005f, 0.005f, 0.005f );
 			PositionEase = new Vector3( 0.2f, 0.2f, 0.2f );
 
 			Rotation = RotationTarget = new Vector2( 0.0f, 0.0f );
@@ -111,6 +111,8 @@ namespace Kaiga.Processes
 			{
 				translation.X -= PositionSpeed.X;
 			}
+
+			translation = Vector3.Transform( translation, Matrix4.CreateRotationX( -Rotation.Y ) * Matrix4.CreateRotationY( -Rotation.X ) );
 		
 			PositionTarget += translation;
 		}
@@ -127,11 +129,16 @@ namespace Kaiga.Processes
 		{
 			matrix = Matrix4.Identity;
 
+			matrix = Matrix4.CreateTranslation( 0, 0, -Dolly ) * matrix;
+			matrix = Matrix4.CreateRotationX( Rotation.Y ) * matrix;
+			matrix = Matrix4.CreateRotationY( Rotation.X ) * matrix;
+			matrix = Matrix4.CreateTranslation( Position ) * matrix;
 
-			matrix *= Matrix4.CreateRotationY( Rotation.X );
-			matrix *= Matrix4.CreateRotationX( Rotation.Y );
-			matrix *= Matrix4.CreateTranslation( 0, 0, -Dolly );
-			matrix *= Matrix4.CreateTranslation( Position );
+
+			//matrix *= Matrix4.CreateRotationY( Rotation.X );
+			//matrix *= Matrix4.CreateRotationX( Rotation.Y );
+			//matrix *= Matrix4.CreateTranslation( 0, 0, -Dolly );
+			//matrix *= Matrix4.CreateTranslation( Position );
 
 			var renderer = scene.GetProcessByType<IRenderer>();
 			if ( renderer == null ) return;
