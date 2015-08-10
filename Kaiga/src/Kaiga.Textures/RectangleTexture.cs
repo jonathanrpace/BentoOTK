@@ -44,6 +44,30 @@ namespace Kaiga.Textures
 			}
 		}
 
+		PixelFormat format = PixelFormat.Rgba;
+		public PixelFormat Format
+		{
+			get	{ return format; }
+			set
+			{
+				if ( value == format ) return;
+				invalidate();
+				format = value;
+			}
+		}
+
+		PixelType pixelType = PixelType.Float;
+		public PixelType PixType
+		{
+			get	{ return pixelType; }
+			set
+			{
+				if ( value == pixelType ) return;
+				invalidate();
+				pixelType = value;
+			}
+		}
+
 		TextureMagFilter magFilter = TextureMagFilter.Linear;
 		public TextureMagFilter MagFilter
 		{
@@ -86,11 +110,13 @@ namespace Kaiga.Textures
 
 		#endregion
 
-		public RectangleTexture( PixelInternalFormat internalFormat = PixelInternalFormat.Rgba, int width = 256, int height = 256 )
+		public RectangleTexture( PixelInternalFormat internalFormat = PixelInternalFormat.Rgba, int width = 256, int height = 256, PixelFormat format = PixelFormat.Rgba, PixelType pixelType = PixelType.Float )
 		{
 			InternalFormat = internalFormat;
 			Width = width;
 			Height = height;
+			Format = format;
+			PixType = pixelType;
 		}
 
 		override protected void onInvalidate()
@@ -108,8 +134,8 @@ namespace Kaiga.Textures
 
 			GL.BindTexture( TextureTarget.TextureRectangle, texture );
 
-			GL.TexImage2D( TextureTarget.TextureRectangle, 0, internalFormat, width, height, 0, PixelFormat.Rgba, 
-				PixelType.Float, new IntPtr(0) );
+			GL.TexImage2D( TextureTarget.TextureRectangle, 0, internalFormat, width, height, 0, format, 
+				pixelType, new IntPtr(0) );
 			
 			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureMagFilter, (int)MagFilter);
 			GL.TexParameter( TextureTarget.TextureRectangle, TextureParameterName.TextureMinFilter, (int)MinFilter );
