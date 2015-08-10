@@ -47,7 +47,7 @@ namespace Kaiga.Components
 			}
 		}
 		
-		private float _near = 0.1f;
+		private float _near = 0.001f;
 		public float Near
 		{
 			get
@@ -62,7 +62,7 @@ namespace Kaiga.Components
 			}
 		}
 
-		private float _far = 30f;
+		private float _far = 10.0f;
 		public float Far
 		{
 			get
